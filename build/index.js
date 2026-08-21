@@ -3292,11 +3292,11 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
         fiber = fiber.next, id--;
       return fiber;
     }
-    function copyWithSetImpl(obj, path9, index, value) {
-      if (index >= path9.length)
+    function copyWithSetImpl(obj, path7, index, value) {
+      if (index >= path7.length)
         return value;
-      var key2 = path9[index], updated = isArrayImpl(obj) ? obj.slice() : assign3({}, obj);
-      updated[key2] = copyWithSetImpl(obj[key2], path9, index + 1, value);
+      var key2 = path7[index], updated = isArrayImpl(obj) ? obj.slice() : assign3({}, obj);
+      updated[key2] = copyWithSetImpl(obj[key2], path7, index + 1, value);
       return updated;
     }
     function copyWithRename(obj, oldPath, newPath) {
@@ -3316,11 +3316,11 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
       index + 1 === oldPath.length ? (updated[newPath[index]] = updated[oldKey], isArrayImpl(updated) ? updated.splice(oldKey, 1) : delete updated[oldKey]) : updated[oldKey] = copyWithRenameImpl(obj[oldKey], oldPath, newPath, index + 1);
       return updated;
     }
-    function copyWithDeleteImpl(obj, path9, index) {
-      var key2 = path9[index], updated = isArrayImpl(obj) ? obj.slice() : assign3({}, obj);
-      if (index + 1 === path9.length)
+    function copyWithDeleteImpl(obj, path7, index) {
+      var key2 = path7[index], updated = isArrayImpl(obj) ? obj.slice() : assign3({}, obj);
+      if (index + 1 === path7.length)
         return isArrayImpl(updated) ? updated.splice(key2, 1) : delete updated[key2], updated;
-      updated[key2] = copyWithDeleteImpl(obj[key2], path9, index + 1);
+      updated[key2] = copyWithDeleteImpl(obj[key2], path7, index + 1);
       return updated;
     }
     function shouldSuspendImpl() {
@@ -13344,29 +13344,29 @@ Check the top-level render call using <` + componentName2 + ">.");
     var didWarnAboutNestedUpdates = false;
     var didWarnAboutFindNodeInStrictMode = {};
     var overrideHookState = null, overrideHookStateDeletePath = null, overrideHookStateRenamePath = null, overrideProps = null, overridePropsDeletePath = null, overridePropsRenamePath = null, scheduleUpdate = null, scheduleRetry = null, setErrorHandler = null, setSuspenseHandler = null;
-    overrideHookState = function(fiber, id, path9, value) {
+    overrideHookState = function(fiber, id, path7, value) {
       id = findHook(fiber, id);
-      id !== null && (path9 = copyWithSetImpl(id.memoizedState, path9, 0, value), id.memoizedState = path9, id.baseState = path9, fiber.memoizedProps = assign3({}, fiber.memoizedProps), path9 = enqueueConcurrentRenderForLane(fiber, 2), path9 !== null && scheduleUpdateOnFiber(path9, fiber, 2));
+      id !== null && (path7 = copyWithSetImpl(id.memoizedState, path7, 0, value), id.memoizedState = path7, id.baseState = path7, fiber.memoizedProps = assign3({}, fiber.memoizedProps), path7 = enqueueConcurrentRenderForLane(fiber, 2), path7 !== null && scheduleUpdateOnFiber(path7, fiber, 2));
     };
-    overrideHookStateDeletePath = function(fiber, id, path9) {
+    overrideHookStateDeletePath = function(fiber, id, path7) {
       id = findHook(fiber, id);
-      id !== null && (path9 = copyWithDeleteImpl(id.memoizedState, path9, 0), id.memoizedState = path9, id.baseState = path9, fiber.memoizedProps = assign3({}, fiber.memoizedProps), path9 = enqueueConcurrentRenderForLane(fiber, 2), path9 !== null && scheduleUpdateOnFiber(path9, fiber, 2));
+      id !== null && (path7 = copyWithDeleteImpl(id.memoizedState, path7, 0), id.memoizedState = path7, id.baseState = path7, fiber.memoizedProps = assign3({}, fiber.memoizedProps), path7 = enqueueConcurrentRenderForLane(fiber, 2), path7 !== null && scheduleUpdateOnFiber(path7, fiber, 2));
     };
     overrideHookStateRenamePath = function(fiber, id, oldPath, newPath) {
       id = findHook(fiber, id);
       id !== null && (oldPath = copyWithRename(id.memoizedState, oldPath, newPath), id.memoizedState = oldPath, id.baseState = oldPath, fiber.memoizedProps = assign3({}, fiber.memoizedProps), oldPath = enqueueConcurrentRenderForLane(fiber, 2), oldPath !== null && scheduleUpdateOnFiber(oldPath, fiber, 2));
     };
-    overrideProps = function(fiber, path9, value) {
-      fiber.pendingProps = copyWithSetImpl(fiber.memoizedProps, path9, 0, value);
+    overrideProps = function(fiber, path7, value) {
+      fiber.pendingProps = copyWithSetImpl(fiber.memoizedProps, path7, 0, value);
       fiber.alternate && (fiber.alternate.pendingProps = fiber.pendingProps);
-      path9 = enqueueConcurrentRenderForLane(fiber, 2);
-      path9 !== null && scheduleUpdateOnFiber(path9, fiber, 2);
+      path7 = enqueueConcurrentRenderForLane(fiber, 2);
+      path7 !== null && scheduleUpdateOnFiber(path7, fiber, 2);
     };
-    overridePropsDeletePath = function(fiber, path9) {
-      fiber.pendingProps = copyWithDeleteImpl(fiber.memoizedProps, path9, 0);
+    overridePropsDeletePath = function(fiber, path7) {
+      fiber.pendingProps = copyWithDeleteImpl(fiber.memoizedProps, path7, 0);
       fiber.alternate && (fiber.alternate.pendingProps = fiber.pendingProps);
-      path9 = enqueueConcurrentRenderForLane(fiber, 2);
-      path9 !== null && scheduleUpdateOnFiber(path9, fiber, 2);
+      path7 = enqueueConcurrentRenderForLane(fiber, 2);
+      path7 !== null && scheduleUpdateOnFiber(path7, fiber, 2);
     };
     overridePropsRenamePath = function(fiber, oldPath, newPath) {
       fiber.pendingProps = copyWithRename(fiber.memoizedProps, oldPath, newPath);
@@ -17580,8 +17580,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             return false;
           }
-          function getInObject(object, path9) {
-            return path9.reduce(function(reduced, attr) {
+          function getInObject(object, path7) {
+            return path7.reduce(function(reduced, attr) {
               if (reduced) {
                 if (hasOwnProperty.call(reduced, attr)) {
                   return reduced[attr];
@@ -17593,11 +17593,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               return null;
             }, object);
           }
-          function deletePathInObject(object, path9) {
-            var length = path9.length;
-            var last2 = path9[length - 1];
+          function deletePathInObject(object, path7) {
+            var length = path7.length;
+            var last2 = path7[length - 1];
             if (object != null) {
-              var parent = getInObject(object, path9.slice(0, length - 1));
+              var parent = getInObject(object, path7.slice(0, length - 1));
               if (parent) {
                 if (Object(_isArray__WEBPACK_IMPORTED_MODULE_7__["a"])(parent)) {
                   parent.splice(last2, 1);
@@ -17623,11 +17623,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             }
           }
-          function setInObject(object, path9, value) {
-            var length = path9.length;
-            var last2 = path9[length - 1];
+          function setInObject(object, path7, value) {
+            var length = path7.length;
+            var last2 = path7[length - 1];
             if (object != null) {
-              var parent = getInObject(object, path9.slice(0, length - 1));
+              var parent = getInObject(object, path7.slice(0, length - 1));
               if (parent) {
                 parent[last2] = value;
               }
@@ -18056,11 +18056,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           return obj;
         }
         function cleanForBridge(data, isPathAllowed) {
-          var path9 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+          var path7 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
           if (data !== null) {
             var cleanedPaths = [];
             var unserializablePaths = [];
-            var cleanedData = Object(_hydration__WEBPACK_IMPORTED_MODULE_1__["a"])(data, cleanedPaths, unserializablePaths, path9, isPathAllowed);
+            var cleanedData = Object(_hydration__WEBPACK_IMPORTED_MODULE_1__["a"])(data, cleanedPaths, unserializablePaths, path7, isPathAllowed);
             return {
               data: cleanedData,
               cleaned: cleanedPaths,
@@ -18080,18 +18080,18 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             Object(clipboard_js__WEBPACK_IMPORTED_MODULE_0__["copy"])(text);
           }
         }
-        function copyWithDelete(obj, path9) {
+        function copyWithDelete(obj, path7) {
           var index = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-          var key2 = path9[index];
+          var key2 = path7[index];
           var updated = Object(shared_isArray__WEBPACK_IMPORTED_MODULE_2__["a"])(obj) ? obj.slice() : _objectSpread({}, obj);
-          if (index + 1 === path9.length) {
+          if (index + 1 === path7.length) {
             if (Object(shared_isArray__WEBPACK_IMPORTED_MODULE_2__["a"])(updated)) {
               updated.splice(key2, 1);
             } else {
               delete updated[key2];
             }
           } else {
-            updated[key2] = copyWithDelete(obj[key2], path9, index + 1);
+            updated[key2] = copyWithDelete(obj[key2], path7, index + 1);
           }
           return updated;
         }
@@ -18112,14 +18112,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           return updated;
         }
-        function copyWithSet(obj, path9, value) {
+        function copyWithSet(obj, path7, value) {
           var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-          if (index >= path9.length) {
+          if (index >= path7.length) {
             return value;
           }
-          var key2 = path9[index];
+          var key2 = path7[index];
           var updated = Object(shared_isArray__WEBPACK_IMPORTED_MODULE_2__["a"])(obj) ? obj.slice() : _objectSpread({}, obj);
-          updated[key2] = copyWithSet(obj[key2], path9, value, index + 1);
+          updated[key2] = copyWithSet(obj[key2], path7, value, index + 1);
           return updated;
         }
         function getEffectDurations(root) {
@@ -19737,8 +19737,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           unserializable: Symbol("unserializable")
         };
         var LEVEL_THRESHOLD = 2;
-        function createDehydrated(type, inspectable, data, cleaned, path9) {
-          cleaned.push(path9);
+        function createDehydrated(type, inspectable, data, cleaned, path7) {
+          cleaned.push(path7);
           var dehydrated = {
             inspectable,
             type,
@@ -19756,13 +19756,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           return dehydrated;
         }
-        function dehydrate(data, cleaned, unserializable, path9, isPathAllowed) {
+        function dehydrate(data, cleaned, unserializable, path7, isPathAllowed) {
           var level = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
           var type = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["d"])(data);
           var isPathAllowedCheck;
           switch (type) {
             case "html_element":
-              cleaned.push(path9);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19771,7 +19771,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "function":
-              cleaned.push(path9);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19780,14 +19780,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "string":
-              isPathAllowedCheck = isPathAllowed(path9);
+              isPathAllowedCheck = isPathAllowed(path7);
               if (isPathAllowedCheck) {
                 return data;
               } else {
                 return data.length <= 500 ? data : data.slice(0, 500) + "...";
               }
             case "bigint":
-              cleaned.push(path9);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19796,7 +19796,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "symbol":
-              cleaned.push(path9);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19805,7 +19805,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "react_element":
-              cleaned.push(path9);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19815,7 +19815,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               };
             case "array_buffer":
             case "data_view":
-              cleaned.push(path9);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19825,19 +19825,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "array":
-              isPathAllowedCheck = isPathAllowed(path9);
+              isPathAllowedCheck = isPathAllowed(path7);
               if (level >= LEVEL_THRESHOLD && !isPathAllowedCheck) {
-                return createDehydrated(type, true, data, cleaned, path9);
+                return createDehydrated(type, true, data, cleaned, path7);
               }
               return data.map(function(item, i2) {
-                return dehydrate(item, cleaned, unserializable, path9.concat([i2]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
+                return dehydrate(item, cleaned, unserializable, path7.concat([i2]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
               });
             case "html_all_collection":
             case "typed_array":
             case "iterator":
-              isPathAllowedCheck = isPathAllowed(path9);
+              isPathAllowedCheck = isPathAllowed(path7);
               if (level >= LEVEL_THRESHOLD && !isPathAllowedCheck) {
-                return createDehydrated(type, true, data, cleaned, path9);
+                return createDehydrated(type, true, data, cleaned, path7);
               } else {
                 var unserializableValue = {
                   unserializable: true,
@@ -19849,13 +19849,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   name: !data.constructor || data.constructor.name === "Object" ? "" : data.constructor.name
                 };
                 Array.from(data).forEach(function(item, i2) {
-                  return unserializableValue[i2] = dehydrate(item, cleaned, unserializable, path9.concat([i2]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
+                  return unserializableValue[i2] = dehydrate(item, cleaned, unserializable, path7.concat([i2]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
                 });
-                unserializable.push(path9);
+                unserializable.push(path7);
                 return unserializableValue;
               }
             case "opaque_iterator":
-              cleaned.push(path9);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19864,7 +19864,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "date":
-              cleaned.push(path9);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19873,7 +19873,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "regexp":
-              cleaned.push(path9);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19882,21 +19882,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "object":
-              isPathAllowedCheck = isPathAllowed(path9);
+              isPathAllowedCheck = isPathAllowed(path7);
               if (level >= LEVEL_THRESHOLD && !isPathAllowedCheck) {
-                return createDehydrated(type, true, data, cleaned, path9);
+                return createDehydrated(type, true, data, cleaned, path7);
               } else {
                 var object = {};
                 Object(_utils__WEBPACK_IMPORTED_MODULE_0__["c"])(data).forEach(function(key2) {
                   var name = key2.toString();
-                  object[name] = dehydrate(data[key2], cleaned, unserializable, path9.concat([name]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
+                  object[name] = dehydrate(data[key2], cleaned, unserializable, path7.concat([name]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
                 });
                 return object;
               }
             case "infinity":
             case "nan":
             case "undefined":
-              cleaned.push(path9);
+              cleaned.push(path7);
               return {
                 type
               };
@@ -19904,8 +19904,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               return data;
           }
         }
-        function fillInPath(object, data, path9, value) {
-          var target = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path9);
+        function fillInPath(object, data, path7, value) {
+          var target = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path7);
           if (target != null) {
             if (!target[meta.unserializable]) {
               delete target[meta.inspectable];
@@ -19920,9 +19920,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           if (value !== null && data.unserializable.length > 0) {
             var unserializablePath = data.unserializable[0];
-            var isMatch2 = unserializablePath.length === path9.length;
-            for (var i2 = 0;i2 < path9.length; i2++) {
-              if (path9[i2] !== unserializablePath[i2]) {
+            var isMatch2 = unserializablePath.length === path7.length;
+            for (var i2 = 0;i2 < path7.length; i2++) {
+              if (path7[i2] !== unserializablePath[i2]) {
                 isMatch2 = false;
                 break;
               }
@@ -19931,13 +19931,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               upgradeUnserializable(value, value);
             }
           }
-          Object(_utils__WEBPACK_IMPORTED_MODULE_0__["l"])(object, path9, value);
+          Object(_utils__WEBPACK_IMPORTED_MODULE_0__["l"])(object, path7, value);
         }
         function hydrate(object, cleaned, unserializable) {
-          cleaned.forEach(function(path9) {
-            var length = path9.length;
-            var last2 = path9[length - 1];
-            var parent = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path9.slice(0, length - 1));
+          cleaned.forEach(function(path7) {
+            var length = path7.length;
+            var last2 = path7[length - 1];
+            var parent = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path7.slice(0, length - 1));
             if (!parent || !parent.hasOwnProperty(last2)) {
               return;
             }
@@ -19963,10 +19963,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               parent[last2] = replaced;
             }
           });
-          unserializable.forEach(function(path9) {
-            var length = path9.length;
-            var last2 = path9[length - 1];
-            var parent = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path9.slice(0, length - 1));
+          unserializable.forEach(function(path7) {
+            var length = path7.length;
+            var last2 = path7[length - 1];
+            var parent = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path7.slice(0, length - 1));
             if (!parent || !parent.hasOwnProperty(last2)) {
               return;
             }
@@ -23009,9 +23009,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             return alternate;
           }
-          function prepareViewAttributeSource(id, path9) {
+          function prepareViewAttributeSource(id, path7) {
             if (isMostRecentlyInspectedElement(id)) {
-              window.$attribute = Object(utils["h"])(mostRecentlyInspectedElement, path9);
+              window.$attribute = Object(utils["h"])(mostRecentlyInspectedElement, path7);
             }
           }
           function prepareViewElementSource(id) {
@@ -23239,9 +23239,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           function isMostRecentlyInspectedElementCurrent(id) {
             return isMostRecentlyInspectedElement(id) && !hasElementUpdatedSinceLastInspected;
           }
-          function mergeInspectedPaths(path9) {
+          function mergeInspectedPaths(path7) {
             var current = currentlyInspectedPaths;
-            path9.forEach(function(key2) {
+            path7.forEach(function(key2) {
               if (!current[key2]) {
                 current[key2] = {};
               }
@@ -23249,16 +23249,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             });
           }
           function createIsPathAllowed(key2, secondaryCategory) {
-            return function isPathAllowed(path9) {
+            return function isPathAllowed(path7) {
               switch (secondaryCategory) {
                 case "hooks":
-                  if (path9.length === 1) {
+                  if (path7.length === 1) {
                     return true;
                   }
-                  if (path9[path9.length - 2] === "hookSource" && path9[path9.length - 1] === "fileName") {
+                  if (path7[path7.length - 2] === "hookSource" && path7[path7.length - 1] === "fileName") {
                     return true;
                   }
-                  if (path9[path9.length - 1] === "subHooks" || path9[path9.length - 2] === "subHooks") {
+                  if (path7[path7.length - 1] === "subHooks" || path7[path7.length - 2] === "subHooks") {
                     return true;
                   }
                   break;
@@ -23269,8 +23269,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               if (!current) {
                 return false;
               }
-              for (var i2 = 0;i2 < path9.length; i2++) {
-                current = current[path9[i2]];
+              for (var i2 = 0;i2 < path7.length; i2++) {
+                current = current[path7[i2]];
                 if (!current) {
                   return false;
                 }
@@ -23319,37 +23319,37 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 break;
             }
           }
-          function storeAsGlobal(id, path9, count) {
+          function storeAsGlobal(id, path7, count) {
             if (isMostRecentlyInspectedElement(id)) {
-              var value = Object(utils["h"])(mostRecentlyInspectedElement, path9);
+              var value = Object(utils["h"])(mostRecentlyInspectedElement, path7);
               var key2 = "$reactTemp".concat(count);
               window[key2] = value;
               console.log(key2);
               console.log(value);
             }
           }
-          function copyElementPath(id, path9) {
+          function copyElementPath(id, path7) {
             if (isMostRecentlyInspectedElement(id)) {
-              Object(backend_utils["b"])(Object(utils["h"])(mostRecentlyInspectedElement, path9));
+              Object(backend_utils["b"])(Object(utils["h"])(mostRecentlyInspectedElement, path7));
             }
           }
-          function inspectElement(requestID, id, path9, forceFullData) {
-            if (path9 !== null) {
-              mergeInspectedPaths(path9);
+          function inspectElement(requestID, id, path7, forceFullData) {
+            if (path7 !== null) {
+              mergeInspectedPaths(path7);
             }
             if (isMostRecentlyInspectedElement(id) && !forceFullData) {
               if (!hasElementUpdatedSinceLastInspected) {
-                if (path9 !== null) {
+                if (path7 !== null) {
                   var secondaryCategory = null;
-                  if (path9[0] === "hooks") {
+                  if (path7[0] === "hooks") {
                     secondaryCategory = "hooks";
                   }
                   return {
                     id,
                     responseID: requestID,
                     type: "hydrated-path",
-                    path: path9,
-                    value: Object(backend_utils["a"])(Object(utils["h"])(mostRecentlyInspectedElement, path9), createIsPathAllowed(null, secondaryCategory), path9)
+                    path: path7,
+                    value: Object(backend_utils["a"])(Object(utils["h"])(mostRecentlyInspectedElement, path7), createIsPathAllowed(null, secondaryCategory), path7)
                   };
                 } else {
                   return {
@@ -23430,17 +23430,17 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               console.groupEnd();
             }
           }
-          function deletePath(type, id, hookID, path9) {
+          function deletePath(type, id, hookID, path7) {
             var fiber = findCurrentFiberUsingSlowPathById(id);
             if (fiber !== null) {
               var instance = fiber.stateNode;
               switch (type) {
                 case "context":
-                  path9 = path9.slice(1);
+                  path7 = path7.slice(1);
                   switch (fiber.tag) {
                     case ClassComponent:
-                      if (path9.length === 0) {} else {
-                        Object(utils["a"])(instance.context, path9);
+                      if (path7.length === 0) {} else {
+                        Object(utils["a"])(instance.context, path7);
                       }
                       instance.forceUpdate();
                       break;
@@ -23450,21 +23450,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   break;
                 case "hooks":
                   if (typeof overrideHookStateDeletePath === "function") {
-                    overrideHookStateDeletePath(fiber, hookID, path9);
+                    overrideHookStateDeletePath(fiber, hookID, path7);
                   }
                   break;
                 case "props":
                   if (instance === null) {
                     if (typeof overridePropsDeletePath === "function") {
-                      overridePropsDeletePath(fiber, path9);
+                      overridePropsDeletePath(fiber, path7);
                     }
                   } else {
-                    fiber.pendingProps = Object(backend_utils["c"])(instance.props, path9);
+                    fiber.pendingProps = Object(backend_utils["c"])(instance.props, path7);
                     instance.forceUpdate();
                   }
                   break;
                 case "state":
-                  Object(utils["a"])(instance.state, path9);
+                  Object(utils["a"])(instance.state, path7);
                   instance.forceUpdate();
                   break;
               }
@@ -23511,19 +23511,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             }
           }
-          function overrideValueAtPath(type, id, hookID, path9, value) {
+          function overrideValueAtPath(type, id, hookID, path7, value) {
             var fiber = findCurrentFiberUsingSlowPathById(id);
             if (fiber !== null) {
               var instance = fiber.stateNode;
               switch (type) {
                 case "context":
-                  path9 = path9.slice(1);
+                  path7 = path7.slice(1);
                   switch (fiber.tag) {
                     case ClassComponent:
-                      if (path9.length === 0) {
+                      if (path7.length === 0) {
                         instance.context = value;
                       } else {
-                        Object(utils["l"])(instance.context, path9, value);
+                        Object(utils["l"])(instance.context, path7, value);
                       }
                       instance.forceUpdate();
                       break;
@@ -23533,18 +23533,18 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   break;
                 case "hooks":
                   if (typeof overrideHookState === "function") {
-                    overrideHookState(fiber, hookID, path9, value);
+                    overrideHookState(fiber, hookID, path7, value);
                   }
                   break;
                 case "props":
                   switch (fiber.tag) {
                     case ClassComponent:
-                      fiber.pendingProps = Object(backend_utils["e"])(instance.props, path9, value);
+                      fiber.pendingProps = Object(backend_utils["e"])(instance.props, path7, value);
                       instance.forceUpdate();
                       break;
                     default:
                       if (typeof overrideProps === "function") {
-                        overrideProps(fiber, path9, value);
+                        overrideProps(fiber, path7, value);
                       }
                       break;
                   }
@@ -23552,7 +23552,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 case "state":
                   switch (fiber.tag) {
                     case ClassComponent:
-                      Object(utils["l"])(instance.state, path9, value);
+                      Object(utils["l"])(instance.state, path7, value);
                       instance.forceUpdate();
                       break;
                   }
@@ -23734,13 +23734,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           var trackedPathMatchFiber = null;
           var trackedPathMatchDepth = -1;
           var mightBeOnTrackedPath = false;
-          function setTrackedPath(path9) {
-            if (path9 === null) {
+          function setTrackedPath(path7) {
+            if (path7 === null) {
               trackedPathMatchFiber = null;
               trackedPathMatchDepth = -1;
               mightBeOnTrackedPath = false;
             }
-            trackedPath = path9;
+            trackedPath = path7;
           }
           function updateTrackedPathStateBeforeMount(fiber) {
             if (trackedPath === null || !mightBeOnTrackedPath) {
@@ -27953,12 +27953,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             bridge_defineProperty(_assertThisInitialized(_this), "overrideValueAtPath", function(_ref) {
-              var { id, path: path9, rendererID, type, value } = _ref;
+              var { id, path: path7, rendererID, type, value } = _ref;
               switch (type) {
                 case "context":
                   _this.send("overrideContext", {
                     id,
-                    path: path9,
+                    path: path7,
                     rendererID,
                     wasForwarded: true,
                     value
@@ -27967,7 +27967,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 case "hooks":
                   _this.send("overrideHookState", {
                     id,
-                    path: path9,
+                    path: path7,
                     rendererID,
                     wasForwarded: true,
                     value
@@ -27976,7 +27976,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 case "props":
                   _this.send("overrideProps", {
                     id,
-                    path: path9,
+                    path: path7,
                     rendererID,
                     wasForwarded: true,
                     value
@@ -27985,7 +27985,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 case "state":
                   _this.send("overrideState", {
                     id,
-                    path: path9,
+                    path: path7,
                     rendererID,
                     wasForwarded: true,
                     value
@@ -28204,21 +28204,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "copyElementPath", function(_ref4) {
-              var { id, path: path9, rendererID } = _ref4;
+              var { id, path: path7, rendererID } = _ref4;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                renderer.copyElementPath(id, path9);
+                renderer.copyElementPath(id, path7);
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "deletePath", function(_ref5) {
-              var { hookID, id, path: path9, rendererID, type } = _ref5;
+              var { hookID, id, path: path7, rendererID, type } = _ref5;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                renderer.deletePath(type, id, hookID, path9);
+                renderer.deletePath(type, id, hookID, path7);
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "getBackendVersion", function() {
@@ -28255,12 +28255,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "inspectElement", function(_ref8) {
-              var { forceFullData, id, path: path9, rendererID, requestID } = _ref8;
+              var { forceFullData, id, path: path7, rendererID, requestID } = _ref8;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                _this._bridge.send("inspectedElement", renderer.inspectElement(requestID, id, path9, forceFullData));
+                _this._bridge.send("inspectedElement", renderer.inspectElement(requestID, id, path7, forceFullData));
                 if (_this._persistedSelectionMatch === null || _this._persistedSelectionMatch.id !== id) {
                   _this._persistedSelection = null;
                   _this._persistedSelectionMatch = null;
@@ -28297,20 +28297,20 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "overrideValueAtPath", function(_ref12) {
-              var { hookID, id, path: path9, rendererID, type, value } = _ref12;
+              var { hookID, id, path: path7, rendererID, type, value } = _ref12;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                renderer.overrideValueAtPath(type, id, hookID, path9, value);
+                renderer.overrideValueAtPath(type, id, hookID, path7, value);
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "overrideContext", function(_ref13) {
-              var { id, path: path9, rendererID, wasForwarded, value } = _ref13;
+              var { id, path: path7, rendererID, wasForwarded, value } = _ref13;
               if (!wasForwarded) {
                 _this.overrideValueAtPath({
                   id,
-                  path: path9,
+                  path: path7,
                   rendererID,
                   type: "context",
                   value
@@ -28318,11 +28318,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "overrideHookState", function(_ref14) {
-              var { id, hookID, path: path9, rendererID, wasForwarded, value } = _ref14;
+              var { id, hookID, path: path7, rendererID, wasForwarded, value } = _ref14;
               if (!wasForwarded) {
                 _this.overrideValueAtPath({
                   id,
-                  path: path9,
+                  path: path7,
                   rendererID,
                   type: "hooks",
                   value
@@ -28330,11 +28330,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "overrideProps", function(_ref15) {
-              var { id, path: path9, rendererID, wasForwarded, value } = _ref15;
+              var { id, path: path7, rendererID, wasForwarded, value } = _ref15;
               if (!wasForwarded) {
                 _this.overrideValueAtPath({
                   id,
-                  path: path9,
+                  path: path7,
                   rendererID,
                   type: "props",
                   value
@@ -28342,11 +28342,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "overrideState", function(_ref16) {
-              var { id, path: path9, rendererID, wasForwarded, value } = _ref16;
+              var { id, path: path7, rendererID, wasForwarded, value } = _ref16;
               if (!wasForwarded) {
                 _this.overrideValueAtPath({
                   id,
-                  path: path9,
+                  path: path7,
                   rendererID,
                   type: "state",
                   value
@@ -28404,12 +28404,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               _this._bridge.send("profilingStatus", _this._isProfiling);
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "storeAsGlobal", function(_ref18) {
-              var { count, id, path: path9, rendererID } = _ref18;
+              var { count, id, path: path7, rendererID } = _ref18;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                renderer.storeAsGlobal(id, path9, count);
+                renderer.storeAsGlobal(id, path7, count);
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "updateConsolePatchSettings", function(_ref19) {
@@ -28429,12 +28429,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "viewAttributeSource", function(_ref20) {
-              var { id, path: path9, rendererID } = _ref20;
+              var { id, path: path7, rendererID } = _ref20;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                renderer.prepareViewAttributeSource(id, path9);
+                renderer.prepareViewAttributeSource(id, path7);
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "viewElementSource", function(_ref21) {
@@ -28488,11 +28488,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "_throttledPersistSelection", lodash_throttle_default()(function(rendererID, id) {
               var renderer = _this._rendererInterfaces[rendererID];
-              var path9 = renderer != null ? renderer.getPathForElement(id) : null;
-              if (path9 !== null) {
+              var path7 = renderer != null ? renderer.getPathForElement(id) : null;
+              if (path7 !== null) {
                 Object(storage["e"])(constants3["i"], JSON.stringify({
                   rendererID,
-                  path: path9
+                  path: path7
                 }));
               } else {
                 Object(storage["d"])(constants3["i"]);
@@ -29404,9 +29404,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           var currentlyInspectedElementID = null;
           var currentlyInspectedPaths = {};
-          function mergeInspectedPaths(path9) {
+          function mergeInspectedPaths(path7) {
             var current = currentlyInspectedPaths;
-            path9.forEach(function(key2) {
+            path7.forEach(function(key2) {
               if (!current[key2]) {
                 current[key2] = {};
               }
@@ -29414,13 +29414,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             });
           }
           function createIsPathAllowed(key2) {
-            return function isPathAllowed(path9) {
+            return function isPathAllowed(path7) {
               var current = currentlyInspectedPaths[key2];
               if (!current) {
                 return false;
               }
-              for (var i2 = 0;i2 < path9.length; i2++) {
-                current = current[path9[i2]];
+              for (var i2 = 0;i2 < path7.length; i2++) {
+                current = current[path7[i2]];
                 if (!current) {
                   return false;
                 }
@@ -29470,23 +29470,23 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 break;
             }
           }
-          function storeAsGlobal(id, path9, count) {
+          function storeAsGlobal(id, path7, count) {
             var inspectedElement = inspectElementRaw(id);
             if (inspectedElement !== null) {
-              var value = Object(src_utils["h"])(inspectedElement, path9);
+              var value = Object(src_utils["h"])(inspectedElement, path7);
               var key2 = "$reactTemp".concat(count);
               window[key2] = value;
               console.log(key2);
               console.log(value);
             }
           }
-          function copyElementPath(id, path9) {
+          function copyElementPath(id, path7) {
             var inspectedElement = inspectElementRaw(id);
             if (inspectedElement !== null) {
-              Object(utils["b"])(Object(src_utils["h"])(inspectedElement, path9));
+              Object(utils["b"])(Object(src_utils["h"])(inspectedElement, path7));
             }
           }
-          function inspectElement(requestID, id, path9, forceFullData) {
+          function inspectElement(requestID, id, path7, forceFullData) {
             if (forceFullData || currentlyInspectedElementID !== id) {
               currentlyInspectedElementID = id;
               currentlyInspectedPaths = {};
@@ -29499,8 +29499,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type: "not-found"
               };
             }
-            if (path9 !== null) {
-              mergeInspectedPaths(path9);
+            if (path7 !== null) {
+              mergeInspectedPaths(path7);
             }
             updateSelectedElement(id);
             inspectedElement.context = Object(utils["a"])(inspectedElement.context, createIsPathAllowed("context"));
@@ -29615,10 +29615,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               console.groupEnd();
             }
           }
-          function prepareViewAttributeSource(id, path9) {
+          function prepareViewAttributeSource(id, path7) {
             var inspectedElement = inspectElementRaw(id);
             if (inspectedElement !== null) {
-              window.$attribute = Object(src_utils["h"])(inspectedElement, path9);
+              window.$attribute = Object(src_utils["h"])(inspectedElement, path7);
             }
           }
           function prepareViewElementSource(id) {
@@ -29634,14 +29634,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             global2.$type = element.type;
           }
-          function deletePath(type, id, hookID, path9) {
+          function deletePath(type, id, hookID, path7) {
             var internalInstance = idToInternalInstanceMap.get(id);
             if (internalInstance != null) {
               var publicInstance = internalInstance._instance;
               if (publicInstance != null) {
                 switch (type) {
                   case "context":
-                    Object(src_utils["a"])(publicInstance.context, path9);
+                    Object(src_utils["a"])(publicInstance.context, path7);
                     forceUpdate(publicInstance);
                     break;
                   case "hooks":
@@ -29649,12 +29649,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   case "props":
                     var element = internalInstance._currentElement;
                     internalInstance._currentElement = _objectSpread(_objectSpread({}, element), {}, {
-                      props: Object(utils["c"])(element.props, path9)
+                      props: Object(utils["c"])(element.props, path7)
                     });
                     forceUpdate(publicInstance);
                     break;
                   case "state":
-                    Object(src_utils["a"])(publicInstance.state, path9);
+                    Object(src_utils["a"])(publicInstance.state, path7);
                     forceUpdate(publicInstance);
                     break;
                 }
@@ -29688,14 +29688,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             }
           }
-          function overrideValueAtPath(type, id, hookID, path9, value) {
+          function overrideValueAtPath(type, id, hookID, path7, value) {
             var internalInstance = idToInternalInstanceMap.get(id);
             if (internalInstance != null) {
               var publicInstance = internalInstance._instance;
               if (publicInstance != null) {
                 switch (type) {
                   case "context":
-                    Object(src_utils["l"])(publicInstance.context, path9, value);
+                    Object(src_utils["l"])(publicInstance.context, path7, value);
                     forceUpdate(publicInstance);
                     break;
                   case "hooks":
@@ -29703,12 +29703,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   case "props":
                     var element = internalInstance._currentElement;
                     internalInstance._currentElement = _objectSpread(_objectSpread({}, element), {}, {
-                      props: Object(utils["e"])(element.props, path9, value)
+                      props: Object(utils["e"])(element.props, path7, value)
                     });
                     forceUpdate(publicInstance);
                     break;
                   case "state":
-                    Object(src_utils["l"])(publicInstance.state, path9, value);
+                    Object(src_utils["l"])(publicInstance.state, path7, value);
                     forceUpdate(publicInstance);
                     break;
                 }
@@ -29743,7 +29743,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           function updateComponentFilters(componentFilters) {}
           function setTraceUpdatesEnabled(enabled) {}
-          function setTrackedPath(path9) {}
+          function setTrackedPath(path7) {}
           function getOwnersList(id) {
             return null;
           }
@@ -42556,8 +42556,8 @@ var cli = meow(`
         --author <author>      override author metadata for --import
     -o, --output <directory>   library root (default: ~/libgen)
         --pages <number>       result pages to evaluate (default: 2)
-        --source-only          retain the source without Markdown conversion
-        --format <format>      converted output: canonical, docling, or both
+        --source-only          retain the source without Docling conversion
+        --markdown             also export Docling Markdown alongside native JSON
     -b, --bulk <MD5LIST.txt>   legacy MD5 bulk downloading mode
     -u, --url <MD5>            get the download URL
     -d, --download <MD5>       download the file by MD5
@@ -42567,8 +42567,9 @@ var cli = meow(`
     $ libgen-downloader    (start the app in interactive mode without flags)
     $ libgen-downloader -s "The Art of War"
     $ libgen-downloader --best "The Art of War by Sun Tzu"
+    $ libgen-downloader --best "The Art of War by Sun Tzu" --markdown
     $ libgen-downloader --list ./reading-list.md
-    $ libgen-downloader --import ~/my-library/book.epub
+    $ libgen-downloader --import ~/my-library/book.pdf
     $ libgen-downloader -b ./MD5_LIST_1695686580524.txt
     $ libgen-downloader -u 1234567890abcdef1234567890abcdef
     $ libgen-downloader -d 1234567890abcdef1234567890abcdef
@@ -42608,9 +42609,9 @@ var cli = meow(`
       type: "boolean",
       default: false
     },
-    format: {
-      type: "string",
-      default: "canonical"
+    markdown: {
+      type: "boolean",
+      default: false
     },
     bulk: {
       type: "string",
@@ -42632,7 +42633,7 @@ var cli = meow(`
 });
 
 // src/cli/operate.ts
-import fs14 from "node:fs";
+import fs12 from "node:fs";
 
 // node_modules/linkedom/esm/shared/symbols.js
 var CHANGED = Symbol("changed");
@@ -50855,8 +50856,8 @@ async function getDocument(searchURL) {
 }
 
 // src/library/ingest.ts
-import fs7 from "node:fs";
-import path6 from "node:path";
+import fs5 from "node:fs";
+import path5 from "node:path";
 
 // node_modules/nanoid/index.js
 import { webcrypto as crypto } from "node:crypto";
@@ -51401,15 +51402,17 @@ function createBookPaths(entry, libraryRootOverride) {
   const libraryRoot = getLibraryRoot(libraryRootOverride);
   const canonicalStem = getCanonicalStem(entry);
   const bookDirectory = path3.join(libraryRoot, canonicalStem);
+  const doclingDirectory = path3.join(bookDirectory, "docling");
   const extension = normalizeExtension(entry.extension);
   return {
     libraryRoot,
     canonicalStem,
     bookDirectory,
-    assetsDirectory: path3.join(bookDirectory, "assets"),
     sourcePath: path3.join(bookDirectory, `source.${extension}`),
-    markdownPath: path3.join(bookDirectory, "book.md"),
-    doclingPath: path3.join(bookDirectory, "document.json"),
+    doclingDirectory,
+    doclingJSONPath: path3.join(doclingDirectory, "source.json"),
+    doclingMarkdownPath: path3.join(doclingDirectory, "source.md"),
+    doclingAssetsDirectory: path3.join(doclingDirectory, "source_artifacts"),
     metadataPath: path3.join(bookDirectory, "metadata.json"),
     conversionPath: path3.join(bookDirectory, "conversion.json")
   };
@@ -51545,12 +51548,395 @@ function rankCandidates(entries2, request) {
 
 // src/library/converter.ts
 import { execFile } from "node:child_process";
-import fs6 from "node:fs";
-import path5 from "node:path";
-
-// src/library/epub.ts
 import fs3 from "node:fs";
 import path4 from "node:path";
+var CONVERSION_TIMEOUT_MS = 15 * 60 * 1000;
+var DOCLING_INPUT_EXTENSIONS = new Set([
+  "adoc",
+  "asciidoc",
+  "bmp",
+  "csv",
+  "docx",
+  "htm",
+  "html",
+  "jpeg",
+  "jpg",
+  "md",
+  "pdf",
+  "png",
+  "pptx",
+  "tif",
+  "tiff",
+  "webp",
+  "xlsx",
+  "xml"
+]);
+function canConvertWithDocling(extension) {
+  return DOCLING_INPUT_EXTENSIONS.has(extension.toLowerCase());
+}
+var runCommand = (command, arguments_, workingDirectory) => new Promise((resolve2) => {
+  execFile(command, arguments_, {
+    cwd: workingDirectory,
+    maxBuffer: 10 * 1024 * 1024,
+    timeout: CONVERSION_TIMEOUT_MS
+  }, (error, stdout, stderr) => {
+    let exitCode = 0;
+    if (error) {
+      exitCode = 1;
+      if (typeof error.code === "number") {
+        exitCode = error.code;
+      }
+    }
+    resolve2({ exitCode, stdout, stderr });
+  });
+});
+async function commandIsAvailable(command, runner, workingDirectory) {
+  const result = await runner(command, ["--version"], workingDirectory);
+  return result.exitCode === 0;
+}
+async function validateDoclingDocument(doclingPath) {
+  try {
+    const document2 = JSON.parse(await fs3.promises.readFile(doclingPath, "utf8"));
+    return document2?.schema_name === "DoclingDocument";
+  } catch {
+    return false;
+  }
+}
+async function validateOptionalMarkdown(paths, includeMarkdown) {
+  if (!includeMarkdown) {
+    return true;
+  }
+  try {
+    const markdown = await fs3.promises.readFile(paths.doclingMarkdownPath, "utf8");
+    return markdown.trim().length > 0;
+  } catch {
+    return false;
+  }
+}
+function getDoclingArguments(paths, includeMarkdown, enrich) {
+  const arguments_ = [
+    path4.basename(paths.sourcePath),
+    "--to=json",
+    "--output=docling",
+    "--image-export-mode=referenced"
+  ];
+  if (includeMarkdown) {
+    arguments_.push("--to=md");
+  }
+  if (enrich) {
+    arguments_.push("--enrich-formula");
+  }
+  return arguments_;
+}
+async function convertBook(paths, candidate, runner = runCommand, includeMarkdown = false) {
+  const extension = candidate.entry.extension.toLowerCase();
+  if (!canConvertWithDocling(extension)) {
+    return {
+      status: "failed",
+      converter: "docling",
+      message: `Docling does not support .${extension}; use --source-only or select a supported copy such as PDF.`
+    };
+  }
+  if (!await commandIsAvailable("docling", runner, paths.bookDirectory)) {
+    return {
+      status: "failed",
+      converter: "docling",
+      message: "Docling is required for document conversion but is not installed."
+    };
+  }
+  await fs3.promises.mkdir(paths.doclingDirectory, { recursive: true });
+  let result = await runner("docling", getDoclingArguments(paths, includeMarkdown, true), paths.bookDirectory);
+  if (result.exitCode !== 0) {
+    result = await runner("docling", getDoclingArguments(paths, includeMarkdown, false), paths.bookDirectory);
+  }
+  const jsonIsValid = await validateDoclingDocument(paths.doclingJSONPath);
+  const markdownIsValid = await validateOptionalMarkdown(paths, includeMarkdown);
+  if (result.exitCode !== 0 || !jsonIsValid || !markdownIsValid) {
+    return {
+      status: "failed",
+      converter: "docling",
+      message: result.stderr.trim() || "Docling did not produce the requested native output."
+    };
+  }
+  const conversion = {
+    status: "converted",
+    converter: "docling",
+    message: "Converted the document to native DoclingDocument JSON.",
+    doclingJSONPath: paths.doclingJSONPath
+  };
+  if (includeMarkdown) {
+    conversion.message = "Converted the document to native DoclingDocument JSON and Markdown.";
+    conversion.doclingMarkdownPath = paths.doclingMarkdownPath;
+  }
+  return conversion;
+}
+
+// src/library/metadata.ts
+import fs4 from "node:fs";
+async function writeBookRecords({
+  paths,
+  request,
+  selected,
+  conversion
+}) {
+  const sourceKind = selected.sourceKind || "libgen";
+  let libgenMD5;
+  let libgenMirrorPath;
+  if (sourceKind === "libgen") {
+    libgenMD5 = selected.md5;
+    libgenMirrorPath = selected.entry.mirror;
+  }
+  const metadata = {
+    schemaVersion: 1,
+    title: selected.entry.title,
+    authors: selected.entry.authors,
+    publisher: selected.entry.publisher,
+    year: selected.entry.year,
+    pages: selected.entry.pages,
+    language: selected.entry.language,
+    sourceFormat: selected.entry.extension.toLowerCase(),
+    sourceFile: "source." + selected.entry.extension.toLowerCase(),
+    source: {
+      kind: sourceKind,
+      file: "source." + selected.entry.extension.toLowerCase(),
+      format: selected.entry.extension.toLowerCase(),
+      md5: selected.md5,
+      sha256: selected.sourceSHA256,
+      originalFilename: selected.originalFilename,
+      libgenMirrorPath
+    },
+    libgenMD5,
+    libgenMirrorPath,
+    requestedAs: request.sourceLine,
+    selection: {
+      score: selected.score,
+      reasons: selected.reasons
+    },
+    ingestedAt: new Date().toISOString()
+  };
+  await fs4.promises.writeFile(paths.metadataPath, `${JSON.stringify(metadata, undefined, 2)}
+`);
+  await fs4.promises.writeFile(paths.conversionPath, `${JSON.stringify(conversion, undefined, 2)}
+`);
+}
+
+// src/library/ingest.ts
+var DEFAULT_PAGE_COUNT = 2;
+var DEFAULT_FINALIST_COUNT = 3;
+function report(options, message) {
+  options.onProgress?.(message);
+}
+async function createLibgenSession(onMirrorFail = () => {}) {
+  const config = await fetchConfig();
+  const mirror = await findMirror(config.mirrors, onMirrorFail);
+  if (!mirror) {
+    throw new Error("No reachable LibGen mirror was found.");
+  }
+  return { mirror, adapter: getAdapter(mirror.src, mirror.type) };
+}
+async function searchBookCandidates(session, request, pageCount = DEFAULT_PAGE_COUNT) {
+  const entries2 = [];
+  let searchQuery = request.query;
+  if (request.author) {
+    searchQuery = `${request.query} ${request.author}`;
+  }
+  for (let pageNumber = 1;pageNumber <= pageCount; pageNumber += 1) {
+    const searchURL = session.adapter.getSearchURL(searchQuery, pageNumber, SEARCH_PAGE_SIZE);
+    const result = await getDocument(searchURL);
+    const connectionError = session.adapter.detectConnectionError(result.document);
+    if (connectionError) {
+      throw new Error(connectionError);
+    }
+    const pageEntries = session.adapter.parseEntries(result.document) || [];
+    if (pageEntries.length === 0) {
+      break;
+    }
+    entries2.push(...pageEntries);
+  }
+  return rankCandidates(entries2, request).filter((candidate) => candidate.score >= 40);
+}
+async function validateDownloadedSource(candidate, sourcePath) {
+  const file = await fs5.promises.open(sourcePath, "r");
+  try {
+    const buffer = Buffer.alloc(8);
+    const { bytesRead } = await file.read(buffer, 0, buffer.length, 0);
+    if (bytesRead === 0) {
+      throw new Error("The downloaded source is empty.");
+    }
+    const signature = buffer.subarray(0, bytesRead).toString("latin1");
+    const extension = candidate.entry.extension.toLowerCase();
+    if (extension === "pdf" && !signature.startsWith("%PDF-")) {
+      throw new Error("The selected PDF candidate did not contain a PDF file.");
+    }
+    if (extension === "epub" && !signature.startsWith("PK")) {
+      throw new Error("The selected EPUB candidate was not a valid EPUB container.");
+    }
+  } finally {
+    await file.close();
+  }
+}
+async function downloadCandidate(session, candidate, paths, options) {
+  const detailURL = session.adapter.getPageURL(candidate.entry.mirror);
+  const detailResult = await getDocument(detailURL);
+  const downloadURL = session.adapter.getMainDownloadURLFromDocument(detailResult.document);
+  if (!downloadURL) {
+    throw new Error("The candidate detail page did not contain a download URL.");
+  }
+  report(options, `Downloading ${candidate.entry.extension.toUpperCase()} candidate...`);
+  let lastReportedPercentage = 0;
+  let lastReportedMegabytes = 0;
+  try {
+    await downloadURLToFile({
+      url: downloadURL,
+      destinationPath: paths.sourcePath,
+      fetcher: fetchLibgen,
+      onRetry(message) {
+        report(options, message);
+      },
+      onProgress(downloadedBytes, totalBytes) {
+        if (totalBytes) {
+          const percentage = Math.min(100, Math.floor(downloadedBytes / totalBytes * 100));
+          const reportablePercentage = Math.floor(percentage / 10) * 10;
+          if (reportablePercentage >= lastReportedPercentage + 10) {
+            lastReportedPercentage = reportablePercentage;
+            report(options, `Downloaded ${reportablePercentage}% of the candidate...`);
+          }
+          return;
+        }
+        const downloadedMegabytes = Math.floor(downloadedBytes / (5 * 1024 * 1024)) * 5;
+        if (downloadedMegabytes >= lastReportedMegabytes + 5) {
+          lastReportedMegabytes = downloadedMegabytes;
+          report(options, `Downloaded ${downloadedMegabytes} MB of the candidate...`);
+        }
+      }
+    });
+  } catch (error) {
+    let reason = String(error);
+    if (error instanceof Error) {
+      reason = error.message;
+    }
+    throw new Error(`The LibGen search mirror is online, but its shared file-download host failed: ${reason}`, { cause: error });
+  }
+  await validateDownloadedSource(candidate, paths.sourcePath);
+}
+function sourceOnlyConversion() {
+  return {
+    status: "unavailable",
+    message: "Document conversion was disabled; the standardized source was retained."
+  };
+}
+async function finalizeStagingDirectory(stagingPaths, finalPaths, stagingRoot) {
+  if (fs5.existsSync(finalPaths.bookDirectory)) {
+    throw new Error(`The canonical book directory already exists: ${finalPaths.bookDirectory}`);
+  }
+  await fs5.promises.rename(stagingPaths.bookDirectory, finalPaths.bookDirectory);
+  await fs5.promises.rm(stagingRoot, { recursive: true, force: true });
+}
+async function ingestBestBook(request, options = {}) {
+  const libraryRoot = getLibraryRoot(options.libraryRoot);
+  await fs5.promises.mkdir(libraryRoot, { recursive: true });
+  const session = options.session || await createLibgenSession();
+  report(options, `Searching ${session.mirror.src} for "${request.query}"...`);
+  let candidates = await searchBookCandidates(session, request, options.pageCount || DEFAULT_PAGE_COUNT);
+  if (options.convert !== false) {
+    candidates = candidates.filter((candidate) => canConvertWithDocling(candidate.entry.extension));
+  }
+  if (candidates.length === 0) {
+    let message = "No sufficiently close, downloadable candidates were found.";
+    if (options.convert !== false) {
+      message = "No sufficiently close candidates support native Docling output.";
+    }
+    return {
+      request,
+      status: "failed",
+      message
+    };
+  }
+  const finalistCount = options.finalistCount || DEFAULT_FINALIST_COUNT;
+  const finalists = candidates.slice(0, finalistCount);
+  let lastError = "All finalist candidates failed.";
+  for (const [index, candidate] of finalists.entries()) {
+    const finalPaths = createBookPaths(candidate.entry, libraryRoot);
+    if (fs5.existsSync(finalPaths.bookDirectory)) {
+      return {
+        request,
+        status: "skipped",
+        message: `Canonical directory already exists; left it untouched at ${finalPaths.bookDirectory}`,
+        selected: candidate,
+        paths: finalPaths
+      };
+    }
+    const stagingRoot = await fs5.promises.mkdtemp(path5.join(libraryRoot, ".staging-"));
+    const stagingPaths = createBookPaths(candidate.entry, stagingRoot);
+    await fs5.promises.mkdir(stagingPaths.bookDirectory, { recursive: true });
+    try {
+      report(options, `Evaluating candidate ${index + 1}/${finalists.length}: ${candidate.reasons.join(", ")}`);
+      await downloadCandidate(session, candidate, stagingPaths, options);
+      let conversion = sourceOnlyConversion();
+      if (options.convert !== false) {
+        let outputDescription = "native Docling JSON";
+        if (options.includeMarkdown) {
+          outputDescription += " and Markdown";
+        }
+        report(options, `Converting the selected source to ${outputDescription}...`);
+        conversion = await convertBook(stagingPaths, candidate, undefined, options.includeMarkdown);
+      }
+      if (conversion.status === "failed") {
+        lastError = conversion.message;
+        await fs5.promises.rm(stagingRoot, { recursive: true, force: true });
+        continue;
+      }
+      const recordedConversion = { ...conversion };
+      if (recordedConversion.doclingJSONPath) {
+        recordedConversion.doclingJSONPath = "docling/source.json";
+      }
+      if (recordedConversion.doclingMarkdownPath) {
+        recordedConversion.doclingMarkdownPath = "docling/source.md";
+      }
+      await writeBookRecords({
+        paths: stagingPaths,
+        request,
+        selected: candidate,
+        conversion: recordedConversion
+      });
+      await finalizeStagingDirectory(stagingPaths, finalPaths, stagingRoot);
+      const finalConversion = { ...conversion };
+      if (finalConversion.doclingJSONPath) {
+        finalConversion.doclingJSONPath = finalPaths.doclingJSONPath;
+      }
+      if (finalConversion.doclingMarkdownPath) {
+        finalConversion.doclingMarkdownPath = finalPaths.doclingMarkdownPath;
+      }
+      let message = `Saved the best candidate to ${finalPaths.bookDirectory}`;
+      if (conversion.status !== "converted") {
+        message += ` (${conversion.message})`;
+      }
+      return {
+        request,
+        status: "downloaded",
+        message,
+        selected: candidate,
+        paths: finalPaths,
+        conversion: finalConversion
+      };
+    } catch (error) {
+      lastError = String(error);
+      if (error instanceof Error) {
+        lastError = error.message;
+      }
+      await fs5.promises.rm(stagingRoot, { recursive: true, force: true });
+    }
+  }
+  return { request, status: "failed", message: lastError };
+}
+
+// src/library/local-import.ts
+import { createHash } from "node:crypto";
+import fs7 from "node:fs";
+import path6 from "node:path";
+
+// src/library/epub.ts
+import fs6 from "node:fs";
 
 // node_modules/fflate/esm/index.mjs
 import { createRequire as createRequire3 } from "module";
@@ -52127,7 +52513,7 @@ function unzip(data, opts, cb) {
 
 // src/library/epub.ts
 function unzipArchive(sourcePath) {
-  return fs3.promises.readFile(sourcePath).then((buffer) => new Promise((resolve2, reject) => {
+  return fs6.promises.readFile(sourcePath).then((buffer) => new Promise((resolve2, reject) => {
     unzip(new Uint8Array(buffer), (error, files) => {
       if (error) {
         reject(error);
@@ -52148,10 +52534,6 @@ function getElementText(xml, elementName) {
   }
   const value = decodeXMLText(match[1].replaceAll(/<[^>]+>/g, ""));
   return value || undefined;
-}
-function getAttribute(tag, attribute2) {
-  const expression = new RegExp(`${attribute2}=["']([^"']+)["']`, "i");
-  return tag.match(expression)?.[1];
 }
 function findPackageFile(files) {
   return Object.keys(files).find((filename) => filename.toLowerCase().endsWith(".opf"));
@@ -52176,727 +52558,6 @@ async function readEpubPackage(sourcePath) {
     language: getElementText(packageFile.xml, "dc:language")
   };
 }
-function findSupplementalImagePaths(files, packageFilename, packageXML) {
-  const manifest = new Map;
-  for (const itemTag of packageXML.match(/<item\b[^>]*>/gi) || []) {
-    const id = getAttribute(itemTag, "id");
-    const href = getAttribute(itemTag, "href");
-    if (id && href) {
-      manifest.set(id, href);
-    }
-  }
-  const packageDirectory = path4.posix.dirname(packageFilename);
-  const documentPaths = [];
-  for (const itemReference of packageXML.match(/<itemref\b[^>]*>/gi) || []) {
-    if (!/linear=["']no["']/i.test(itemReference)) {
-      continue;
-    }
-    const id = getAttribute(itemReference, "idref");
-    let href;
-    if (id) {
-      href = manifest.get(id);
-    }
-    if (href) {
-      documentPaths.push(path4.posix.normalize(path4.posix.join(packageDirectory, href)));
-    }
-  }
-  const imagePaths = new Set;
-  for (const documentPath of documentPaths) {
-    const documentData = files[documentPath];
-    if (!documentData) {
-      continue;
-    }
-    const document2 = new TextDecoder().decode(documentData);
-    for (const imageTag of document2.match(/<img\b[^>]*>/gi) || []) {
-      const source = getAttribute(imageTag, "src");
-      if (source) {
-        imagePaths.add(path4.posix.normalize(path4.posix.join(path4.posix.dirname(documentPath), source)));
-      }
-    }
-  }
-  return [...imagePaths].filter((imagePath) => files[imagePath]);
-}
-async function extractSupplementalEpubAssets(paths) {
-  let files;
-  try {
-    files = await unzipArchive(paths.sourcePath);
-  } catch {
-    return [];
-  }
-  const packageFile = getPackageXML(files);
-  if (!packageFile) {
-    return [];
-  }
-  const imagePaths = findSupplementalImagePaths(files, packageFile.filename, packageFile.xml);
-  const assets = [];
-  for (const [index, imagePath] of imagePaths.entries()) {
-    const extension = path4.extname(imagePath).toLowerCase() || ".bin";
-    const filename = `front-matter-${String(index + 1).padStart(3, "0")}${extension}`;
-    await fs3.promises.writeFile(path4.join(paths.assetsDirectory, filename), files[imagePath]);
-    let label = `Front matter ${index + 1}`;
-    if (index === 0) {
-      label = "Book cover";
-    }
-    assets.push({
-      markdownPath: `assets/${filename}`,
-      label
-    });
-  }
-  return assets;
-}
-
-// src/library/markdown.ts
-import fs4 from "node:fs";
-function getNumberedHeading(block) {
-  const match = block.match(/^(\d{1,2})\\?\.\s+(.{1,140})$/);
-  if (!match?.[1] || !match[2]) {
-    return;
-  }
-  return { number: match[1], title: match[2].replace(/\.$/, "").trim() };
-}
-function isMarkdownStructure(block) {
-  return /^(?:#{1,6}\s|[-*+]\s|!\[|```|---$)/.test(block);
-}
-function shouldJoinPageBreak(previous, current) {
-  if (isMarkdownStructure(previous) || isMarkdownStructure(current)) {
-    return false;
-  }
-  if (!/^['“‘(]*[a-z]/.test(current)) {
-    return false;
-  }
-  return !/[.!?…:;”’"')\]]$/.test(previous);
-}
-function joinPageBreakParagraphs(blocks) {
-  const joined = [];
-  for (const block of blocks) {
-    const previous = joined.at(-1);
-    if (previous && shouldJoinPageBreak(previous, block)) {
-      let separator = " ";
-      if (previous.endsWith("-")) {
-        separator = "";
-      }
-      joined[joined.length - 1] = previous + separator + block;
-    } else {
-      joined.push(block);
-    }
-  }
-  return joined;
-}
-async function normalizeBookMarkdown(markdownPath, title, supplementalAssets = []) {
-  const markdown = await fs4.promises.readFile(markdownPath, "utf8");
-  const blocks = markdown.replaceAll(`\r
-`, `
-`).split(/\n{2,}/);
-  const contentsIndex = blocks.findIndex((block) => /\bcontents\s*$/i.test(block.trim()));
-  const seenChapterNumbers = new Set;
-  const normalizedBlocks = [`# ${title}`];
-  for (const asset of supplementalAssets) {
-    normalizedBlocks.push(`![${asset.label}](${asset.markdownPath})`);
-  }
-  for (const [index, originalBlock] of blocks.entries()) {
-    const block = originalBlock.trim();
-    if (!block || /^<span\b[^>]*><\/span>$/i.test(block)) {
-      continue;
-    }
-    if (index === contentsIndex) {
-      const beforeContents = block.replace(/\bcontents\s*$/i, "").trim();
-      if (beforeContents) {
-        normalizedBlocks.push(beforeContents);
-      }
-      normalizedBlocks.push("## Contents");
-      continue;
-    }
-    const numbered = getNumberedHeading(block);
-    if (numbered && contentsIndex !== -1 && index > contentsIndex) {
-      if (seenChapterNumbers.has(numbered.number)) {
-        normalizedBlocks.push(`## ${numbered.number}. ${numbered.title}`);
-      } else {
-        seenChapterNumbers.add(numbered.number);
-        normalizedBlocks.push(`- ${numbered.number}. ${numbered.title}`);
-      }
-      continue;
-    }
-    if (/^(?:preface|introduction|afterword|epilogue)\b.{0,100}$/i.test(block)) {
-      normalizedBlocks.push(`## ${block.replace(/\.$/, "")}`);
-      continue;
-    }
-    normalizedBlocks.push(block);
-  }
-  const joinedBlocks = joinPageBreakParagraphs(normalizedBlocks);
-  await fs4.promises.writeFile(markdownPath, `${joinedBlocks.join(`
-
-`)}
-`);
-}
-
-// src/library/metadata.ts
-import fs5 from "node:fs";
-async function writeBookRecords({
-  paths,
-  request,
-  selected,
-  conversion
-}) {
-  const sourceKind = selected.sourceKind || "libgen";
-  let libgenMD5;
-  let libgenMirrorPath;
-  if (sourceKind === "libgen") {
-    libgenMD5 = selected.md5;
-    libgenMirrorPath = selected.entry.mirror;
-  }
-  const metadata = {
-    schemaVersion: 1,
-    title: selected.entry.title,
-    authors: selected.entry.authors,
-    publisher: selected.entry.publisher,
-    year: selected.entry.year,
-    pages: selected.entry.pages,
-    language: selected.entry.language,
-    sourceFormat: selected.entry.extension.toLowerCase(),
-    sourceFile: "source." + selected.entry.extension.toLowerCase(),
-    source: {
-      kind: sourceKind,
-      file: "source." + selected.entry.extension.toLowerCase(),
-      format: selected.entry.extension.toLowerCase(),
-      md5: selected.md5,
-      sha256: selected.sourceSHA256,
-      originalFilename: selected.originalFilename,
-      libgenMirrorPath
-    },
-    libgenMD5,
-    libgenMirrorPath,
-    requestedAs: request.sourceLine,
-    selection: {
-      score: selected.score,
-      reasons: selected.reasons
-    },
-    ingestedAt: new Date().toISOString()
-  };
-  await fs5.promises.writeFile(paths.metadataPath, `${JSON.stringify(metadata, undefined, 2)}
-`);
-  await fs5.promises.writeFile(paths.conversionPath, `${JSON.stringify(conversion, undefined, 2)}
-`);
-}
-function yamlString(value) {
-  return JSON.stringify(value);
-}
-function createMarkdownFrontmatter(candidate) {
-  const lines = [
-    "---",
-    `title: ${yamlString(candidate.entry.title)}`,
-    `authors: ${yamlString(candidate.entry.authors)}`,
-    `publisher: ${yamlString(candidate.entry.publisher)}`,
-    `year: ${yamlString(candidate.entry.year)}`,
-    `language: ${yamlString(candidate.entry.language)}`,
-    `source_kind: ${yamlString(candidate.sourceKind || "libgen")}`,
-    `source_format: ${yamlString(candidate.entry.extension.toLowerCase())}`
-  ];
-  if (candidate.sourceKind === "local") {
-    lines.push(`source_md5: ${yamlString(candidate.md5)}`);
-    if (candidate.sourceSHA256) {
-      lines.push(`source_sha256: ${yamlString(candidate.sourceSHA256)}`);
-    }
-  } else {
-    lines.push(`libgen_md5: ${yamlString(candidate.md5)}`);
-  }
-  lines.push("---", "");
-  return lines.join(`
-`);
-}
-async function addMarkdownFrontmatter(markdownPath, candidate) {
-  const markdown = await fs5.promises.readFile(markdownPath, "utf8");
-  let checksumLine = `libgen_md5: ${yamlString(candidate.md5)}`;
-  if (candidate.sourceKind === "local") {
-    checksumLine = `source_md5: ${yamlString(candidate.md5)}`;
-  }
-  if (markdown.includes(checksumLine)) {
-    return;
-  }
-  await fs5.promises.writeFile(markdownPath, createMarkdownFrontmatter(candidate) + markdown);
-}
-
-// src/library/converter.ts
-var CONVERSION_TIMEOUT_MS = 15 * 60 * 1000;
-var DOCLING_INPUT_EXTENSIONS = new Set([
-  "adoc",
-  "asciidoc",
-  "bmp",
-  "csv",
-  "docx",
-  "htm",
-  "html",
-  "jpeg",
-  "jpg",
-  "md",
-  "pdf",
-  "png",
-  "pptx",
-  "tif",
-  "tiff",
-  "webp",
-  "xlsx",
-  "xml"
-]);
-function canConvertWithDocling(extension) {
-  return DOCLING_INPUT_EXTENSIONS.has(extension.toLowerCase());
-}
-var runCommand = (command, arguments_, workingDirectory) => new Promise((resolve2) => {
-  execFile(command, arguments_, {
-    cwd: workingDirectory,
-    maxBuffer: 10 * 1024 * 1024,
-    timeout: CONVERSION_TIMEOUT_MS
-  }, (error, stdout, stderr) => {
-    let exitCode = 0;
-    if (error) {
-      exitCode = 1;
-      if (typeof error.code === "number") {
-        exitCode = error.code;
-      }
-    }
-    resolve2({ exitCode, stdout, stderr });
-  });
-});
-async function commandIsAvailable(command, runner, workingDirectory) {
-  const result = await runner(command, ["--version"], workingDirectory);
-  return result.exitCode === 0;
-}
-async function validateMarkdown(markdownPath) {
-  try {
-    const contents = await fs6.promises.readFile(markdownPath, "utf8");
-    return contents.trim().length >= 20;
-  } catch {
-    return false;
-  }
-}
-async function normalizeDoclingOutput(paths, outputFormat) {
-  const generatedMarkdown = path5.join(paths.bookDirectory, "source.md");
-  if (outputFormat !== "docling" && generatedMarkdown !== paths.markdownPath && fs6.existsSync(generatedMarkdown)) {
-    await fs6.promises.rename(generatedMarkdown, paths.markdownPath);
-  }
-  const generatedDocling = path5.join(paths.bookDirectory, "source.json");
-  if (outputFormat !== "canonical" && generatedDocling !== paths.doclingPath && fs6.existsSync(generatedDocling)) {
-    await fs6.promises.rename(generatedDocling, paths.doclingPath);
-  }
-  const generatedAssets = path5.join(paths.bookDirectory, "source_artifacts");
-  if (!fs6.existsSync(generatedAssets)) {
-    return;
-  }
-  await fs6.promises.mkdir(paths.assetsDirectory, { recursive: true });
-  await fs6.promises.cp(generatedAssets, paths.assetsDirectory, { recursive: true });
-  await fs6.promises.rm(generatedAssets, { recursive: true, force: true });
-  if (fs6.existsSync(paths.markdownPath)) {
-    const markdown = await fs6.promises.readFile(paths.markdownPath, "utf8");
-    await fs6.promises.writeFile(paths.markdownPath, markdown.replaceAll("source_artifacts/", "assets/"));
-  }
-  if (fs6.existsSync(paths.doclingPath)) {
-    const document2 = await fs6.promises.readFile(paths.doclingPath, "utf8");
-    await fs6.promises.writeFile(paths.doclingPath, document2.replaceAll("source_artifacts/", "assets/"));
-  }
-}
-async function validateDoclingDocument(doclingPath) {
-  try {
-    const document2 = JSON.parse(await fs6.promises.readFile(doclingPath, "utf8"));
-    return document2 !== null && typeof document2 === "object";
-  } catch {
-    return false;
-  }
-}
-async function convertTextSource(paths, candidate) {
-  await fs6.promises.copyFile(paths.sourcePath, paths.markdownPath);
-  await normalizeBookMarkdown(paths.markdownPath, candidate.entry.title);
-  await addMarkdownFrontmatter(paths.markdownPath, candidate);
-  return {
-    status: "converted",
-    converter: "copy",
-    message: "Copied the textual source into canonical Markdown.",
-    markdownPath: paths.markdownPath
-  };
-}
-async function convertWithPandoc(paths, candidate, runner) {
-  if (!await commandIsAvailable("pandoc", runner, paths.bookDirectory)) {
-    return {
-      status: "unavailable",
-      converter: "pandoc",
-      message: "Pandoc is not installed; the original source was retained for later conversion."
-    };
-  }
-  const result = await runner("pandoc", [
-    path5.basename(paths.sourcePath),
-    "--to=gfm-raw_html+tex_math_dollars",
-    "--wrap=none",
-    "--extract-media=assets",
-    `--output=${path5.basename(paths.markdownPath)}`
-  ], paths.bookDirectory);
-  if (result.exitCode !== 0 || !await validateMarkdown(paths.markdownPath)) {
-    return {
-      status: "failed",
-      converter: "pandoc",
-      message: result.stderr.trim() || "Pandoc did not produce usable Markdown."
-    };
-  }
-  let supplementalAssets = [];
-  if (candidate.entry.extension.toLowerCase() === "epub") {
-    supplementalAssets = await extractSupplementalEpubAssets(paths);
-  }
-  await normalizeBookMarkdown(paths.markdownPath, candidate.entry.title, supplementalAssets);
-  await addMarkdownFrontmatter(paths.markdownPath, candidate);
-  return {
-    status: "converted",
-    converter: "pandoc",
-    message: "Converted the structured ebook with Pandoc.",
-    markdownPath: paths.markdownPath
-  };
-}
-async function convertWithDocling(paths, candidate, runner, outputFormat) {
-  if (!await commandIsAvailable("docling", runner, paths.bookDirectory)) {
-    return {
-      status: "unavailable",
-      converter: "docling",
-      outputFormat,
-      message: "Docling is not installed; the original source was retained for later conversion."
-    };
-  }
-  const requestedOutputs = [];
-  if (outputFormat !== "docling") {
-    requestedOutputs.push("--to=md");
-  }
-  if (outputFormat !== "canonical") {
-    requestedOutputs.push("--to=json");
-  }
-  const arguments_ = [
-    path5.basename(paths.sourcePath),
-    ...requestedOutputs,
-    "--output=.",
-    "--image-export-mode=referenced",
-    "--enrich-formula"
-  ];
-  let result = await runner("docling", arguments_, paths.bookDirectory);
-  if (result.exitCode !== 0) {
-    result = await runner("docling", [
-      path5.basename(paths.sourcePath),
-      ...requestedOutputs,
-      "--output=.",
-      "--image-export-mode=referenced"
-    ], paths.bookDirectory);
-  }
-  if (result.exitCode === 0) {
-    await normalizeDoclingOutput(paths, outputFormat);
-  }
-  const markdownIsValid = outputFormat === "docling" || await validateMarkdown(paths.markdownPath);
-  const doclingIsValid = outputFormat === "canonical" || await validateDoclingDocument(paths.doclingPath);
-  if (result.exitCode !== 0 || !markdownIsValid || !doclingIsValid) {
-    return {
-      status: "failed",
-      converter: "docling",
-      outputFormat,
-      message: result.stderr.trim() || "Docling did not produce the requested output."
-    };
-  }
-  if (outputFormat !== "docling") {
-    await normalizeBookMarkdown(paths.markdownPath, candidate.entry.title);
-    await addMarkdownFrontmatter(paths.markdownPath, candidate);
-  }
-  let message = "Converted the document to canonical Markdown with Docling.";
-  if (outputFormat === "docling") {
-    message = "Converted the document to native DoclingDocument JSON.";
-  } else if (outputFormat === "both") {
-    message = "Converted the document to canonical Markdown and native DoclingDocument JSON.";
-  }
-  const conversion = {
-    status: "converted",
-    converter: "docling",
-    outputFormat,
-    message
-  };
-  if (outputFormat !== "docling") {
-    conversion.markdownPath = paths.markdownPath;
-  }
-  if (outputFormat !== "canonical") {
-    conversion.doclingPath = paths.doclingPath;
-  }
-  return conversion;
-}
-async function convertBook(paths, candidate, runner = runCommand, outputFormat = "canonical") {
-  await fs6.promises.mkdir(paths.assetsDirectory, { recursive: true });
-  const extension = candidate.entry.extension.toLowerCase();
-  if (outputFormat !== "canonical") {
-    if (!canConvertWithDocling(extension)) {
-      return {
-        status: "failed",
-        converter: "docling",
-        outputFormat,
-        message: `Docling does not support native conversion from .${extension}; try --format canonical or select a PDF copy.`
-      };
-    }
-    return convertWithDocling(paths, candidate, runner, outputFormat);
-  }
-  if (["md", "markdown", "txt"].includes(extension)) {
-    return convertTextSource(paths, candidate);
-  }
-  if (extension === "pdf") {
-    return convertWithDocling(paths, candidate, runner, outputFormat);
-  }
-  if (["epub", "docx", "html", "htm", "mobi", "azw3", "fb2", "rtf", "odt"].includes(extension)) {
-    return convertWithPandoc(paths, candidate, runner);
-  }
-  return {
-    status: "unavailable",
-    message: `No Markdown converter is configured for .${extension} files.`
-  };
-}
-
-// src/library/ingest.ts
-var DEFAULT_PAGE_COUNT = 2;
-var DEFAULT_FINALIST_COUNT = 3;
-function report(options, message) {
-  options.onProgress?.(message);
-}
-async function createLibgenSession(onMirrorFail = () => {}) {
-  const config = await fetchConfig();
-  const mirror = await findMirror(config.mirrors, onMirrorFail);
-  if (!mirror) {
-    throw new Error("No reachable LibGen mirror was found.");
-  }
-  return { mirror, adapter: getAdapter(mirror.src, mirror.type) };
-}
-async function searchBookCandidates(session, request, pageCount = DEFAULT_PAGE_COUNT) {
-  const entries2 = [];
-  let searchQuery = request.query;
-  if (request.author) {
-    searchQuery = `${request.query} ${request.author}`;
-  }
-  for (let pageNumber = 1;pageNumber <= pageCount; pageNumber += 1) {
-    const searchURL = session.adapter.getSearchURL(searchQuery, pageNumber, SEARCH_PAGE_SIZE);
-    const result = await getDocument(searchURL);
-    const connectionError = session.adapter.detectConnectionError(result.document);
-    if (connectionError) {
-      throw new Error(connectionError);
-    }
-    const pageEntries = session.adapter.parseEntries(result.document) || [];
-    if (pageEntries.length === 0) {
-      break;
-    }
-    entries2.push(...pageEntries);
-  }
-  return rankCandidates(entries2, request).filter((candidate) => candidate.score >= 40);
-}
-async function validateDownloadedSource(candidate, sourcePath) {
-  const file = await fs7.promises.open(sourcePath, "r");
-  try {
-    const buffer = Buffer.alloc(8);
-    const { bytesRead } = await file.read(buffer, 0, buffer.length, 0);
-    if (bytesRead === 0) {
-      throw new Error("The downloaded source is empty.");
-    }
-    const signature = buffer.subarray(0, bytesRead).toString("latin1");
-    const extension = candidate.entry.extension.toLowerCase();
-    if (extension === "pdf" && !signature.startsWith("%PDF-")) {
-      throw new Error("The selected PDF candidate did not contain a PDF file.");
-    }
-    if (extension === "epub" && !signature.startsWith("PK")) {
-      throw new Error("The selected EPUB candidate was not a valid EPUB container.");
-    }
-  } finally {
-    await file.close();
-  }
-}
-async function downloadCandidate(session, candidate, paths, options) {
-  const detailURL = session.adapter.getPageURL(candidate.entry.mirror);
-  const detailResult = await getDocument(detailURL);
-  const downloadURL = session.adapter.getMainDownloadURLFromDocument(detailResult.document);
-  if (!downloadURL) {
-    throw new Error("The candidate detail page did not contain a download URL.");
-  }
-  report(options, `Downloading ${candidate.entry.extension.toUpperCase()} candidate...`);
-  let lastReportedPercentage = 0;
-  let lastReportedMegabytes = 0;
-  try {
-    await downloadURLToFile({
-      url: downloadURL,
-      destinationPath: paths.sourcePath,
-      fetcher: fetchLibgen,
-      onRetry(message) {
-        report(options, message);
-      },
-      onProgress(downloadedBytes, totalBytes) {
-        if (totalBytes) {
-          const percentage = Math.min(100, Math.floor(downloadedBytes / totalBytes * 100));
-          const reportablePercentage = Math.floor(percentage / 10) * 10;
-          if (reportablePercentage >= lastReportedPercentage + 10) {
-            lastReportedPercentage = reportablePercentage;
-            report(options, `Downloaded ${reportablePercentage}% of the candidate...`);
-          }
-          return;
-        }
-        const downloadedMegabytes = Math.floor(downloadedBytes / (5 * 1024 * 1024)) * 5;
-        if (downloadedMegabytes >= lastReportedMegabytes + 5) {
-          lastReportedMegabytes = downloadedMegabytes;
-          report(options, `Downloaded ${downloadedMegabytes} MB of the candidate...`);
-        }
-      }
-    });
-  } catch (error) {
-    let reason = String(error);
-    if (error instanceof Error) {
-      reason = error.message;
-    }
-    throw new Error(`The LibGen search mirror is online, but its shared file-download host failed: ${reason}`, { cause: error });
-  }
-  await validateDownloadedSource(candidate, paths.sourcePath);
-}
-function sourceOnlyConversion() {
-  return {
-    status: "unavailable",
-    message: "Document conversion was disabled; the standardized source was retained."
-  };
-}
-async function finalizeStagingDirectory(stagingPaths, finalPaths, stagingRoot) {
-  if (fs7.existsSync(finalPaths.bookDirectory)) {
-    throw new Error(`The canonical book directory already exists: ${finalPaths.bookDirectory}`);
-  }
-  await fs7.promises.rename(stagingPaths.bookDirectory, finalPaths.bookDirectory);
-  await fs7.promises.rm(stagingRoot, { recursive: true, force: true });
-}
-async function ingestBestBook(request, options = {}) {
-  const libraryRoot = getLibraryRoot(options.libraryRoot);
-  await fs7.promises.mkdir(libraryRoot, { recursive: true });
-  const session = options.session || await createLibgenSession();
-  report(options, `Searching ${session.mirror.src} for "${request.query}"...`);
-  let candidates = await searchBookCandidates(session, request, options.pageCount || DEFAULT_PAGE_COUNT);
-  if (options.outputFormat && options.outputFormat !== "canonical") {
-    candidates = candidates.filter((candidate) => canConvertWithDocling(candidate.entry.extension));
-  }
-  if (candidates.length === 0) {
-    let message = "No sufficiently close, downloadable candidates were found.";
-    if (options.outputFormat && options.outputFormat !== "canonical") {
-      message = "No sufficiently close candidates support native Docling output.";
-    }
-    return {
-      request,
-      status: "failed",
-      message
-    };
-  }
-  const finalistCount = options.finalistCount || DEFAULT_FINALIST_COUNT;
-  const finalists = candidates.slice(0, finalistCount);
-  let lastError = "All finalist candidates failed.";
-  for (const [index, candidate] of finalists.entries()) {
-    const finalPaths = createBookPaths(candidate.entry, libraryRoot);
-    if (fs7.existsSync(finalPaths.bookDirectory)) {
-      return {
-        request,
-        status: "skipped",
-        message: `Canonical directory already exists; left it untouched at ${finalPaths.bookDirectory}`,
-        selected: candidate,
-        paths: finalPaths
-      };
-    }
-    const stagingRoot = await fs7.promises.mkdtemp(path6.join(libraryRoot, ".staging-"));
-    const stagingPaths = createBookPaths(candidate.entry, stagingRoot);
-    await fs7.promises.mkdir(stagingPaths.assetsDirectory, { recursive: true });
-    try {
-      report(options, `Evaluating candidate ${index + 1}/${finalists.length}: ${candidate.reasons.join(", ")}`);
-      await downloadCandidate(session, candidate, stagingPaths, options);
-      let conversion = sourceOnlyConversion();
-      if (options.convert !== false) {
-        report(options, `Converting the selected source to ${options.outputFormat || "canonical"} output...`);
-        conversion = await convertBook(stagingPaths, candidate, undefined, options.outputFormat || "canonical");
-      }
-      const hasMoreFinalists = index < finalists.length - 1;
-      if (conversion.status === "failed" && hasMoreFinalists) {
-        lastError = conversion.message;
-        await fs7.promises.rm(stagingRoot, { recursive: true, force: true });
-        continue;
-      }
-      const recordedConversion = { ...conversion };
-      if (recordedConversion.markdownPath) {
-        recordedConversion.markdownPath = "book.md";
-      }
-      if (recordedConversion.doclingPath) {
-        recordedConversion.doclingPath = "document.json";
-      }
-      await writeBookRecords({
-        paths: stagingPaths,
-        request,
-        selected: candidate,
-        conversion: recordedConversion
-      });
-      await finalizeStagingDirectory(stagingPaths, finalPaths, stagingRoot);
-      const finalConversion = { ...conversion };
-      if (finalConversion.markdownPath) {
-        finalConversion.markdownPath = finalPaths.markdownPath;
-      }
-      if (finalConversion.doclingPath) {
-        finalConversion.doclingPath = finalPaths.doclingPath;
-      }
-      let message = `Saved the best candidate to ${finalPaths.bookDirectory}`;
-      if (conversion.status !== "converted") {
-        message += ` (${conversion.message})`;
-      }
-      return {
-        request,
-        status: "downloaded",
-        message,
-        selected: candidate,
-        paths: finalPaths,
-        conversion: finalConversion
-      };
-    } catch (error) {
-      lastError = String(error);
-      if (error instanceof Error) {
-        lastError = error.message;
-      }
-      await fs7.promises.rm(stagingRoot, { recursive: true, force: true });
-    }
-  }
-  return { request, status: "failed", message: lastError };
-}
-
-// src/library/local-import.ts
-import { createHash } from "node:crypto";
-import fs9 from "node:fs";
-import path8 from "node:path";
-
-// src/library/validation.ts
-import fs8 from "node:fs";
-import path7 from "node:path";
-async function validateCanonicalBook(paths) {
-  const issues = [];
-  const markdown = await fs8.promises.readFile(paths.markdownPath, "utf8");
-  const words = markdown.split(/\s+/).filter(Boolean).length;
-  const headings = (markdown.match(/^#{1,6}\s+.+$/gm) || []).length;
-  const imageMatches = [...markdown.matchAll(/!\[[^\]]*]\((assets\/[^)]+)\)/g)];
-  for (const imageMatch of imageMatches) {
-    const relativePath = imageMatch[1];
-    if (relativePath && !fs8.existsSync(path7.join(paths.bookDirectory, relativePath))) {
-      issues.push(`Missing linked asset: ${relativePath}`);
-    }
-  }
-  if (words < 20) {
-    issues.push("Markdown output contains fewer than 20 words.");
-  }
-  if (headings === 0) {
-    issues.push("Markdown output contains no headings.");
-  }
-  if (/<(?:html|body|script|iframe)\b/i.test(markdown)) {
-    issues.push("Markdown output contains unwanted raw HTML.");
-  }
-  let assets = 0;
-  try {
-    const directoryEntries = await fs8.promises.readdir(paths.assetsDirectory);
-    assets = directoryEntries.length;
-  } catch {
-    issues.push("Assets directory is missing.");
-  }
-  return {
-    valid: issues.length === 0,
-    words,
-    headings,
-    images: imageMatches.length,
-    assets,
-    issues
-  };
-}
 
 // src/library/local-import.ts
 function restoreCommaSeparatedAuthor(value) {
@@ -52907,7 +52568,7 @@ function restoreCommaSeparatedAuthor(value) {
   return `${parts[1]} ${parts[0]}`;
 }
 function inferFilenameMetadata(sourcePath) {
-  const stem = path8.basename(sourcePath, path8.extname(sourcePath)).trim();
+  const stem = path6.basename(sourcePath, path6.extname(sourcePath)).trim();
   const byMatch = stem.match(/^(.+?)\s+by\s+(.+)$/i);
   if (byMatch?.[1] && byMatch[2]) {
     return { title: byMatch[1].trim(), author: byMatch[2].trim() };
@@ -52922,7 +52583,7 @@ function inferFilenameMetadata(sourcePath) {
   return { title: stem };
 }
 async function getChecksums(sourcePath) {
-  const contents = await fs9.promises.readFile(sourcePath);
+  const contents = await fs7.promises.readFile(sourcePath);
   return {
     md5: createHash("md5").update(contents).digest("hex"),
     sha256: createHash("sha256").update(contents).digest("hex")
@@ -52930,18 +52591,18 @@ async function getChecksums(sourcePath) {
 }
 async function createLocalEntry(sourcePath, options) {
   const filename = inferFilenameMetadata(sourcePath);
-  const extension = normalizeExtension(path8.extname(sourcePath).slice(1));
+  const extension = normalizeExtension(path6.extname(sourcePath).slice(1));
   let embedded = {};
   if (extension === "epub") {
     embedded = await readEpubPackage(sourcePath);
   }
-  const stat = await fs9.promises.stat(sourcePath);
+  const stat = await fs7.promises.stat(sourcePath);
   let inferredTitle = embedded.title || filename.title;
   if (filename.author) {
     inferredTitle = filename.title;
   }
   return {
-    id: path8.basename(sourcePath),
+    id: path6.basename(sourcePath),
     title: options.title || inferredTitle || "Unknown title",
     authors: options.author || filename.author || embedded.authors || "unknown-author",
     publisher: embedded.publisher || "",
@@ -52954,8 +52615,8 @@ async function createLocalEntry(sourcePath, options) {
   };
 }
 async function importLocalBook(sourcePathInput, options = {}) {
-  const sourcePath = path8.resolve(sourcePathInput.replace(/^~(?=$|\/)/, process.env.HOME || ""));
-  const stat = await fs9.promises.stat(sourcePath);
+  const sourcePath = path6.resolve(sourcePathInput.replace(/^~(?=$|\/)/, process.env.HOME || ""));
+  const stat = await fs7.promises.stat(sourcePath);
   if (!stat.isFile()) {
     throw new Error(`Local import source is not a file: ${sourcePath}`);
   }
@@ -52968,17 +52629,17 @@ async function importLocalBook(sourcePathInput, options = {}) {
     reasons: ["locally owned source"],
     sourceKind: "local",
     sourceSHA256: checksums.sha256,
-    originalFilename: path8.basename(sourcePath)
+    originalFilename: path6.basename(sourcePath)
   };
   const request = {
     query: entry.title,
     title: entry.title,
     author: entry.authors,
-    sourceLine: path8.basename(sourcePath)
+    sourceLine: path6.basename(sourcePath)
   };
   const libraryRoot = getLibraryRoot(options.libraryRoot);
   const finalPaths = createBookPaths(entry, libraryRoot);
-  if (fs9.existsSync(finalPaths.bookDirectory)) {
+  if (fs7.existsSync(finalPaths.bookDirectory)) {
     return {
       request,
       status: "skipped",
@@ -52987,37 +52648,34 @@ async function importLocalBook(sourcePathInput, options = {}) {
       paths: finalPaths
     };
   }
-  await fs9.promises.mkdir(libraryRoot, { recursive: true });
-  const stagingRoot = await fs9.promises.mkdtemp(path8.join(libraryRoot, ".staging-import-"));
+  await fs7.promises.mkdir(libraryRoot, { recursive: true });
+  const stagingRoot = await fs7.promises.mkdtemp(path6.join(libraryRoot, ".staging-import-"));
   const stagingPaths = createBookPaths(entry, stagingRoot);
   try {
-    options.onProgress?.(`Copying ${path8.basename(sourcePath)} without modifying the original...`);
-    await fs9.promises.mkdir(stagingPaths.assetsDirectory, { recursive: true });
-    await fs9.promises.copyFile(sourcePath, stagingPaths.sourcePath);
+    options.onProgress?.(`Copying ${path6.basename(sourcePath)} without modifying the original...`);
+    await fs7.promises.mkdir(stagingPaths.bookDirectory, { recursive: true });
+    await fs7.promises.copyFile(sourcePath, stagingPaths.sourcePath);
     let conversion = {
       status: "unavailable",
       message: "Document conversion was disabled; the standardized source was retained."
     };
     if (options.convert !== false) {
-      const outputFormat = options.outputFormat || "canonical";
-      options.onProgress?.(`Converting the local source to ${outputFormat} output...`);
-      conversion = await convertBook(stagingPaths, candidate, options.runner || runCommand, outputFormat);
+      let outputDescription = "native Docling JSON";
+      if (options.includeMarkdown) {
+        outputDescription += " and Markdown";
+      }
+      options.onProgress?.(`Converting the local source to ${outputDescription}...`);
+      conversion = await convertBook(stagingPaths, candidate, options.runner || runCommand, options.includeMarkdown);
       if (conversion.status === "failed") {
         throw new Error(conversion.message);
       }
-      if (conversion.status === "converted" && conversion.markdownPath) {
-        conversion.validation = await validateCanonicalBook(stagingPaths);
-        if (!conversion.validation.valid) {
-          throw new Error(`Canonical validation failed: ${conversion.validation.issues.join("; ")}`);
-        }
-      }
     }
     const recordedConversion = { ...conversion };
-    if (recordedConversion.markdownPath) {
-      recordedConversion.markdownPath = "book.md";
+    if (recordedConversion.doclingJSONPath) {
+      recordedConversion.doclingJSONPath = "docling/source.json";
     }
-    if (recordedConversion.doclingPath) {
-      recordedConversion.doclingPath = "document.json";
+    if (recordedConversion.doclingMarkdownPath) {
+      recordedConversion.doclingMarkdownPath = "docling/source.md";
     }
     await writeBookRecords({
       paths: stagingPaths,
@@ -53025,14 +52683,14 @@ async function importLocalBook(sourcePathInput, options = {}) {
       selected: candidate,
       conversion: recordedConversion
     });
-    await fs9.promises.rename(stagingPaths.bookDirectory, finalPaths.bookDirectory);
-    await fs9.promises.rm(stagingRoot, { recursive: true, force: true });
+    await fs7.promises.rename(stagingPaths.bookDirectory, finalPaths.bookDirectory);
+    await fs7.promises.rm(stagingRoot, { recursive: true, force: true });
     const finalConversion = { ...conversion };
-    if (conversion.markdownPath) {
-      finalConversion.markdownPath = finalPaths.markdownPath;
+    if (conversion.doclingJSONPath) {
+      finalConversion.doclingJSONPath = finalPaths.doclingJSONPath;
     }
-    if (conversion.doclingPath) {
-      finalConversion.doclingPath = finalPaths.doclingPath;
+    if (conversion.doclingMarkdownPath) {
+      finalConversion.doclingMarkdownPath = finalPaths.doclingMarkdownPath;
     }
     return {
       request,
@@ -53043,7 +52701,7 @@ async function importLocalBook(sourcePathInput, options = {}) {
       conversion: finalConversion
     };
   } catch (error) {
-    await fs9.promises.rm(stagingRoot, { recursive: true, force: true });
+    await fs7.promises.rm(stagingRoot, { recursive: true, force: true });
     throw error;
   }
 }
@@ -58005,7 +57663,7 @@ var FocusContext_default = FocusContext;
 // node_modules/ink/build/components/ErrorOverview.js
 var import_react11 = __toESM(require_react(), 1);
 var import_stack_utils = __toESM(require_stack_utils(), 1);
-import * as fs10 from "node:fs";
+import * as fs8 from "node:fs";
 import { cwd } from "node:process";
 
 // node_modules/convert-to-spaces/dist/index.js
@@ -58125,8 +57783,8 @@ function Text5({ color, backgroundColor, dimColor = false, bold = false, italic 
 }
 
 // node_modules/ink/build/components/ErrorOverview.js
-var cleanupPath = (path9) => {
-  return path9?.replace(`file://${cwd()}/`, "");
+var cleanupPath = (path7) => {
+  return path7?.replace(`file://${cwd()}/`, "");
 };
 var stackUtils = new import_stack_utils.default({
   cwd: cwd(),
@@ -58139,8 +57797,8 @@ function ErrorOverview({ error }) {
   const filePath = cleanupPath(origin?.file);
   let excerpt;
   let lineWidth = 0;
-  if (filePath && origin?.line && fs10.existsSync(filePath)) {
-    const sourceCode = fs10.readFileSync(filePath, "utf8");
+  if (filePath && origin?.line && fs8.existsSync(filePath)) {
+    const sourceCode = fs8.readFileSync(filePath, "utf8");
     excerpt = dist_default3(sourceCode, origin.line);
     if (excerpt) {
       for (const { line } of excerpt) {
@@ -59180,22 +58838,22 @@ var downloadStatusIndicators = {
 };
 
 // src/api/data/file.ts
-import fs11 from "fs";
+import fs9 from "fs";
 async function createMD5ListFile(md5List) {
   const filename = `libgen_downloader_md5_list_${Date.now().toString()}.txt`;
-  await fs11.promises.writeFile(`./${filename}`, md5List.join(`
+  await fs9.promises.writeFile(`./${filename}`, md5List.join(`
 `));
   return filename;
 }
 
 // src/library/direct-download.ts
-import path10 from "node:path";
-import fs13 from "node:fs";
+import path8 from "node:path";
+import fs11 from "node:fs";
 
 // src/api/data/download.ts
 var import_content_disposition = __toESM(require_content_disposition(), 1);
-import fs12 from "node:fs";
-import path9 from "node:path";
+import fs10 from "node:fs";
+import path7 from "node:path";
 import { Readable, Transform as Transform2 } from "node:stream";
 import { pipeline } from "node:stream/promises";
 function getResponseFilename(downloadStream) {
@@ -59225,7 +58883,7 @@ var downloadFile = async ({
   const outputPath = destinationPath || `./${slicedFileName}`;
   let writePath = outputPath;
   if (destinationPath) {
-    await fs12.promises.mkdir(path9.dirname(destinationPath), { recursive: true });
+    await fs10.promises.mkdir(path7.dirname(destinationPath), { recursive: true });
     writePath = `${destinationPath}.partial`;
   }
   const total = Number(downloadStream.headers.get("content-length") || 0);
@@ -59242,9 +58900,9 @@ var downloadFile = async ({
     }
   });
   try {
-    await pipeline(Readable.from(downloadStream.body, { objectMode: false }), progressStream, fs12.createWriteStream(writePath));
+    await pipeline(Readable.from(downloadStream.body, { objectMode: false }), progressStream, fs10.createWriteStream(writePath));
     if (destinationPath) {
-      await fs12.promises.rename(writePath, outputPath);
+      await fs10.promises.rename(writePath, outputPath);
     }
     const downloadResult = {
       path: outputPath,
@@ -59254,7 +58912,7 @@ var downloadFile = async ({
     return downloadResult;
   } catch {
     if (destinationPath) {
-      await fs12.promises.rm(writePath, { force: true });
+      await fs10.promises.rm(writePath, { force: true });
     }
     throw new Error(`(${filename}) Error occurred while downloading file`);
   }
@@ -59262,11 +58920,11 @@ var downloadFile = async ({
 
 // src/library/direct-download.ts
 async function saveSource(entry, md5, paths, downloadStream, callbacks) {
-  await fs13.promises.mkdir(paths.assetsDirectory, { recursive: true });
+  await fs11.promises.mkdir(paths.bookDirectory, { recursive: true });
   await downloadFile({
     downloadStream,
     destinationPath: paths.sourcePath,
-    filename: path10.basename(paths.sourcePath),
+    filename: path8.basename(paths.sourcePath),
     ...callbacks
   });
   const selected = {
@@ -59281,7 +58939,7 @@ async function saveSource(entry, md5, paths, downloadStream, callbacks) {
     selected,
     conversion: {
       status: "unavailable",
-      message: "Manual copy retained. Use --best or --list for automatic Markdown conversion."
+      message: "Manual copy retained. Use --best or --list for automatic Docling conversion."
     }
   });
   return paths;
@@ -59292,7 +58950,7 @@ async function saveEntrySource(entry, downloadStream, callbacks) {
 }
 async function saveMD5Source(md5, downloadStream, callbacks) {
   const responseFilename = getResponseFilename(downloadStream) || "source.bin";
-  const extension = normalizeExtension(path10.extname(responseFilename).slice(1));
+  const extension = normalizeExtension(path8.extname(responseFilename).slice(1));
   const paths = createMD5BookPaths(md5, extension);
   const entry = {
     id: md5,
@@ -62577,18 +62235,10 @@ function getPageCount(flags) {
   }
   return pageCount;
 }
-function getOutputFormat(flags) {
-  const outputFormat = String(flags.format || "canonical").toLowerCase();
-  if (!["canonical", "docling", "both"].includes(outputFormat)) {
-    throw new Error("--format must be canonical, docling, or both.");
-  }
-  return outputFormat;
-}
 async function ingestRequests(requests, flags) {
   if (requests.length === 0) {
     throw new Error("The reading list did not contain any book entries.");
   }
-  const outputFormat = getOutputFormat(flags);
   const session = await createLibgenSession((mirror) => {
     console.log(`Mirror unavailable: ${mirror}`);
   });
@@ -62601,7 +62251,7 @@ async function ingestRequests(requests, flags) {
       libraryRoot: flags.output,
       pageCount: getPageCount(flags),
       convert: flags.sourceOnly !== true,
-      outputFormat,
+      includeMarkdown: flags.markdown === true,
       onProgress(message) {
         console.log(`  ${message}`);
       }
@@ -62620,13 +62270,16 @@ Complete: ${downloaded} downloaded, ${skipped} skipped, ${failed} failed.`);
   return results;
 }
 var operate = async (flags) => {
+  if (flags.sourceOnly === true && flags.markdown === true) {
+    throw new Error("--markdown cannot be combined with --source-only.");
+  }
   if (flags.import) {
     const result2 = await importLocalBook(flags.import, {
       libraryRoot: flags.output,
       title: flags.title,
       author: flags.author,
       convert: flags.sourceOnly !== true,
-      outputFormat: getOutputFormat(flags),
+      includeMarkdown: flags.markdown === true,
       onProgress(message) {
         console.log(`  ${message}`);
       }
@@ -62643,7 +62296,7 @@ var operate = async (flags) => {
     return;
   }
   if (flags.list) {
-    const markdown = await fs14.promises.readFile(flags.list, "utf8");
+    const markdown = await fs12.promises.readFile(flags.list, "utf8");
     await ingestRequests(parseReadingList(markdown), flags);
     return;
   }
@@ -62665,7 +62318,7 @@ var operate = async (flags) => {
   }
   if (flags.bulk) {
     const filePath = flags.bulk;
-    const data = await fs14.promises.readFile(filePath, "utf8");
+    const data = await fs12.promises.readFile(filePath, "utf8");
     const md5List = data.split(`
 `).filter((line) => line.trim());
     const store = useBoundStore.getState();

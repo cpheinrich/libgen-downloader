@@ -42,7 +42,7 @@ chmod +x ./libgen-downloader-linux-*
 - Interactive user interface.
 - Non app blocking direct downloading.
 - Bulk downloading.
-- Best-copy ingestion that ranks duplicate results for Markdown conversion.
+- Best-copy ingestion that ranks duplicate results for Docling conversion.
 - Canonical library folders under `~/libgen/<author>_<title>/`.
 - Markdown reading-list ingestion with `--list`.
 - Local-file ingestion for books you already own with `--import`.
@@ -62,7 +62,8 @@ chmod +x ./libgen-downloader-linux-*
       --author <author>      override author metadata for --import
   -o, --output <directory>   library root (default: ~/libgen)
       --pages <number>       result pages to evaluate (default: 2)
-      --source-only          retain sources without converting to Markdown
+      --source-only          retain sources without Docling conversion
+      --markdown             also export Docling Markdown alongside native JSON
   -b, --bulk <MD5LIST.txt>   legacy MD5 bulk downloading mode
   -u, --url <MD5>            get the download URL
   -d, --download <MD5>       download the file by MD5
@@ -72,8 +73,9 @@ chmod +x ./libgen-downloader-linux-*
   $ libgen-downloader    (start the app in interactive mode without flags)
   $ libgen-downloader -s "The Art of War"
   $ libgen-downloader --best "The Art of War by Sun Tzu"
+  $ libgen-downloader --best "The Art of War by Sun Tzu" --markdown
   $ libgen-downloader --list ./reading-list.md
-  $ libgen-downloader --import ~/my-library/book.epub
+  $ libgen-downloader --import ~/my-library/book.pdf
   $ libgen-downloader -b ./MD5_LIST_1695686580524.txt
   	$ libgen-downloader -u 1234567890abcdef1234567890abcdef
   	$ libgen-downloader -d 1234567890abcdef1234567890abcdef
@@ -87,44 +89,41 @@ Best-copy and reading-list ingestion stores each work in a deterministic directo
 ```text
 ~/libgen/
 └── sun-tzu_the-art-of-war/
-    ├── source.epub
-    ├── book.md
-    ├── document.json       # optional native DoclingDocument output
+    ├── source.pdf
     ├── metadata.json
     ├── conversion.json
-    └── assets/
+    └── docling/
+        ├── source.json              # canonical DoclingDocument
+        ├── source.md                # optional: add --markdown
+        └── source_artifacts/        # native referenced images
 ```
 
 The original server filename is never trusted. The selected source is always named
-`source.<extension>`, and the canonical text is always `book.md`. Set a different library root
-with `--output` or the `LIBGEN_LIBRARY_DIR` environment variable.
+`source.<extension>`. Docling's native output is stored together and left untouched under
+`docling/`. Set a different library root with `--output` or the `LIBGEN_LIBRARY_DIR` environment
+variable.
 
 Use `--import` for a local EPUB, PDF, RTF, or other supported source you already own. The importer
 copies the source rather than moving it, infers `Title by Author` and `Author - Title` filenames,
 and accepts `--title` and `--author` overrides when the embedded metadata is incomplete.
 
-Structured ebooks are converted with Pandoc. PDFs are converted with Docling, including OCR,
-formula enrichment, and referenced images when available. If the matching converter is not
-installed, the source is retained and `conversion.json` records what is missing.
-
-Choose the converted representation with `--format`:
+Docling is the only document converter. Its JSON document model is always produced and is the
+canonical converted representation. Add `--markdown` to ask Docling to export Markdown from the
+same parse. The package does not rewrite, normalize, add frontmatter to, or otherwise parse
+Docling's Markdown. OCR, formula enrichment, and referenced images are enabled when available.
 
 ```bash
-libgen-downloader --best "On the Origin of Species by Charles Darwin" --format canonical
-libgen-downloader --best "On the Origin of Species by Charles Darwin" --format docling
-libgen-downloader --best "On the Origin of Species by Charles Darwin" --format both
+libgen-downloader --best "On the Origin of Species by Charles Darwin"
+libgen-downloader --best "On the Origin of Species by Charles Darwin" --markdown
 ```
 
-`canonical` is the default and produces `book.md`. `docling` preserves Docling's lossless native
-document model as `document.json`. `both` produces the Markdown and JSON representations from one
-Docling parse. The standardized folder, original `source.*`, metadata, and referenced `assets/`
-remain the stable library envelope in every mode. Native Docling output requires a source format
-that Docling supports; for ebook-only formats such as EPUB, use `canonical` or select a PDF copy.
+Automatic best-copy selection only downloads source formats Docling supports. EPUB and other
+unsupported local files can still be retained with `--source-only`, but are not routed through a
+second converter.
 
-On macOS, install the optional converters with:
+On macOS, install the converter with:
 
 ```bash
-brew install pandoc
 uv tool install docling
 ```
 

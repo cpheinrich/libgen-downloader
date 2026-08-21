@@ -14,8 +14,8 @@ export const cli = meow(
         --author <author>      override author metadata for --import
     -o, --output <directory>   library root (default: ~/libgen)
         --pages <number>       result pages to evaluate (default: 2)
-        --source-only          retain the source without Markdown conversion
-        --format <format>      converted output: canonical, docling, or both
+        --source-only          retain the source without Docling conversion
+        --markdown             also export Docling Markdown alongside native JSON
     -b, --bulk <MD5LIST.txt>   legacy MD5 bulk downloading mode
     -u, --url <MD5>            get the download URL
     -d, --download <MD5>       download the file by MD5
@@ -25,8 +25,9 @@ export const cli = meow(
     $ libgen-downloader    (start the app in interactive mode without flags)
     $ libgen-downloader -s "The Art of War"
     $ libgen-downloader --best "The Art of War by Sun Tzu"
+    $ libgen-downloader --best "The Art of War by Sun Tzu" --markdown
     $ libgen-downloader --list ./reading-list.md
-    $ libgen-downloader --import ~/my-library/book.epub
+    $ libgen-downloader --import ~/my-library/book.pdf
     $ libgen-downloader -b ./MD5_LIST_1695686580524.txt
     $ libgen-downloader -u 1234567890abcdef1234567890abcdef
     $ libgen-downloader -d 1234567890abcdef1234567890abcdef
@@ -67,9 +68,9 @@ export const cli = meow(
         type: "boolean",
         default: false,
       },
-      format: {
-        type: "string",
-        default: "canonical",
+      markdown: {
+        type: "boolean",
+        default: false,
       },
       bulk: {
         type: "string",

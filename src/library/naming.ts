@@ -59,16 +59,18 @@ export function createBookPaths(entry: Entry, libraryRootOverride?: string): Boo
   const libraryRoot = getLibraryRoot(libraryRootOverride);
   const canonicalStem = getCanonicalStem(entry);
   const bookDirectory = path.join(libraryRoot, canonicalStem);
+  const doclingDirectory = path.join(bookDirectory, "docling");
   const extension = normalizeExtension(entry.extension);
 
   return {
     libraryRoot,
     canonicalStem,
     bookDirectory,
-    assetsDirectory: path.join(bookDirectory, "assets"),
     sourcePath: path.join(bookDirectory, `source.${extension}`),
-    markdownPath: path.join(bookDirectory, "book.md"),
-    doclingPath: path.join(bookDirectory, "document.json"),
+    doclingDirectory,
+    doclingJSONPath: path.join(doclingDirectory, "source.json"),
+    doclingMarkdownPath: path.join(doclingDirectory, "source.md"),
+    doclingAssetsDirectory: path.join(doclingDirectory, "source_artifacts"),
     metadataPath: path.join(bookDirectory, "metadata.json"),
     conversionPath: path.join(bookDirectory, "conversion.json"),
   };

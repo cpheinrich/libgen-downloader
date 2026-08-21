@@ -177,12 +177,12 @@ export async function ingestBestBook(
     request,
     options.pageCount || DEFAULT_PAGE_COUNT
   );
-  if (options.outputFormat && options.outputFormat !== "canonical") {
+  if (options.convert !== false) {
     candidates = candidates.filter((candidate) => canConvertWithDocling(candidate.entry.extension));
   }
   if (candidates.length === 0) {
     let message = "No sufficiently close, downloadable candidates were found.";
-    if (options.outputFormat && options.outputFormat !== "canonical") {
+    if (options.convert !== false) {
       message = "No sufficiently close candidates support native Docling output.";
     }
     return {
@@ -210,7 +210,7 @@ export async function ingestBestBook(
 
     const stagingRoot = await fs.promises.mkdtemp(path.join(libraryRoot, ".staging-"));
     const stagingPaths = createBookPaths(candidate.entry, stagingRoot);
-    await fs.promises.mkdir(stagingPaths.assetsDirectory, { recursive: true });
+    await fs.promises.mkdir(stagingPaths.bookDirectory, { recursive: true });
 
     try {
       report(
@@ -221,31 +221,26 @@ export async function ingestBestBook(
 
       let conversion = sourceOnlyConversion();
       if (options.convert !== false) {
-        report(
-          options,
-          `Converting the selected source to ${options.outputFormat || "canonical"} output...`
-        );
-        conversion = await convertBook(
-          stagingPaths,
-          candidate,
-          undefined,
-          options.outputFormat || "canonical"
-        );
+        let outputDescription = "native Docling JSON";
+        if (options.includeMarkdown) {
+          outputDescription += " and Markdown";
+        }
+        report(options, `Converting the selected source to ${outputDescription}...`);
+        conversion = await convertBook(stagingPaths, candidate, undefined, options.includeMarkdown);
       }
 
-      const hasMoreFinalists = index < finalists.length - 1;
-      if (conversion.status === "failed" && hasMoreFinalists) {
+      if (conversion.status === "failed") {
         lastError = conversion.message;
         await fs.promises.rm(stagingRoot, { recursive: true, force: true });
         continue;
       }
 
       const recordedConversion = { ...conversion };
-      if (recordedConversion.markdownPath) {
-        recordedConversion.markdownPath = "book.md";
+      if (recordedConversion.doclingJSONPath) {
+        recordedConversion.doclingJSONPath = "docling/source.json";
       }
-      if (recordedConversion.doclingPath) {
-        recordedConversion.doclingPath = "document.json";
+      if (recordedConversion.doclingMarkdownPath) {
+        recordedConversion.doclingMarkdownPath = "docling/source.md";
       }
       await writeBookRecords({
         paths: stagingPaths,
@@ -256,11 +251,11 @@ export async function ingestBestBook(
       await finalizeStagingDirectory(stagingPaths, finalPaths, stagingRoot);
 
       const finalConversion = { ...conversion };
-      if (finalConversion.markdownPath) {
-        finalConversion.markdownPath = finalPaths.markdownPath;
+      if (finalConversion.doclingJSONPath) {
+        finalConversion.doclingJSONPath = finalPaths.doclingJSONPath;
       }
-      if (finalConversion.doclingPath) {
-        finalConversion.doclingPath = finalPaths.doclingPath;
+      if (finalConversion.doclingMarkdownPath) {
+        finalConversion.doclingMarkdownPath = finalPaths.doclingMarkdownPath;
       }
       let message = `Saved the best candidate to ${finalPaths.bookDirectory}`;
       if (conversion.status !== "converted") {

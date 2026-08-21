@@ -18,7 +18,7 @@ async function saveSource(
   downloadStream: Response,
   callbacks: ProgressCallbacks
 ): Promise<BookPaths> {
-  await fs.promises.mkdir(paths.assetsDirectory, { recursive: true });
+  await fs.promises.mkdir(paths.bookDirectory, { recursive: true });
   await downloadFile({
     downloadStream,
     destinationPath: paths.sourcePath,
@@ -38,7 +38,7 @@ async function saveSource(
     selected,
     conversion: {
       status: "unavailable",
-      message: "Manual copy retained. Use --best or --list for automatic Markdown conversion.",
+      message: "Manual copy retained. Use --best or --list for automatic Docling conversion.",
     },
   });
   return paths;

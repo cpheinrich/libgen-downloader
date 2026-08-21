@@ -13,7 +13,6 @@ import type {
   LocalImportOptions,
   RankedCandidate,
 } from "./types";
-import { validateCanonicalBook } from "./validation";
 
 interface LocalImportRuntimeOptions extends LocalImportOptions {
   runner?: CommandRunner;
@@ -131,7 +130,7 @@ export async function importLocalBook(
   const stagingPaths = createBookPaths(entry, stagingRoot);
   try {
     options.onProgress?.(`Copying ${path.basename(sourcePath)} without modifying the original...`);
-    await fs.promises.mkdir(stagingPaths.assetsDirectory, { recursive: true });
+    await fs.promises.mkdir(stagingPaths.bookDirectory, { recursive: true });
     await fs.promises.copyFile(sourcePath, stagingPaths.sourcePath);
 
     let conversion: ConversionResult = {
@@ -139,33 +138,28 @@ export async function importLocalBook(
       message: "Document conversion was disabled; the standardized source was retained.",
     };
     if (options.convert !== false) {
-      const outputFormat = options.outputFormat || "canonical";
-      options.onProgress?.(`Converting the local source to ${outputFormat} output...`);
+      let outputDescription = "native Docling JSON";
+      if (options.includeMarkdown) {
+        outputDescription += " and Markdown";
+      }
+      options.onProgress?.(`Converting the local source to ${outputDescription}...`);
       conversion = await convertBook(
         stagingPaths,
         candidate,
         options.runner || runCommand,
-        outputFormat
+        options.includeMarkdown
       );
       if (conversion.status === "failed") {
         throw new Error(conversion.message);
       }
-      if (conversion.status === "converted" && conversion.markdownPath) {
-        conversion.validation = await validateCanonicalBook(stagingPaths);
-        if (!conversion.validation.valid) {
-          throw new Error(
-            `Canonical validation failed: ${conversion.validation.issues.join("; ")}`
-          );
-        }
-      }
     }
 
     const recordedConversion = { ...conversion };
-    if (recordedConversion.markdownPath) {
-      recordedConversion.markdownPath = "book.md";
+    if (recordedConversion.doclingJSONPath) {
+      recordedConversion.doclingJSONPath = "docling/source.json";
     }
-    if (recordedConversion.doclingPath) {
-      recordedConversion.doclingPath = "document.json";
+    if (recordedConversion.doclingMarkdownPath) {
+      recordedConversion.doclingMarkdownPath = "docling/source.md";
     }
     await writeBookRecords({
       paths: stagingPaths,
@@ -177,11 +171,11 @@ export async function importLocalBook(
     await fs.promises.rm(stagingRoot, { recursive: true, force: true });
 
     const finalConversion = { ...conversion };
-    if (conversion.markdownPath) {
-      finalConversion.markdownPath = finalPaths.markdownPath;
+    if (conversion.doclingJSONPath) {
+      finalConversion.doclingJSONPath = finalPaths.doclingJSONPath;
     }
-    if (conversion.doclingPath) {
-      finalConversion.doclingPath = finalPaths.doclingPath;
+    if (conversion.doclingMarkdownPath) {
+      finalConversion.doclingMarkdownPath = finalPaths.doclingMarkdownPath;
     }
 
     return {
