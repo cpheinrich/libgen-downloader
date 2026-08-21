@@ -181,6 +181,24 @@ describe("best-copy ranking", () => {
     expect(candidates[0]?.md5).toBe("epub-copy");
   });
 
+  it("prefers a text-native MOBI over an otherwise equivalent PDF", () => {
+    const request = {
+      query: "The Art of War",
+      title: "The Art of War",
+      author: "Sun Tzu",
+      sourceLine: "The Art of War — Sun Tzu",
+    };
+    const candidates = rankCandidates(
+      [
+        createEntry({ extension: "pdf", mirror: "/ads.php?md5=pdf-copy" }),
+        createEntry({ extension: "mobi", mirror: "/ads.php?md5=mobi-copy" }),
+      ],
+      request
+    );
+
+    expect(candidates[0]?.md5).toBe("mobi-copy");
+  });
+
   it("prefers an exact title segment over an article containing the title words", () => {
     const request = {
       query: "The Art of War",
@@ -211,7 +229,57 @@ describe("Docling conversion", () => {
   it("recognizes supported native source formats", () => {
     expect(canConvertWithDocling("PDF")).toBe(true);
     expect(canConvertWithDocling("docx")).toBe(true);
-    expect(canConvertWithDocling("epub")).toBe(false);
+    expect(canConvertWithDocling("epub")).toBe(true);
+    expect(canConvertWithDocling("mobi")).toBe(true);
+  });
+
+  it("bridges MOBI through unpacked HTML and DOCX before Docling", async () => {
+    const libraryRoot = await fs.promises.mkdtemp(path.join(os.tmpdir(), "libgen-docling-mobi-"));
+    const entry = createEntry({ extension: "mobi" });
+    const paths = createBookPaths(entry, libraryRoot);
+    await fs.promises.mkdir(paths.bookDirectory, { recursive: true });
+    await fs.promises.writeFile(paths.sourcePath, "test-mobi-source");
+    const commands: string[] = [];
+
+    try {
+      const conversion = await convertBook(
+        paths,
+        { entry, md5: "mobi-copy", score: 200, reasons: ["exact title match"] },
+        async (command, arguments_) => {
+          commands.push(command);
+          if (arguments_.includes("--version")) {
+            return { exitCode: 0, stdout: `${command} version`, stderr: "" };
+          }
+          if (command === "uvx") {
+            const unpackDirectory = arguments_.at(-1) || "";
+            const htmlDirectory = path.join(unpackDirectory, "mobi7");
+            await fs.promises.mkdir(htmlDirectory, { recursive: true });
+            await fs.promises.writeFile(
+              path.join(htmlDirectory, "book.html"),
+              '<meta charset="windows-1252"><h1>Test book</h1>'
+            );
+          } else if (command === "pandoc") {
+            const outputArgument = arguments_.find((argument) => argument.startsWith("--output="));
+            await fs.promises.writeFile(outputArgument?.slice("--output=".length) || "", "docx");
+          } else {
+            await fs.promises.writeFile(
+              paths.doclingJSONPath,
+              JSON.stringify({ schema_name: "DoclingDocument", version: "1.9.0" })
+            );
+          }
+          return { exitCode: 0, stdout: "", stderr: "" };
+        }
+      );
+
+      expect(conversion.status).toBe("converted");
+      expect(conversion.message).toContain("text-preserving bridge");
+      expect(commands).toContain("uvx");
+      expect(commands).toContain("pandoc");
+      const bookDirectoryEntries = await fs.promises.readdir(paths.bookDirectory);
+      expect(bookDirectoryEntries.some((name) => name.startsWith(".ebook-bridge-"))).toBe(false);
+    } finally {
+      await fs.promises.rm(libraryRoot, { recursive: true, force: true });
+    }
   });
 
   it("produces native JSON by default without Markdown", async () => {
@@ -325,19 +393,19 @@ describe("Docling conversion", () => {
     const libraryRoot = await fs.promises.mkdtemp(
       path.join(os.tmpdir(), "libgen-docling-unsupported-")
     );
-    const entry = createEntry({ extension: "epub" });
+    const entry = createEntry({ extension: "fb2" });
     const paths = createBookPaths(entry, libraryRoot);
 
     try {
       const conversion = await convertBook(paths, {
         entry,
-        md5: "epub-copy",
+        md5: "fb2-copy",
         score: 200,
         reasons: ["exact title match"],
       });
 
       expect(conversion.status).toBe("failed");
-      expect(conversion.message).toContain("use --source-only or select a supported copy");
+      expect(conversion.message).toContain("use --source-only or select PDF, EPUB, MOBI");
     } finally {
       await fs.promises.rm(libraryRoot, { recursive: true, force: true });
     }
@@ -417,8 +485,8 @@ describe("headless ingestion", () => {
     const searchHTML = `
       <table id="tablelibgen"><tbody><tr>
         <td><a>The Art of War</a></td><td>Sun Tzu</td><td>Example Press</td>
-        <td>2024</td><td>English</td><td>300</td><td>2 MB</td><td>epub</td>
-        <td><a href="/ads.php?md5=epub-copy">Mirror</a></td>
+        <td>2024</td><td>English</td><td>300</td><td>2 MB</td><td>fb2</td>
+        <td><a href="/ads.php?md5=fb2-copy">Mirror</a></td>
       </tr></tbody></table>`;
     const fetchMock = spyOn(globalThis, "fetch").mockImplementation(
       Object.assign(async () => new Response(searchHTML), { preconnect() {} })

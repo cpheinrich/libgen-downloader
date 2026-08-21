@@ -113,21 +113,28 @@ same parse. The package does not rewrite, normalize, add frontmatter to, or othe
 Docling's Markdown. OCR, formula enrichment, and referenced picture images are enabled when
 available. Full-page raster caches are omitted from JSON because the original source already
 preserves every page; this keeps large documents compact without discarding extracted figures.
+Text-native EPUB files are bridged through Pandoc, while MOBI and AZW files are unpacked with the
+open-source `mobi`/KindleUnpack tool and then bridged through Pandoc. The original ebook remains the
+canonical `source.<extension>`; bridge files are temporary. These formats are preferred over PDF
+when duplicate search results otherwise match equally well.
 
 ```bash
 libgen-downloader --best "On the Origin of Species by Charles Darwin"
 libgen-downloader --best "On the Origin of Species by Charles Darwin" --markdown
 ```
 
-Automatic best-copy selection only downloads source formats Docling supports. EPUB and other
-unsupported local files can still be retained with `--source-only`, but are not routed through a
-second converter.
+Automatic best-copy selection only downloads native Docling inputs or EPUB/MOBI/AZW ebooks handled
+by the text-preserving bridge. Other unsupported local files can still be retained with
+`--source-only`.
 
 On macOS, install the converter with:
 
 ```bash
 uv tool install docling
+brew install pandoc
 ```
+
+`uvx` downloads the isolated `mobi` unpacker on the first MOBI or AZW conversion.
 
 ### Markdown reading lists
 

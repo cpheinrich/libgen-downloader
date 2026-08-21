@@ -4,12 +4,13 @@ import type { BookRequest, RankedCandidate } from "./types";
 
 const FORMAT_SCORES: Record<string, number> = {
   epub: 50,
+  mobi: 48,
+  azw3: 47,
+  azw: 46,
   pdf: 38,
   docx: 34,
   html: 32,
   htm: 32,
-  mobi: 26,
-  azw3: 26,
   fb2: 24,
   rtf: 20,
   txt: 18,

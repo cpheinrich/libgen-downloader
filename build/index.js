@@ -51435,12 +51435,13 @@ function createMD5BookPaths(md5, extension, libraryRootOverride) {
 // src/library/candidates.ts
 var FORMAT_SCORES = {
   epub: 50,
+  mobi: 48,
+  azw3: 47,
+  azw: 46,
   pdf: 38,
   docx: 34,
   html: 32,
   htm: 32,
-  mobi: 26,
-  azw3: 26,
   fb2: 24,
   rtf: 20,
   txt: 18,
@@ -51572,8 +51573,10 @@ var DOCLING_INPUT_EXTENSIONS = new Set([
   "xlsx",
   "xml"
 ]);
+var BRIDGED_EBOOK_EXTENSIONS = new Set(["azw", "azw3", "epub", "mobi"]);
 function canConvertWithDocling(extension) {
-  return DOCLING_INPUT_EXTENSIONS.has(extension.toLowerCase());
+  const normalizedExtension = extension.toLowerCase();
+  return DOCLING_INPUT_EXTENSIONS.has(normalizedExtension) || BRIDGED_EBOOK_EXTENSIONS.has(normalizedExtension);
 }
 var runCommand = (command, arguments_, workingDirectory) => new Promise((resolve2) => {
   execFile(command, arguments_, {
@@ -51647,6 +51650,76 @@ async function resolveExporterPath() {
   }
   throw new Error("The bundled Docling exporter script is missing.");
 }
+async function findHTMLFiles(directory) {
+  const matches2 = [];
+  for (const entry of await fs3.promises.readdir(directory, { withFileTypes: true })) {
+    const entryPath = path4.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      matches2.push(...await findHTMLFiles(entryPath));
+    } else if (/\.x?html?$/i.test(entry.name)) {
+      matches2.push(entryPath);
+    }
+  }
+  return matches2;
+}
+async function getLargestHTMLFile(directory) {
+  const htmlFiles = await findHTMLFiles(directory);
+  if (htmlFiles.length === 0) {
+    throw new Error("The MOBI unpacker did not produce an HTML document.");
+  }
+  const sizes = await Promise.all(htmlFiles.map(async (filePath) => {
+    const stat = await fs3.promises.stat(filePath);
+    return { filePath, size: stat.size };
+  }));
+  sizes.sort((first, second) => second.size - first.size);
+  return sizes[0]?.filePath || htmlFiles[0];
+}
+async function normalizeHTMLToUTF8(sourcePath, outputPath) {
+  const source = await fs3.promises.readFile(sourcePath);
+  const header = source.subarray(0, 4096).toString("ascii");
+  const declaredCharset = header.match(/charset\s*=\s*["']?([^\s"'/>;]+)/i)?.[1];
+  let charset = declaredCharset || "windows-1252";
+  let text;
+  try {
+    text = new TextDecoder(charset).decode(source);
+  } catch {
+    charset = "windows-1252";
+    text = new TextDecoder(charset).decode(source);
+  }
+  await fs3.promises.writeFile(outputPath, text, "utf8");
+}
+async function runRequiredCommand(runner, command, arguments_, workingDirectory, failureMessage) {
+  const result = await runner(command, arguments_, workingDirectory);
+  if (result.exitCode !== 0) {
+    throw new Error(result.stderr.trim() || failureMessage);
+  }
+}
+async function prepareEbookForDocling(paths, extension, runner) {
+  const bridgeDirectory = await fs3.promises.mkdtemp(path4.join(paths.bookDirectory, ".ebook-bridge-"));
+  const docxPath = path4.join(bridgeDirectory, "source.docx");
+  try {
+    if (extension === "epub") {
+      await runRequiredCommand(runner, "pandoc", [paths.sourcePath, "--from=epub", "--to=docx", `--output=${docxPath}`], paths.bookDirectory, "Pandoc could not convert the EPUB source to DOCX.");
+    } else {
+      const unpackDirectory = path4.join(bridgeDirectory, "unpacked");
+      await runRequiredCommand(runner, "uvx", ["--from", "mobi", "mobiunpack", "--epub_version=3", paths.sourcePath, unpackDirectory], paths.bookDirectory, "The MOBI unpacker could not extract this ebook.");
+      const extractedHTMLPath = await getLargestHTMLFile(unpackDirectory);
+      const normalizedHTMLPath = path4.join(bridgeDirectory, "source.html");
+      await normalizeHTMLToUTF8(extractedHTMLPath, normalizedHTMLPath);
+      await runRequiredCommand(runner, "pandoc", [
+        normalizedHTMLPath,
+        "--from=html",
+        "--to=docx",
+        `--resource-path=${path4.dirname(extractedHTMLPath)}`,
+        `--output=${docxPath}`
+      ], paths.bookDirectory, "Pandoc could not convert the extracted ebook to DOCX.");
+    }
+    return { bridgeDirectory, sourcePath: docxPath };
+  } catch (error) {
+    await fs3.promises.rm(bridgeDirectory, { recursive: true, force: true });
+    throw error;
+  }
+}
 async function validateDoclingDocument(doclingPath) {
   try {
     const document2 = JSON.parse(await fs3.promises.readFile(doclingPath, "utf8"));
@@ -51685,8 +51758,8 @@ async function validateOptionalMarkdown(paths, includeMarkdown) {
     return false;
   }
 }
-function getDoclingArguments(exporterPath, paths, includeMarkdown) {
-  const arguments_ = [exporterPath, paths.sourcePath, paths.doclingDirectory];
+function getDoclingArguments(exporterPath, sourcePath, paths, includeMarkdown) {
+  const arguments_ = [exporterPath, sourcePath, paths.doclingDirectory];
   if (includeMarkdown) {
     arguments_.push("--markdown");
   }
@@ -51698,7 +51771,7 @@ async function convertBook(paths, candidate, runner = runCommand, includeMarkdow
     return {
       status: "failed",
       converter: "docling",
-      message: `Docling does not support .${extension}; use --source-only or select a supported copy such as PDF.`
+      message: `The conversion pipeline does not support .${extension}; use --source-only or select PDF, EPUB, MOBI, or another supported copy.`
     };
   }
   if (!await commandIsAvailable("docling", runner, paths.bookDirectory)) {
@@ -51706,6 +51779,20 @@ async function convertBook(paths, candidate, runner = runCommand, includeMarkdow
       status: "failed",
       converter: "docling",
       message: "Docling is required for document conversion but is not installed."
+    };
+  }
+  if (BRIDGED_EBOOK_EXTENSIONS.has(extension) && !await commandIsAvailable("pandoc", runner, paths.bookDirectory)) {
+    return {
+      status: "failed",
+      converter: "docling",
+      message: "Pandoc is required to prepare EPUB, MOBI, and AZW ebooks for Docling."
+    };
+  }
+  if (extension !== "epub" && BRIDGED_EBOOK_EXTENSIONS.has(extension) && !await commandIsAvailable("uvx", runner, paths.bookDirectory)) {
+    return {
+      status: "failed",
+      converter: "docling",
+      message: "uvx is required to unpack MOBI and AZW ebooks before Docling conversion."
     };
   }
   await fs3.promises.mkdir(paths.doclingDirectory, { recursive: true });
@@ -51727,7 +51814,27 @@ async function convertBook(paths, candidate, runner = runCommand, includeMarkdow
       message
     };
   }
-  const result = await runner(pythonCommand, getDoclingArguments(exporterPath, paths, includeMarkdown), paths.bookDirectory);
+  let bridgeDirectory;
+  let conversionSourcePath = paths.sourcePath;
+  let result;
+  try {
+    if (BRIDGED_EBOOK_EXTENSIONS.has(extension)) {
+      const prepared = await prepareEbookForDocling(paths, extension, runner);
+      bridgeDirectory = prepared.bridgeDirectory;
+      conversionSourcePath = prepared.sourcePath;
+    }
+    result = await runner(pythonCommand, getDoclingArguments(exporterPath, conversionSourcePath, paths, includeMarkdown), paths.bookDirectory);
+  } catch (error) {
+    let message = "Could not prepare the ebook for Docling conversion.";
+    if (error instanceof Error) {
+      message = error.message;
+    }
+    return { status: "failed", converter: "docling", message };
+  } finally {
+    if (bridgeDirectory) {
+      await fs3.promises.rm(bridgeDirectory, { recursive: true, force: true });
+    }
+  }
   const jsonIsValid = await validateDoclingDocument(paths.doclingJSONPath);
   const markdownIsValid = await validateOptionalMarkdown(paths, includeMarkdown);
   if (result.exitCode !== 0 || !jsonIsValid || !markdownIsValid) {
@@ -51743,8 +51850,14 @@ async function convertBook(paths, candidate, runner = runCommand, includeMarkdow
     message: "Converted the document to native DoclingDocument JSON.",
     doclingJSONPath: paths.doclingJSONPath
   };
+  if (BRIDGED_EBOOK_EXTENSIONS.has(extension)) {
+    conversion.message = `Converted the .${extension} ebook through a text-preserving bridge to native DoclingDocument JSON.`;
+  }
   if (includeMarkdown) {
     conversion.message = "Converted the document to native DoclingDocument JSON and Markdown.";
+    if (BRIDGED_EBOOK_EXTENSIONS.has(extension)) {
+      conversion.message = `Converted the .${extension} ebook through a text-preserving bridge to native DoclingDocument JSON and Markdown.`;
+    }
     conversion.doclingMarkdownPath = paths.doclingMarkdownPath;
   }
   return conversion;
