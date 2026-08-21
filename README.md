@@ -45,6 +45,7 @@ chmod +x ./libgen-downloader-linux-*
 - Best-copy ingestion that ranks duplicate results for Markdown conversion.
 - Canonical library folders under `~/libgen/<author>_<title>/`.
 - Markdown reading-list ingestion with `--list`.
+- Local-file ingestion for books you already own with `--import`.
 - Alternative download options.
 - Command line parameters;
 
@@ -56,6 +57,9 @@ chmod +x ./libgen-downloader-linux-*
   -s, --search <query>       search for a book interactively
       --best <query>         find and ingest the best copy of a book
   -l, --list <BOOKS.md>      ingest every book in a Markdown list
+  -i, --import <file>        import and convert a locally owned book
+      --title <title>        override title metadata for --import
+      --author <author>      override author metadata for --import
   -o, --output <directory>   library root (default: ~/libgen)
       --pages <number>       result pages to evaluate (default: 2)
       --source-only          retain sources without converting to Markdown
@@ -69,6 +73,7 @@ chmod +x ./libgen-downloader-linux-*
   $ libgen-downloader -s "The Art of War"
   $ libgen-downloader --best "The Art of War by Sun Tzu"
   $ libgen-downloader --list ./reading-list.md
+  $ libgen-downloader --import ~/my-library/book.epub
   $ libgen-downloader -b ./MD5_LIST_1695686580524.txt
   	$ libgen-downloader -u 1234567890abcdef1234567890abcdef
   	$ libgen-downloader -d 1234567890abcdef1234567890abcdef
@@ -92,6 +97,10 @@ Best-copy and reading-list ingestion stores each work in a deterministic directo
 The original server filename is never trusted. The selected source is always named
 `source.<extension>`, and the canonical text is always `book.md`. Set a different library root
 with `--output` or the `LIBGEN_LIBRARY_DIR` environment variable.
+
+Use `--import` for a local EPUB, PDF, RTF, or other supported source you already own. The importer
+copies the source rather than moving it, infers `Title by Author` and `Author - Title` filenames,
+and accepts `--title` and `--author` overrides when the embedded metadata is incomplete.
 
 Structured ebooks are converted with Pandoc. PDFs and DjVu files are converted with Docling,
 including OCR, formula enrichment, and referenced images when available. If the matching converter

@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import { getDocument } from "../api/data/document";
 import { createLibgenSession, ingestBestBook } from "../library/ingest";
+import { importLocalBook } from "../library/local-import";
 import { parseBookRequest, parseReadingList } from "../library/reading-list";
 import type { BookRequest, IngestionResult } from "../library/types";
 import renderTUI from "../tui/index";
@@ -55,6 +56,20 @@ async function ingestRequests(
 }
 
 export const operate = async (flags: Record<string, unknown>) => {
+  if (flags.import) {
+    const result = await importLocalBook(flags.import as string, {
+      libraryRoot: flags.output as string | undefined,
+      title: flags.title as string | undefined,
+      author: flags.author as string | undefined,
+      convert: flags.sourceOnly !== true,
+      onProgress(message) {
+        console.log(`  ${message}`);
+      },
+    });
+    console.log(`${result.status.toUpperCase()}: ${result.message}`);
+    return;
+  }
+
   if (flags.best) {
     const request = parseBookRequest(flags.best as string);
     if (!request) {

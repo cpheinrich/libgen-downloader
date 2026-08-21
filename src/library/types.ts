@@ -14,6 +14,9 @@ export interface RankedCandidate {
   md5: string;
   score: number;
   reasons: string[];
+  sourceKind?: "libgen" | "local";
+  sourceSHA256?: string;
+  originalFilename?: string;
 }
 
 export interface BookPaths {
@@ -34,6 +37,16 @@ export interface ConversionResult {
   converter?: "copy" | "pandoc" | "docling";
   message: string;
   markdownPath?: string;
+  validation?: CanonicalValidation;
+}
+
+export interface CanonicalValidation {
+  valid: boolean;
+  words: number;
+  headings: number;
+  images: number;
+  assets: number;
+  issues: string[];
 }
 
 export interface LibgenSession {
@@ -58,5 +71,13 @@ export interface IngestionOptions {
   finalistCount?: number;
   convert?: boolean;
   session?: LibgenSession;
+  onProgress?: (message: string) => void;
+}
+
+export interface LocalImportOptions {
+  libraryRoot?: string;
+  title?: string;
+  author?: string;
+  convert?: boolean;
   onProgress?: (message: string) => void;
 }

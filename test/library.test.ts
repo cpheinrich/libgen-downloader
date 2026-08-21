@@ -2,11 +2,13 @@ import { afterEach, describe, expect, it, mock, spyOn } from "bun:test";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import { strToU8, zipSync } from "fflate";
 import { LibgenPlusAdapter } from "../src/api/adapters/libgen-plus-adapter";
 import type { Entry } from "../src/api/models/entry";
 import { rankCandidates } from "../src/library/candidates";
 import { convertBook } from "../src/library/converter";
 import { ingestBestBook } from "../src/library/ingest";
+import { importLocalBook, inferFilenameMetadata } from "../src/library/local-import";
 import { createBookPaths, getCanonicalStem, slugify } from "../src/library/naming";
 import { parseReadingList } from "../src/library/reading-list";
 
@@ -41,6 +43,84 @@ describe("canonical library naming", () => {
     expect(paths.markdownPath).toEndWith("/book.md");
     expect(paths.assetsDirectory).toEndWith("/assets");
     expect(slugify("  A/B & C  ")).toBe("a-b-and-c");
+  });
+});
+
+describe("local library imports", () => {
+  it("infers title and author from common local filenames", () => {
+    expect(inferFilenameMetadata("The Selfish Gene by Richard Dawkins.epub")).toEqual({
+      title: "The Selfish Gene",
+      author: "Richard Dawkins",
+    });
+    expect(inferFilenameMetadata("Feynman, Richard Phillips - Surely You're Joking.rtf")).toEqual({
+      title: "Surely You're Joking",
+      author: "Richard Phillips Feynman",
+    });
+  });
+
+  it("imports an EPUB, restores headings, and links supplemental front matter", async () => {
+    const sourceRoot = await fs.promises.mkdtemp(path.join(os.tmpdir(), "libgen-source-"));
+    const libraryRoot = await fs.promises.mkdtemp(path.join(os.tmpdir(), "libgen-import-"));
+    const sourcePath = path.join(sourceRoot, "The Selfish Gene by Richard Dawkins.epub");
+    const epub = zipSync({
+      "OEBPS/content.opf": strToU8(`
+        <package><metadata><dc:title>The Selfish Gene</dc:title><dc:language>eng</dc:language></metadata>
+        <manifest><item id="cover-page" href="cover.xhtml"/></manifest>
+        <spine><itemref idref="cover-page" linear="no"/></spine></package>`),
+      "OEBPS/cover.xhtml": strToU8('<html><body><img src="images/cover.jpg"/></body></html>'),
+      "OEBPS/images/cover.jpg": new Uint8Array([1, 2, 3, 4]),
+    });
+    await fs.promises.writeFile(sourcePath, epub);
+
+    try {
+      const result = await importLocalBook(sourcePath, {
+        libraryRoot,
+        runner: async (_command, arguments_, workingDirectory) => {
+          if (arguments_.includes("--version")) {
+            return { exitCode: 0, stdout: "pandoc 3", stderr: "" };
+          }
+          await fs.promises.writeFile(
+            path.join(workingDirectory, "book.md"),
+            [
+              "RICHARD DAWKINS Contents",
+              "",
+              String.raw`1\. Why are people?`,
+              "",
+              String.raw`1\. Why are people?`,
+              "",
+              "This converted chapter contains enough words to pass canonical validation cleanly.",
+              "",
+              "A sentence interrupted at a scanned page boundary",
+              "",
+              "continues in lowercase on the next page.",
+            ].join("\n")
+          );
+          return { exitCode: 0, stdout: "", stderr: "" };
+        },
+      });
+
+      expect(result.status).toBe("downloaded");
+      expect(result.paths?.bookDirectory).toBe(
+        path.join(libraryRoot, "richard-dawkins_the-selfish-gene")
+      );
+      const markdown = await fs.promises.readFile(result.paths?.markdownPath || "", "utf8");
+      expect(markdown).toContain('source_kind: "local"');
+      expect(markdown).toContain("# The Selfish Gene");
+      expect(markdown).toContain("## Contents");
+      expect(markdown).toContain("## 1. Why are people?");
+      expect(markdown).toContain(
+        "A sentence interrupted at a scanned page boundary continues in lowercase on the next page."
+      );
+      expect(markdown).toContain("![Book cover](assets/front-matter-001.jpg)");
+      expect(
+        fs.existsSync(path.join(result.paths?.assetsDirectory || "", "front-matter-001.jpg"))
+      ).toBe(true);
+      expect(result.conversion?.validation?.valid).toBe(true);
+      expect(await fs.promises.readFile(sourcePath)).toEqual(Buffer.from(epub));
+    } finally {
+      await fs.promises.rm(sourceRoot, { recursive: true, force: true });
+      await fs.promises.rm(libraryRoot, { recursive: true, force: true });
+    }
   });
 });
 

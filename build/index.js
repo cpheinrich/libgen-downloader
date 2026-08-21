@@ -2258,7 +2258,7 @@ var require_react_development = __commonJS((exports, module) => {
             type = type._init;
             try {
               return getComponentNameFromType(type(innerType));
-            } catch (x) {}
+            } catch (x2) {}
         }
       return null;
     }
@@ -2270,7 +2270,7 @@ var require_react_development = __commonJS((exports, module) => {
       try {
         var name = getComponentNameFromType(type);
         return name ? "<" + name + ">" : "<...>";
-      } catch (x) {
+      } catch (x2) {
         return "<...>";
       }
     }
@@ -2422,11 +2422,11 @@ var require_react_development = __commonJS((exports, module) => {
       invokeCallback = 0;
       childKey = nameSoFar === "" ? "." : nameSoFar + ":";
       if (isArrayImpl(children))
-        for (var i = 0;i < children.length; i++)
-          nameSoFar = children[i], type = childKey + getElementKey(nameSoFar, i), invokeCallback += mapIntoArray(nameSoFar, array, escapedPrefix, type, callback);
-      else if (i = getIteratorFn(children), typeof i === "function")
-        for (i === children.entries && (didWarnAboutMaps || console.warn("Using Maps as children is not supported. Use an array of keyed ReactElements instead."), didWarnAboutMaps = true), children = i.call(children), i = 0;!(nameSoFar = children.next()).done; )
-          nameSoFar = nameSoFar.value, type = childKey + getElementKey(nameSoFar, i++), invokeCallback += mapIntoArray(nameSoFar, array, escapedPrefix, type, callback);
+        for (var i2 = 0;i2 < children.length; i2++)
+          nameSoFar = children[i2], type = childKey + getElementKey(nameSoFar, i2), invokeCallback += mapIntoArray(nameSoFar, array, escapedPrefix, type, callback);
+      else if (i2 = getIteratorFn(children), typeof i2 === "function")
+        for (i2 === children.entries && (didWarnAboutMaps || console.warn("Using Maps as children is not supported. Use an array of keyed ReactElements instead."), didWarnAboutMaps = true), children = i2.call(children), i2 = 0;!(nameSoFar = children.next()).done; )
+          nameSoFar = nameSoFar.value, type = childKey + getElementKey(nameSoFar, i2++), invokeCallback += mapIntoArray(nameSoFar, array, escapedPrefix, type, callback);
       else if (type === "object") {
         if (typeof children.then === "function")
           return mapIntoArray(resolveThenable(children), array, escapedPrefix, nameSoFar, callback);
@@ -2541,17 +2541,17 @@ See https://react.dev/link/invalid-hook-call for tips about how to debug and fix
     function flushActQueue(queue) {
       if (!isFlushing) {
         isFlushing = true;
-        var i = 0;
+        var i2 = 0;
         try {
-          for (;i < queue.length; i++) {
-            var callback = queue[i];
+          for (;i2 < queue.length; i2++) {
+            var callback = queue[i2];
             do {
               ReactSharedInternals.didUsePromise = false;
               var continuation = callback(false);
               if (continuation !== null) {
                 if (ReactSharedInternals.didUsePromise) {
-                  queue[i] = callback;
-                  queue.splice(0, i);
+                  queue[i2] = callback;
+                  queue.splice(0, i2);
                   return;
                 }
                 callback = continuation;
@@ -2561,7 +2561,7 @@ See https://react.dev/link/invalid-hook-call for tips about how to debug and fix
           }
           queue.length = 0;
         } catch (error) {
-          queue.splice(0, i + 1), ReactSharedInternals.thrownErrors.push(error);
+          queue.splice(0, i2 + 1), ReactSharedInternals.thrownErrors.push(error);
         } finally {
           isFlushing = false;
         }
@@ -2789,8 +2789,8 @@ See https://react.dev/link/invalid-hook-call for tips about how to debug and fix
         props.children = children;
       else if (1 < propName) {
         JSCompiler_inline_result = Array(propName);
-        for (var i = 0;i < propName; i++)
-          JSCompiler_inline_result[i] = arguments[i + 2];
+        for (var i2 = 0;i2 < propName; i2++)
+          JSCompiler_inline_result[i2] = arguments[i2 + 2];
         props.children = JSCompiler_inline_result;
       }
       props = ReactElement(element.type, key2, props, owner, element._debugStack, element._debugTask);
@@ -2817,28 +2817,28 @@ See https://react.dev/link/invalid-hook-call for tips about how to debug and fix
       return defaultValue;
     };
     exports.createElement = function(type, config, children) {
-      for (var i = 2;i < arguments.length; i++)
-        validateChildKeys(arguments[i]);
-      i = {};
+      for (var i2 = 2;i2 < arguments.length; i2++)
+        validateChildKeys(arguments[i2]);
+      i2 = {};
       var key2 = null;
       if (config != null)
         for (propName in didWarnAboutOldJSXRuntime || !("__self" in config) || "key" in config || (didWarnAboutOldJSXRuntime = true, console.warn("Your app (or one of its dependencies) is using an outdated JSX transform. Update to the modern JSX transform for faster performance: https://react.dev/link/new-jsx-transform")), hasValidKey(config) && (checkKeyStringCoercion(config.key), key2 = "" + config.key), config)
-          hasOwnProperty2.call(config, propName) && propName !== "key" && propName !== "__self" && propName !== "__source" && (i[propName] = config[propName]);
+          hasOwnProperty2.call(config, propName) && propName !== "key" && propName !== "__self" && propName !== "__source" && (i2[propName] = config[propName]);
       var childrenLength = arguments.length - 2;
       if (childrenLength === 1)
-        i.children = children;
+        i2.children = children;
       else if (1 < childrenLength) {
         for (var childArray = Array(childrenLength), _i = 0;_i < childrenLength; _i++)
           childArray[_i] = arguments[_i + 2];
         Object.freeze && Object.freeze(childArray);
-        i.children = childArray;
+        i2.children = childArray;
       }
       if (type && type.defaultProps)
         for (propName in childrenLength = type.defaultProps, childrenLength)
-          i[propName] === undefined && (i[propName] = childrenLength[propName]);
-      key2 && defineKeyPropWarningGetter(i, typeof type === "function" ? type.displayName || type.name || "Unknown" : type);
+          i2[propName] === undefined && (i2[propName] = childrenLength[propName]);
+      key2 && defineKeyPropWarningGetter(i2, typeof type === "function" ? type.displayName || type.name || "Unknown" : type);
       var propName = 1e4 > ReactSharedInternals.recentlyCreatedOwnerStacks++;
-      return ReactElement(type, key2, i, getOwner(), propName ? Error("react-stack-top-frame") : unknownOwnerDebugStack, propName ? createTask(getTaskName(type)) : unknownOwnerDebugTask);
+      return ReactElement(type, key2, i2, getOwner(), propName ? Error("react-stack-top-frame") : unknownOwnerDebugStack, propName ? createTask(getTaskName(type)) : unknownOwnerDebugTask);
     };
     exports.createRef = function() {
       var refObject = { current: null };
@@ -3457,19 +3457,19 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
         fiber = fiber.next, id--;
       return fiber;
     }
-    function copyWithSetImpl(obj, path7, index, value) {
-      if (index >= path7.length)
+    function copyWithSetImpl(obj, path10, index, value) {
+      if (index >= path10.length)
         return value;
-      var key2 = path7[index], updated = isArrayImpl(obj) ? obj.slice() : assign3({}, obj);
-      updated[key2] = copyWithSetImpl(obj[key2], path7, index + 1, value);
+      var key2 = path10[index], updated = isArrayImpl(obj) ? obj.slice() : assign3({}, obj);
+      updated[key2] = copyWithSetImpl(obj[key2], path10, index + 1, value);
       return updated;
     }
     function copyWithRename(obj, oldPath, newPath) {
       if (oldPath.length !== newPath.length)
         console.warn("copyWithRename() expects paths of the same length");
       else {
-        for (var i = 0;i < newPath.length - 1; i++)
-          if (oldPath[i] !== newPath[i]) {
+        for (var i2 = 0;i2 < newPath.length - 1; i2++)
+          if (oldPath[i2] !== newPath[i2]) {
             console.warn("copyWithRename() expects paths to be the same except for the deepest key");
             return;
           }
@@ -3481,11 +3481,11 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
       index + 1 === oldPath.length ? (updated[newPath[index]] = updated[oldKey], isArrayImpl(updated) ? updated.splice(oldKey, 1) : delete updated[oldKey]) : updated[oldKey] = copyWithRenameImpl(obj[oldKey], oldPath, newPath, index + 1);
       return updated;
     }
-    function copyWithDeleteImpl(obj, path7, index) {
-      var key2 = path7[index], updated = isArrayImpl(obj) ? obj.slice() : assign3({}, obj);
-      if (index + 1 === path7.length)
+    function copyWithDeleteImpl(obj, path10, index) {
+      var key2 = path10[index], updated = isArrayImpl(obj) ? obj.slice() : assign3({}, obj);
+      if (index + 1 === path10.length)
         return isArrayImpl(updated) ? updated.splice(key2, 1) : delete updated[key2], updated;
-      updated[key2] = copyWithDeleteImpl(obj[key2], path7, index + 1);
+      updated[key2] = copyWithDeleteImpl(obj[key2], path10, index + 1);
       return updated;
     }
     function shouldSuspendImpl() {
@@ -3694,7 +3694,7 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
             type = type._init;
             try {
               return getComponentNameFromType(type(innerType));
-            } catch (x) {}
+            } catch (x2) {}
         }
       return null;
     }
@@ -3753,9 +3753,9 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
         case 29:
           type = fiber._debugInfo;
           if (type != null) {
-            for (var i = type.length - 1;0 <= i; i--)
-              if (typeof type[i].name === "string")
-                return type[i].name;
+            for (var i2 = type.length - 1;0 <= i2; i2--)
+              if (typeof type[i2].name === "string")
+                return type[i2].name;
           }
           if (fiber.return !== null)
             return getComponentNameFromFiber(fiber.return);
@@ -3774,9 +3774,9 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
       fiberStack[index$jscomp$0] = fiber;
       cursor.current = value;
     }
-    function clz32Fallback(x) {
-      x >>>= 0;
-      return x === 0 ? 32 : 31 - (log$1(x) / LN2 | 0) | 0;
+    function clz32Fallback(x2) {
+      x2 >>>= 0;
+      return x2 === 0 ? 32 : 31 - (log$1(x2) / LN2 | 0) | 0;
     }
     function getHighestPriorityLanes(lanes) {
       var pendingSyncLanes = lanes & 42;
@@ -3895,7 +3895,7 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
       return lane;
     }
     function createLaneMap(initial2) {
-      for (var laneMap = [], i = 0;31 > i; i++)
+      for (var laneMap = [], i2 = 0;31 > i2; i2++)
         laneMap.push(initial2);
       return laneMap;
     }
@@ -4023,8 +4023,8 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
         return console.error("The installed version of React DevTools is too old and will not work with the current version of React. Please update React DevTools. https://react.dev/link/react-devtools"), true;
       try {
         rendererID = hook.inject(internals), injectedHook = hook;
-      } catch (err) {
-        console.error("React instrumentation encountered an error: %o.", err);
+      } catch (err2) {
+        console.error("React instrumentation encountered an error: %o.", err2);
       }
       return hook.checkDCE ? true : false;
     }
@@ -4033,16 +4033,16 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
       if (injectedHook && typeof injectedHook.setStrictMode === "function")
         try {
           injectedHook.setStrictMode(rendererID, newIsStrictMode);
-        } catch (err) {
-          hasLoggedError || (hasLoggedError = true, console.error("React instrumentation encountered an error: %o", err));
+        } catch (err2) {
+          hasLoggedError || (hasLoggedError = true, console.error("React instrumentation encountered an error: %o", err2));
         }
     }
-    function is3(x, y) {
-      return x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y;
+    function is3(x2, y) {
+      return x2 === y && (x2 !== 0 || 1 / x2 === 1 / y) || x2 !== x2 && y !== y;
     }
     function getArrayKind(array) {
-      for (var kind = 0, i = 0;i < array.length; i++) {
-        var value = array[i];
+      for (var kind = 0, i2 = 0;i2 < array.length; i2++) {
+        var value = array[i2];
         if (typeof value === "object" && value !== null)
           if (isArrayImpl(value) && value.length === 2 && typeof value[0] === "string") {
             if (kind !== 0 && kind !== 3)
@@ -4243,8 +4243,8 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
       if (supportsUserTiming) {
         var name = getComponentNameFromFiber(fiber);
         if (name !== null) {
-          for (var debugTask = null, properties = [], i = 0;i < errors.length; i++) {
-            var capturedValue = errors[i];
+          for (var debugTask = null, properties = [], i2 = 0;i2 < errors.length; i2++) {
+            var capturedValue = errors[i2];
             debugTask == null && capturedValue.source !== null && (debugTask = capturedValue.source._debugTask);
             capturedValue = capturedValue.value;
             properties.push([
@@ -4277,8 +4277,8 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
           var name = getComponentNameFromFiber(fiber);
           if (name !== null) {
             selfTime = [];
-            for (var i = 0;i < errors.length; i++) {
-              var error = errors[i].value;
+            for (var i2 = 0;i2 < errors.length; i2++) {
+              var error = errors[i2].value;
               selfTime.push([
                 "Error",
                 typeof error === "object" && error !== null && typeof error.message === "string" ? String(error.message) : String(error)
@@ -4320,8 +4320,8 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
     function logRecoveredRenderPhase(startTime, endTime, lanes, recoverableErrors, hydrationFailed, debugTask) {
       if (supportsUserTiming && !(endTime <= startTime)) {
         lanes = [];
-        for (var i = 0;i < recoverableErrors.length; i++) {
-          var error = recoverableErrors[i].value;
+        for (var i2 = 0;i2 < recoverableErrors.length; i2++) {
+          var error = recoverableErrors[i2].value;
           lanes.push([
             "Recoverable Error",
             typeof error === "object" && error !== null && typeof error.message === "string" ? String(error.message) : String(error)
@@ -4351,8 +4351,8 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
     }
     function logCommitErrored(startTime, endTime, errors, passive, debugTask) {
       if (supportsUserTiming && !(endTime <= startTime)) {
-        for (var properties = [], i = 0;i < errors.length; i++) {
-          var error = errors[i].value;
+        for (var properties = [], i2 = 0;i2 < errors.length; i2++) {
+          var error = errors[i2].value;
           properties.push([
             "Error",
             typeof error === "object" && error !== null && typeof error.message === "string" ? String(error.message) : String(error)
@@ -4441,11 +4441,11 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
       if (prefix === undefined)
         try {
           throw Error();
-        } catch (x) {
-          var match = x.stack.trim().match(/\n( *(at )?)/);
+        } catch (x2) {
+          var match = x2.stack.trim().match(/\n( *(at )?)/);
           prefix = match && match[1] || "";
-          suffix = -1 < x.stack.indexOf(`
-    at`) ? " (<anonymous>)" : -1 < x.stack.indexOf("@") ? "@unknown:0:0" : "";
+          suffix = -1 < x2.stack.indexOf(`
+    at`) ? " (<anonymous>)" : -1 < x2.stack.indexOf("@") ? "@unknown:0:0" : "";
         }
       return `
 ` + prefix + name + suffix;
@@ -4479,8 +4479,8 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
                 if (typeof Reflect === "object" && Reflect.construct) {
                   try {
                     Reflect.construct(Fake, []);
-                  } catch (x) {
-                    var control = x;
+                  } catch (x2) {
+                    var control = x2;
                   }
                   Reflect.construct(fn, [], Fake);
                 } else {
@@ -4576,8 +4576,8 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
           info += describeFiber(workInProgress2, previous);
           var debugInfo = workInProgress2._debugInfo;
           if (debugInfo)
-            for (var i = debugInfo.length - 1;0 <= i; i--) {
-              var entry = debugInfo[i];
+            for (var i2 = debugInfo.length - 1;0 <= i2; i2--) {
+              var entry = debugInfo[i2];
               if (typeof entry.name === "string") {
                 var JSCompiler_temp_const = info;
                 a: {
@@ -4600,10 +4600,10 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
           workInProgress2 = workInProgress2.return;
         } while (workInProgress2);
         return info;
-      } catch (x) {
+      } catch (x2) {
         return `
-Error generating stack: ` + x.message + `
-` + x.stack;
+Error generating stack: ` + x2.message + `
+` + x2.stack;
       }
     }
     function describeFunctionComponentFrameWithoutLineNumber(fn) {
@@ -4912,22 +4912,22 @@ Error generating stack: ` + x.message + `
       skipToNode = "";
       var debugInfo = node2.fiber._debugInfo;
       if (debugInfo)
-        for (var i = 0;i < debugInfo.length; i++) {
-          var serverComponentName = debugInfo[i].name;
+        for (var i2 = 0;i2 < debugInfo.length; i2++) {
+          var serverComponentName = debugInfo[i2].name;
           typeof serverComponentName === "string" && (skipToNode += indentation(indent) + "<" + serverComponentName + `>
 `, indent++);
         }
       debugInfo = "";
-      i = node2.fiber.pendingProps;
+      i2 = node2.fiber.pendingProps;
       if (node2.fiber.tag === 6)
-        debugInfo = describeTextDiff(i, node2.serverProps, indent), indent++;
+        debugInfo = describeTextDiff(i2, node2.serverProps, indent), indent++;
       else if (serverComponentName = describeFiberType(node2.fiber), serverComponentName !== null)
         if (node2.serverProps === undefined) {
           debugInfo = indent;
           var maxLength = 120 - 2 * debugInfo - serverComponentName.length - 2, content = "";
-          for (propName in i)
-            if (i.hasOwnProperty(propName) && propName !== "children") {
-              var propValue = describePropValue(i[propName], 15);
+          for (propName in i2)
+            if (i2.hasOwnProperty(propName) && propName !== "children") {
+              var propValue = describePropValue(i2[propName], 15);
               maxLength -= propName.length + propValue.length + 2;
               if (0 > maxLength) {
                 content += " ...";
@@ -4939,17 +4939,17 @@ Error generating stack: ` + x.message + `
 `;
           indent++;
         } else
-          node2.serverProps === null ? (debugInfo = describeExpandedElement(serverComponentName, i, added(indent)), indent++) : typeof node2.serverProps === "string" ? console.error("Should not have matched a non HostText fiber to a Text node. This is a bug in React.") : (debugInfo = describeElementDiff(serverComponentName, i, node2.serverProps, indent), indent++);
+          node2.serverProps === null ? (debugInfo = describeExpandedElement(serverComponentName, i2, added(indent)), indent++) : typeof node2.serverProps === "string" ? console.error("Should not have matched a non HostText fiber to a Text node. This is a bug in React.") : (debugInfo = describeElementDiff(serverComponentName, i2, node2.serverProps, indent), indent++);
       var propName = "";
-      i = node2.fiber.child;
-      for (serverComponentName = 0;i && serverComponentName < node2.children.length; )
-        maxLength = node2.children[serverComponentName], maxLength.fiber === i ? (propName += describeNode(maxLength, indent), serverComponentName++) : propName += describeSiblingFiber(i, indent), i = i.sibling;
-      i && 0 < node2.children.length && (propName += indentation(indent) + `...
+      i2 = node2.fiber.child;
+      for (serverComponentName = 0;i2 && serverComponentName < node2.children.length; )
+        maxLength = node2.children[serverComponentName], maxLength.fiber === i2 ? (propName += describeNode(maxLength, indent), serverComponentName++) : propName += describeSiblingFiber(i2, indent), i2 = i2.sibling;
+      i2 && 0 < node2.children.length && (propName += indentation(indent) + `...
 `);
-      i = node2.serverTail;
+      i2 = node2.serverTail;
       node2.serverProps === null && indent--;
-      for (node2 = 0;node2 < i.length; node2++)
-        serverComponentName = i[node2], propName = typeof serverComponentName === "string" ? propName + (removed(indent) + describeTextNode(serverComponentName, 120 - 2 * indent) + `
+      for (node2 = 0;node2 < i2.length; node2++)
+        serverComponentName = i2[node2], propName = typeof serverComponentName === "string" ? propName + (removed(indent) + describeTextNode(serverComponentName, 120 - 2 * indent) + `
 `) : propName + describeExpandedElement(serverComponentName.type, serverComponentName.props, removed(indent));
       return skipToNode + debugInfo + propName;
     }
@@ -4958,7 +4958,7 @@ Error generating stack: ` + x.message + `
         return `
 
 ` + describeNode(rootNode, 0);
-      } catch (x) {
+      } catch (x2) {
         return "";
       }
     }
@@ -5010,10 +5010,10 @@ Error generating stack: ` + x.message + `
           } else
             break;
         var JSCompiler_inline_result = info;
-      } catch (x) {
+      } catch (x2) {
         JSCompiler_inline_result = `
-Error generating stack: ` + x.message + `
-` + x.stack;
+Error generating stack: ` + x2.message + `
+` + x2.stack;
       }
       return JSCompiler_inline_result;
     }
@@ -5204,8 +5204,8 @@ It can also happen if the client has a browser extension installed which messes 
             for (;list !== null; ) {
               var dependency = list;
               list = fiber;
-              for (var i = 0;i < contexts.length; i++)
-                if (dependency.context === contexts[i]) {
+              for (var i2 = 0;i2 < contexts.length; i2++)
+                if (dependency.context === contexts[i2]) {
                   list.lanes |= renderLanes2;
                   dependency = list.alternate;
                   dependency !== null && (dependency.lanes |= renderLanes2);
@@ -5615,8 +5615,8 @@ It can also happen if the client has a browser extension installed which messes 
         currentEntangledListeners = null;
         currentEntangledLane = 0;
         currentEntangledActionThenable = null;
-        for (var i = 0;i < listeners.length; i++)
-          (0, listeners[i])();
+        for (var i2 = 0;i2 < listeners.length; i2++)
+          (0, listeners[i2])();
       }
     }
     function chainThenableValue(thenable, result2) {
@@ -5631,8 +5631,8 @@ It can also happen if the client has a browser extension installed which messes 
       thenable.then(function() {
         thenableWithOverride.status = "fulfilled";
         thenableWithOverride.value = result2;
-        for (var i = 0;i < listeners.length; i++)
-          (0, listeners[i])(result2);
+        for (var i2 = 0;i2 < listeners.length; i2++)
+          (0, listeners[i2])(result2);
       }, function(error) {
         thenableWithOverride.status = "rejected";
         thenableWithOverride.reason = error;
@@ -5738,10 +5738,10 @@ It can also happen if the client has a browser extension installed which messes 
     function resolveLazy(lazyType) {
       try {
         return callLazyInitInDEV(lazyType);
-      } catch (x) {
-        if (x !== null && typeof x === "object" && typeof x.then === "function")
-          throw suspendedThenable = x, needsToResetSuspendedThenableDEV = true, SuspenseException;
-        throw x;
+      } catch (x2) {
+        if (x2 !== null && typeof x2 === "object" && typeof x2.then === "function")
+          throw suspendedThenable = x2, needsToResetSuspendedThenableDEV = true, SuspenseException;
+        throw x2;
       }
     }
     function getSuspendedThenable() {
@@ -5764,9 +5764,9 @@ It can also happen if the client has a browser extension installed which messes 
     function getCurrentDebugTask() {
       var debugInfo = currentDebugInfo;
       if (debugInfo != null) {
-        for (var i = debugInfo.length - 1;0 <= i; i--)
-          if (debugInfo[i].name != null) {
-            var debugTask = debugInfo[i].debugTask;
+        for (var i2 = debugInfo.length - 1;0 <= i2; i2--)
+          if (debugInfo[i2].name != null) {
+            var debugTask = debugInfo[i2].debugTask;
             if (debugTask != null)
               return debugTask;
           }
@@ -5774,8 +5774,8 @@ It can also happen if the client has a browser extension installed which messes 
       return null;
     }
     function validateFragmentProps(element, fiber, returnFiber) {
-      for (var keys3 = Object.keys(element.props), i = 0;i < keys3.length; i++) {
-        var key2 = keys3[i];
+      for (var keys3 = Object.keys(element.props), i2 = 0;i2 < keys3.length; i2++) {
+        var key2 = keys3[i2];
         if (key2 !== "children" && key2 !== "key") {
           fiber === null && (fiber = createFiberFromElement(element, returnFiber.mode, 0), fiber._debugInfo = currentDebugInfo, fiber.return = returnFiber);
           runWithFiberInDEV(fiber, function(erroredKey) {
@@ -6188,20 +6188,20 @@ It can also happen if the client has a browser extension installed which messes 
           var firstChildFiber = reconcileChildFibersImpl(returnFiber, currentFirstChild, newChild, lanes);
           thenableState$1 = null;
           return firstChildFiber;
-        } catch (x) {
-          if (x === SuspenseException || x === SuspenseActionException)
-            throw x;
-          var fiber = createFiber(29, x, null, returnFiber.mode);
+        } catch (x2) {
+          if (x2 === SuspenseException || x2 === SuspenseActionException)
+            throw x2;
+          var fiber = createFiber(29, x2, null, returnFiber.mode);
           fiber.lanes = lanes;
           fiber.return = returnFiber;
           var debugInfo = fiber._debugInfo = currentDebugInfo;
           fiber._debugOwner = returnFiber._debugOwner;
           fiber._debugTask = returnFiber._debugTask;
           if (debugInfo != null) {
-            for (var i = debugInfo.length - 1;0 <= i; i--)
-              if (typeof debugInfo[i].stack === "string") {
-                fiber._debugOwner = debugInfo[i];
-                fiber._debugTask = debugInfo[i].debugTask;
+            for (var i2 = debugInfo.length - 1;0 <= i2; i2--)
+              if (typeof debugInfo[i2].stack === "string") {
+                fiber._debugOwner = debugInfo[i2];
+                fiber._debugTask = debugInfo[i2].debugTask;
                 break;
               }
           }
@@ -6217,15 +6217,15 @@ It can also happen if the client has a browser extension installed which messes 
       return isAnArray || childSlot ? (isAnArray = isAnArray ? "array" : "iterable", console.error("A nested %s was passed to row #%s in <SuspenseList />. Wrap it in an additional SuspenseList to configure its revealOrder: <SuspenseList revealOrder=...> ... <SuspenseList revealOrder=...>{%s}</SuspenseList> ... </SuspenseList>", isAnArray, index, isAnArray), false) : true;
     }
     function finishQueueingConcurrentUpdates() {
-      for (var endIndex = concurrentQueuesIndex, i = concurrentlyUpdatedLanes = concurrentQueuesIndex = 0;i < endIndex; ) {
-        var fiber = concurrentQueues[i];
-        concurrentQueues[i++] = null;
-        var queue = concurrentQueues[i];
-        concurrentQueues[i++] = null;
-        var update3 = concurrentQueues[i];
-        concurrentQueues[i++] = null;
-        var lane = concurrentQueues[i];
-        concurrentQueues[i++] = null;
+      for (var endIndex = concurrentQueuesIndex, i2 = concurrentlyUpdatedLanes = concurrentQueuesIndex = 0;i2 < endIndex; ) {
+        var fiber = concurrentQueues[i2];
+        concurrentQueues[i2++] = null;
+        var queue = concurrentQueues[i2];
+        concurrentQueues[i2++] = null;
+        var update3 = concurrentQueues[i2];
+        concurrentQueues[i2++] = null;
+        var lane = concurrentQueues[i2];
+        concurrentQueues[i2++] = null;
         if (queue !== null && update3 !== null) {
           var pending = queue.pending;
           pending === null ? update3.next = update3 : (update3.next = pending.next, pending.next = update3);
@@ -6564,9 +6564,9 @@ Please update the following component: %s`, componentName2);
       if (hookTypesDev !== null && (hookTypesUpdateIndexDev++, hookTypesDev[hookTypesUpdateIndexDev] !== hookName)) {
         var componentName2 = getComponentNameFromFiber(currentlyRenderingFiber);
         if (!didWarnAboutMismatchedHooksForComponent.has(componentName2) && (didWarnAboutMismatchedHooksForComponent.add(componentName2), hookTypesDev !== null)) {
-          for (var table = "", i = 0;i <= hookTypesUpdateIndexDev; i++) {
-            var oldHookName = hookTypesDev[i], newHookName = i === hookTypesUpdateIndexDev ? hookName : oldHookName;
-            for (oldHookName = i + 1 + ". " + oldHookName;30 > oldHookName.length; )
+          for (var table = "", i2 = 0;i2 <= hookTypesUpdateIndexDev; i2++) {
+            var oldHookName = hookTypesDev[i2], newHookName = i2 === hookTypesUpdateIndexDev ? hookName : oldHookName;
+            for (oldHookName = i2 + 1 + ". " + oldHookName;30 > oldHookName.length; )
               oldHookName += " ";
             oldHookName += newHookName + `
 `;
@@ -6604,8 +6604,8 @@ See https://react.dev/link/invalid-hook-call for tips about how to debug and fix
 
 Previous: %s
 Incoming: %s`, currentHookNameInDev, "[" + prevDeps.join(", ") + "]", "[" + nextDeps.join(", ") + "]");
-      for (var i = 0;i < prevDeps.length && i < nextDeps.length; i++)
-        if (!objectIs(nextDeps[i], prevDeps[i]))
+      for (var i2 = 0;i2 < prevDeps.length && i2 < nextDeps.length; i2++)
+        if (!objectIs(nextDeps[i2], prevDeps[i2]))
           return false;
       return true;
     }
@@ -7138,8 +7138,8 @@ Incoming: %s`, currentHookNameInDev, "[" + prevDeps.join(", ") + "]", "[" + next
     }
     function notifyActionListeners(actionNode) {
       actionNode = actionNode.listeners;
-      for (var i = 0;i < actionNode.length; i++)
-        (0, actionNode[i])();
+      for (var i2 = 0;i2 < actionNode.length; i2++)
+        (0, actionNode[i2])();
     }
     function actionStateReducer(oldState, newState) {
       return newState;
@@ -7203,10 +7203,10 @@ Incoming: %s`, currentHookNameInDev, "[" + prevDeps.join(", ") + "]", "[" + next
       if (typeof currentStateHook === "object" && currentStateHook !== null && typeof currentStateHook.then === "function")
         try {
           var state = useThenable(currentStateHook);
-        } catch (x) {
-          if (x === SuspenseException)
+        } catch (x2) {
+          if (x2 === SuspenseException)
             throw SuspenseActionException;
-          throw x;
+          throw x2;
         }
       else
         state = currentStateHook;
@@ -9661,8 +9661,8 @@ Learn more about data fetching with Hooks: https://react.dev/link/hooks-data-fet
       if (injectedHook && typeof injectedHook.onCommitFiberUnmount === "function")
         try {
           injectedHook.onCommitFiberUnmount(rendererID, deletedFiber);
-        } catch (err) {
-          hasLoggedError || (hasLoggedError = true, console.error("React instrumentation encountered an error: %o", err));
+        } catch (err2) {
+          hasLoggedError || (hasLoggedError = true, console.error("React instrumentation encountered an error: %o", err2));
         }
       var prevEffectStart = pushComponentEffectStart(), prevEffectDuration = pushComponentEffectDuration(), prevEffectErrors = pushComponentEffectErrors(), prevEffectDidSpawnUpdate = pushComponentEffectDidSpawnUpdate();
       switch (deletedFiber.tag) {
@@ -9789,8 +9789,8 @@ Learn more about data fetching with Hooks: https://react.dev/link/hooks-data-fet
     function recursivelyTraverseMutationEffects(root$jscomp$0, parentFiber) {
       var deletions = parentFiber.deletions;
       if (deletions !== null)
-        for (var i = 0;i < deletions.length; i++) {
-          var root = root$jscomp$0, returnFiber = parentFiber, deletedFiber = deletions[i], prevEffectStart = pushComponentEffectStart();
+        for (var i2 = 0;i2 < deletions.length; i2++) {
+          var root = root$jscomp$0, returnFiber = parentFiber, deletedFiber = deletions[i2], prevEffectStart = pushComponentEffectStart();
           if (supportsMutation) {
             var parent = returnFiber;
             a:
@@ -10387,8 +10387,8 @@ Learn more about data fetching with Hooks: https://react.dev/link/hooks-data-fet
       var deletions = parentFiber.deletions;
       if ((parentFiber.flags & 16) !== 0) {
         if (deletions !== null)
-          for (var i = 0;i < deletions.length; i++) {
-            var childToDelete = deletions[i], prevEffectStart = pushComponentEffectStart();
+          for (var i2 = 0;i2 < deletions.length; i2++) {
+            var childToDelete = deletions[i2], prevEffectStart = pushComponentEffectStart();
             nextEffect = childToDelete;
             commitPassiveUnmountEffectsInsideOfDeletedTree_begin(childToDelete, parentFiber);
             (childToDelete.mode & 2) !== NoMode && 0 <= componentEffectStartTime && 0 <= componentEffectEndTime && 0.05 < componentEffectEndTime - componentEffectStartTime && logComponentTrigger(childToDelete, componentEffectStartTime, componentEffectEndTime, "Unmount");
@@ -10436,8 +10436,8 @@ Learn more about data fetching with Hooks: https://react.dev/link/hooks-data-fet
       var deletions = parentFiber.deletions;
       if ((parentFiber.flags & 16) !== 0) {
         if (deletions !== null)
-          for (var i = 0;i < deletions.length; i++) {
-            var childToDelete = deletions[i], prevEffectStart = pushComponentEffectStart();
+          for (var i2 = 0;i2 < deletions.length; i2++) {
+            var childToDelete = deletions[i2], prevEffectStart = pushComponentEffectStart();
             nextEffect = childToDelete;
             commitPassiveUnmountEffectsInsideOfDeletedTree_begin(childToDelete, parentFiber);
             (childToDelete.mode & 2) !== NoMode && 0 <= componentEffectStartTime && 0 <= componentEffectEndTime && 0.05 < componentEffectEndTime - componentEffectStartTime && logComponentTrigger(childToDelete, componentEffectStartTime, componentEffectEndTime, "Unmount");
@@ -10823,8 +10823,8 @@ Learn more about data fetching with Hooks: https://react.dev/link/hooks-data-fet
       for (var node2 = finishedWork;; ) {
         var tag = node2.tag;
         if ((tag === 0 || tag === 11 || tag === 15) && node2.flags & 16384 && (tag = node2.updateQueue, tag !== null && (tag = tag.stores, tag !== null)))
-          for (var i = 0;i < tag.length; i++) {
-            var check2 = tag[i], getSnapshot = check2.getSnapshot;
+          for (var i2 = 0;i2 < tag.length; i2++) {
+            var check2 = tag[i2], getSnapshot = check2.getSnapshot;
             check2 = check2.value;
             try {
               if (!objectIs(getSnapshot(), check2))
@@ -11463,8 +11463,8 @@ Learn more about data fetching with Hooks: https://react.dev/link/hooks-data-fet
                 schedulerPriority = NormalPriority$1;
             }
             injectedHook.onCommitFiberRoot(rendererID, finishedWork, schedulerPriority, didError);
-          } catch (err) {
-            hasLoggedError || (hasLoggedError = true, console.error("React instrumentation encountered an error: %o", err));
+          } catch (err2) {
+            hasLoggedError || (hasLoggedError = true, console.error("React instrumentation encountered an error: %o", err2));
           }
         isDevToolsPresent && startViewTransitionStartTime.memoizedUpdaters.clear();
         onCommitRoot();
@@ -11567,8 +11567,8 @@ Learn more about data fetching with Hooks: https://react.dev/link/hooks-data-fet
         if (injectedHook && typeof injectedHook.onPostCommitFiberRoot === "function")
           try {
             injectedHook.onPostCommitFiberRoot(rendererID, priority);
-          } catch (err) {
-            hasLoggedError || (hasLoggedError = true, console.error("React instrumentation encountered an error: %o", err));
+          } catch (err2) {
+            hasLoggedError || (hasLoggedError = true, console.error("React instrumentation encountered an error: %o", err2));
           }
         var stateNode = priority.current.stateNode;
         stateNode.effectDuration = 0;
@@ -12035,8 +12035,8 @@ Check the render method of \`` + fiberTag + "`.");
       if (injectedHook && typeof injectedHook.onScheduleFiberRoot === "function")
         try {
           injectedHook.onScheduleFiberRoot(rendererID, container, element);
-        } catch (err) {
-          hasLoggedError || (hasLoggedError = true, console.error("React instrumentation encountered an error: %o", err));
+        } catch (err2) {
+          hasLoggedError || (hasLoggedError = true, console.error("React instrumentation encountered an error: %o", err2));
         }
       parentComponent = getContextForSubtree(parentComponent);
       container.context === null ? container.context = parentComponent : container.pendingContext = parentComponent;
@@ -13509,29 +13509,29 @@ Check the top-level render call using <` + componentName2 + ">.");
     var didWarnAboutNestedUpdates = false;
     var didWarnAboutFindNodeInStrictMode = {};
     var overrideHookState = null, overrideHookStateDeletePath = null, overrideHookStateRenamePath = null, overrideProps = null, overridePropsDeletePath = null, overridePropsRenamePath = null, scheduleUpdate = null, scheduleRetry = null, setErrorHandler = null, setSuspenseHandler = null;
-    overrideHookState = function(fiber, id, path7, value) {
+    overrideHookState = function(fiber, id, path10, value) {
       id = findHook(fiber, id);
-      id !== null && (path7 = copyWithSetImpl(id.memoizedState, path7, 0, value), id.memoizedState = path7, id.baseState = path7, fiber.memoizedProps = assign3({}, fiber.memoizedProps), path7 = enqueueConcurrentRenderForLane(fiber, 2), path7 !== null && scheduleUpdateOnFiber(path7, fiber, 2));
+      id !== null && (path10 = copyWithSetImpl(id.memoizedState, path10, 0, value), id.memoizedState = path10, id.baseState = path10, fiber.memoizedProps = assign3({}, fiber.memoizedProps), path10 = enqueueConcurrentRenderForLane(fiber, 2), path10 !== null && scheduleUpdateOnFiber(path10, fiber, 2));
     };
-    overrideHookStateDeletePath = function(fiber, id, path7) {
+    overrideHookStateDeletePath = function(fiber, id, path10) {
       id = findHook(fiber, id);
-      id !== null && (path7 = copyWithDeleteImpl(id.memoizedState, path7, 0), id.memoizedState = path7, id.baseState = path7, fiber.memoizedProps = assign3({}, fiber.memoizedProps), path7 = enqueueConcurrentRenderForLane(fiber, 2), path7 !== null && scheduleUpdateOnFiber(path7, fiber, 2));
+      id !== null && (path10 = copyWithDeleteImpl(id.memoizedState, path10, 0), id.memoizedState = path10, id.baseState = path10, fiber.memoizedProps = assign3({}, fiber.memoizedProps), path10 = enqueueConcurrentRenderForLane(fiber, 2), path10 !== null && scheduleUpdateOnFiber(path10, fiber, 2));
     };
     overrideHookStateRenamePath = function(fiber, id, oldPath, newPath) {
       id = findHook(fiber, id);
       id !== null && (oldPath = copyWithRename(id.memoizedState, oldPath, newPath), id.memoizedState = oldPath, id.baseState = oldPath, fiber.memoizedProps = assign3({}, fiber.memoizedProps), oldPath = enqueueConcurrentRenderForLane(fiber, 2), oldPath !== null && scheduleUpdateOnFiber(oldPath, fiber, 2));
     };
-    overrideProps = function(fiber, path7, value) {
-      fiber.pendingProps = copyWithSetImpl(fiber.memoizedProps, path7, 0, value);
+    overrideProps = function(fiber, path10, value) {
+      fiber.pendingProps = copyWithSetImpl(fiber.memoizedProps, path10, 0, value);
       fiber.alternate && (fiber.alternate.pendingProps = fiber.pendingProps);
-      path7 = enqueueConcurrentRenderForLane(fiber, 2);
-      path7 !== null && scheduleUpdateOnFiber(path7, fiber, 2);
+      path10 = enqueueConcurrentRenderForLane(fiber, 2);
+      path10 !== null && scheduleUpdateOnFiber(path10, fiber, 2);
     };
-    overridePropsDeletePath = function(fiber, path7) {
-      fiber.pendingProps = copyWithDeleteImpl(fiber.memoizedProps, path7, 0);
+    overridePropsDeletePath = function(fiber, path10) {
+      fiber.pendingProps = copyWithDeleteImpl(fiber.memoizedProps, path10, 0);
       fiber.alternate && (fiber.alternate.pendingProps = fiber.pendingProps);
-      path7 = enqueueConcurrentRenderForLane(fiber, 2);
-      path7 !== null && scheduleUpdateOnFiber(path7, fiber, 2);
+      path10 = enqueueConcurrentRenderForLane(fiber, 2);
+      path10 !== null && scheduleUpdateOnFiber(path10, fiber, 2);
     };
     overridePropsRenamePath = function(fiber, oldPath, newPath) {
       fiber.pendingProps = copyWithRename(fiber.memoizedProps, oldPath, newPath);
@@ -13693,22 +13693,22 @@ Visit https://react.dev/link/error-boundaries to learn more about error boundari
         throw Error("Test selector API is not supported by this renderer.");
       selectors = findAllNodes(hostRoot, selectors);
       hostRoot = [];
-      for (var i = 0;i < selectors.length; i++)
-        hostRoot.push(getBoundingRect(selectors[i]));
+      for (var i2 = 0;i2 < selectors.length; i2++)
+        hostRoot.push(getBoundingRect(selectors[i2]));
       for (selectors = hostRoot.length - 1;0 < selectors; selectors--) {
-        i = hostRoot[selectors];
-        for (var targetLeft = i.x, targetRight = targetLeft + i.width, targetTop = i.y, targetBottom = targetTop + i.height, j = selectors - 1;0 <= j; j--)
+        i2 = hostRoot[selectors];
+        for (var targetLeft = i2.x, targetRight = targetLeft + i2.width, targetTop = i2.y, targetBottom = targetTop + i2.height, j = selectors - 1;0 <= j; j--)
           if (selectors !== j) {
             var otherRect = hostRoot[j], otherLeft = otherRect.x, otherRight = otherLeft + otherRect.width, otherTop = otherRect.y, otherBottom = otherTop + otherRect.height;
             if (targetLeft >= otherLeft && targetTop >= otherTop && targetRight <= otherRight && targetBottom <= otherBottom) {
               hostRoot.splice(selectors, 1);
               break;
-            } else if (!(targetLeft !== otherLeft || i.width !== otherRect.width || otherBottom < targetTop || otherTop > targetBottom)) {
+            } else if (!(targetLeft !== otherLeft || i2.width !== otherRect.width || otherBottom < targetTop || otherTop > targetBottom)) {
               otherTop > targetTop && (otherRect.height += otherTop - targetTop, otherRect.y = targetTop);
               otherBottom < targetBottom && (otherRect.height = targetBottom - otherTop);
               hostRoot.splice(selectors, 1);
               break;
-            } else if (!(targetTop !== otherTop || i.height !== otherRect.height || otherRight < targetLeft || otherLeft > targetRight)) {
+            } else if (!(targetTop !== otherTop || i2.height !== otherRect.height || otherRight < targetLeft || otherLeft > targetRight)) {
               otherLeft > targetLeft && (otherRect.width += otherLeft - targetLeft, otherRect.x = targetLeft);
               otherRight < targetRight && (otherRect.width = targetRight - otherLeft);
               hostRoot.splice(selectors, 1);
@@ -13936,8 +13936,8 @@ var require_buffer_util = __commonJS((exports, module) => {
       return list[0];
     const target = Buffer.allocUnsafe(totalLength);
     let offset = 0;
-    for (let i = 0;i < list.length; i++) {
-      const buf = list[i];
+    for (let i2 = 0;i2 < list.length; i2++) {
+      const buf = list[i2];
       target.set(buf, offset);
       offset += buf.length;
     }
@@ -13947,13 +13947,13 @@ var require_buffer_util = __commonJS((exports, module) => {
     return target;
   }
   function _mask(source, mask, output, offset, length) {
-    for (let i = 0;i < length; i++) {
-      output[offset + i] = source[i] ^ mask[i & 3];
+    for (let i2 = 0;i2 < length; i2++) {
+      output[offset + i2] = source[i2] ^ mask[i2 & 3];
     }
   }
   function _unmask(buffer, mask) {
-    for (let i = 0;i < buffer.length; i++) {
-      buffer[i] ^= mask[i & 3];
+    for (let i2 = 0;i2 < buffer.length; i2++) {
+      buffer[i2] ^= mask[i2 & 3];
     }
   }
   function toArrayBuffer(buf) {
@@ -14183,17 +14183,17 @@ var require_permessage_deflate = __commonJS((exports, module) => {
     }
     decompress(data, fin, callback) {
       zlibLimiter.add((done) => {
-        this._decompress(data, fin, (err, result2) => {
+        this._decompress(data, fin, (err2, result2) => {
           done();
-          callback(err, result2);
+          callback(err2, result2);
         });
       });
     }
     compress(data, fin, callback) {
       zlibLimiter.add((done) => {
-        this._compress(data, fin, (err, result2) => {
+        this._compress(data, fin, (err2, result2) => {
           done();
-          callback(err, result2);
+          callback(err2, result2);
         });
       });
     }
@@ -14217,11 +14217,11 @@ var require_permessage_deflate = __commonJS((exports, module) => {
       if (fin)
         this._inflate.write(TRAILER);
       this._inflate.flush(() => {
-        const err = this._inflate[kError];
-        if (err) {
+        const err2 = this._inflate[kError];
+        if (err2) {
           this._inflate.close();
           this._inflate = null;
-          callback(err);
+          callback(err2);
           return;
         }
         const data2 = bufferUtil.concat(this._inflate[kBuffers], this._inflate[kTotalLength]);
@@ -14288,14 +14288,14 @@ var require_permessage_deflate = __commonJS((exports, module) => {
     this.removeListener("data", inflateOnData);
     this.reset();
   }
-  function inflateOnError(err) {
+  function inflateOnError(err2) {
     this[kPerMessageDeflate]._inflate = null;
     if (this[kError]) {
       this[kCallback](this[kError]);
       return;
     }
-    err[kStatusCode] = 1007;
-    this[kCallback](err);
+    err2[kStatusCode] = 1007;
+    this[kCallback](err2);
   }
 });
 
@@ -14438,25 +14438,25 @@ var require_validation = __commonJS((exports, module) => {
   }
   function _isValidUTF8(buf) {
     const len = buf.length;
-    let i = 0;
-    while (i < len) {
-      if ((buf[i] & 128) === 0) {
-        i++;
-      } else if ((buf[i] & 224) === 192) {
-        if (i + 1 === len || (buf[i + 1] & 192) !== 128 || (buf[i] & 254) === 192) {
+    let i2 = 0;
+    while (i2 < len) {
+      if ((buf[i2] & 128) === 0) {
+        i2++;
+      } else if ((buf[i2] & 224) === 192) {
+        if (i2 + 1 === len || (buf[i2 + 1] & 192) !== 128 || (buf[i2] & 254) === 192) {
           return false;
         }
-        i += 2;
-      } else if ((buf[i] & 240) === 224) {
-        if (i + 2 >= len || (buf[i + 1] & 192) !== 128 || (buf[i + 2] & 192) !== 128 || buf[i] === 224 && (buf[i + 1] & 224) === 128 || buf[i] === 237 && (buf[i + 1] & 224) === 160) {
+        i2 += 2;
+      } else if ((buf[i2] & 240) === 224) {
+        if (i2 + 2 >= len || (buf[i2 + 1] & 192) !== 128 || (buf[i2 + 2] & 192) !== 128 || buf[i2] === 224 && (buf[i2 + 1] & 224) === 128 || buf[i2] === 237 && (buf[i2 + 1] & 224) === 160) {
           return false;
         }
-        i += 3;
-      } else if ((buf[i] & 248) === 240) {
-        if (i + 3 >= len || (buf[i + 1] & 192) !== 128 || (buf[i + 2] & 192) !== 128 || (buf[i + 3] & 192) !== 128 || buf[i] === 240 && (buf[i + 1] & 240) === 128 || buf[i] === 244 && buf[i + 1] > 143 || buf[i] > 244) {
+        i2 += 3;
+      } else if ((buf[i2] & 248) === 240) {
+        if (i2 + 3 >= len || (buf[i2 + 1] & 192) !== 128 || (buf[i2 + 2] & 192) !== 128 || (buf[i2 + 3] & 192) !== 128 || buf[i2] === 240 && (buf[i2 + 1] & 240) === 128 || buf[i2] === 244 && buf[i2 + 1] > 143 || buf[i2] > 244) {
           return false;
         }
-        i += 4;
+        i2 += 4;
       } else {
         return false;
       }
@@ -14746,9 +14746,9 @@ var require_receiver = __commonJS((exports, module) => {
     }
     decompress(data, cb) {
       const perMessageDeflate = this._extensions[PerMessageDeflate.extensionName];
-      perMessageDeflate.decompress(data, this._fin, (err, buf) => {
-        if (err)
-          return cb(err);
+      perMessageDeflate.decompress(data, this._fin, (err2, buf) => {
+        if (err2)
+          return cb(err2);
         if (buf.length) {
           this._messageLength += buf.length;
           if (this._messageLength > this._maxPayload && this._maxPayload > 0) {
@@ -14857,11 +14857,11 @@ var require_receiver = __commonJS((exports, module) => {
     createError(ErrorCtor, message, prefix, statusCode, errorCode) {
       this._loop = false;
       this._errored = true;
-      const err = new ErrorCtor(prefix ? `Invalid WebSocket frame: ${message}` : message);
-      Error.captureStackTrace(err, this.createError);
-      err.code = errorCode;
-      err[kStatusCode] = statusCode;
-      return err;
+      const err2 = new ErrorCtor(prefix ? `Invalid WebSocket frame: ${message}` : message);
+      Error.captureStackTrace(err2, this.createError);
+      err2.code = errorCode;
+      err2[kStatusCode] = statusCode;
+      return err2;
     }
   }
   module.exports = Receiver;
@@ -15144,8 +15144,8 @@ var require_sender = __commonJS((exports, module) => {
       this._state = GET_BLOB_DATA;
       blob.arrayBuffer().then((arrayBuffer) => {
         if (this._socket.destroyed) {
-          const err = new Error("The socket was closed while the blob was being read");
-          process.nextTick(callCallbacks, this, err, cb);
+          const err2 = new Error("The socket was closed while the blob was being read");
+          process.nextTick(callCallbacks, this, err2, cb);
           return;
         }
         this._bufferedBytes -= options[kByteLength];
@@ -15157,8 +15157,8 @@ var require_sender = __commonJS((exports, module) => {
         } else {
           this.dispatch(data, compress, options, cb);
         }
-      }).catch((err) => {
-        process.nextTick(onError, this, err, cb);
+      }).catch((err2) => {
+        process.nextTick(onError, this, err2, cb);
       });
     }
     dispatch(data, compress, options, cb) {
@@ -15171,8 +15171,8 @@ var require_sender = __commonJS((exports, module) => {
       this._state = DEFLATING;
       perMessageDeflate.compress(data, options.fin, (_, buf) => {
         if (this._socket.destroyed) {
-          const err = new Error("The socket was closed while data was being compressed");
-          callCallbacks(this, err, cb);
+          const err2 = new Error("The socket was closed while data was being compressed");
+          callCallbacks(this, err2, cb);
           return;
         }
         this._bufferedBytes -= options[kByteLength];
@@ -15205,19 +15205,19 @@ var require_sender = __commonJS((exports, module) => {
     }
   }
   module.exports = Sender;
-  function callCallbacks(sender, err, cb) {
+  function callCallbacks(sender, err2, cb) {
     if (typeof cb === "function")
-      cb(err);
-    for (let i = 0;i < sender._queue.length; i++) {
-      const params = sender._queue[i];
+      cb(err2);
+    for (let i2 = 0;i2 < sender._queue.length; i2++) {
+      const params = sender._queue[i2];
       const callback = params[params.length - 1];
       if (typeof callback === "function")
-        callback(err);
+        callback(err2);
     }
   }
-  function onError(sender, err, cb) {
-    callCallbacks(sender, err, cb);
-    sender.onerror(err);
+  function onError(sender, err2, cb) {
+    callCallbacks(sender, err2, cb);
+    sender.onerror(err2);
   }
 });
 
@@ -15392,22 +15392,22 @@ var require_extension = __commonJS((exports, module) => {
     let start = -1;
     let code = -1;
     let end = -1;
-    let i = 0;
-    for (;i < header.length; i++) {
-      code = header.charCodeAt(i);
+    let i2 = 0;
+    for (;i2 < header.length; i2++) {
+      code = header.charCodeAt(i2);
       if (extensionName === undefined) {
         if (end === -1 && tokenChars[code] === 1) {
           if (start === -1)
-            start = i;
-        } else if (i !== 0 && (code === 32 || code === 9)) {
+            start = i2;
+        } else if (i2 !== 0 && (code === 32 || code === 9)) {
           if (end === -1 && start !== -1)
-            end = i;
+            end = i2;
         } else if (code === 59 || code === 44) {
           if (start === -1) {
-            throw new SyntaxError(`Unexpected character at index ${i}`);
+            throw new SyntaxError(`Unexpected character at index ${i2}`);
           }
           if (end === -1)
-            end = i;
+            end = i2;
           const name = header.slice(start, end);
           if (code === 44) {
             push2(offers, name, params);
@@ -15417,21 +15417,21 @@ var require_extension = __commonJS((exports, module) => {
           }
           start = end = -1;
         } else {
-          throw new SyntaxError(`Unexpected character at index ${i}`);
+          throw new SyntaxError(`Unexpected character at index ${i2}`);
         }
       } else if (paramName === undefined) {
         if (end === -1 && tokenChars[code] === 1) {
           if (start === -1)
-            start = i;
+            start = i2;
         } else if (code === 32 || code === 9) {
           if (end === -1 && start !== -1)
-            end = i;
+            end = i2;
         } else if (code === 59 || code === 44) {
           if (start === -1) {
-            throw new SyntaxError(`Unexpected character at index ${i}`);
+            throw new SyntaxError(`Unexpected character at index ${i2}`);
           }
           if (end === -1)
-            end = i;
+            end = i2;
           push2(params, header.slice(start, end), true);
           if (code === 44) {
             push2(offers, extensionName, params);
@@ -15440,47 +15440,47 @@ var require_extension = __commonJS((exports, module) => {
           }
           start = end = -1;
         } else if (code === 61 && start !== -1 && end === -1) {
-          paramName = header.slice(start, i);
+          paramName = header.slice(start, i2);
           start = end = -1;
         } else {
-          throw new SyntaxError(`Unexpected character at index ${i}`);
+          throw new SyntaxError(`Unexpected character at index ${i2}`);
         }
       } else {
         if (isEscaping) {
           if (tokenChars[code] !== 1) {
-            throw new SyntaxError(`Unexpected character at index ${i}`);
+            throw new SyntaxError(`Unexpected character at index ${i2}`);
           }
           if (start === -1)
-            start = i;
+            start = i2;
           else if (!mustUnescape)
             mustUnescape = true;
           isEscaping = false;
         } else if (inQuotes) {
           if (tokenChars[code] === 1) {
             if (start === -1)
-              start = i;
+              start = i2;
           } else if (code === 34 && start !== -1) {
             inQuotes = false;
-            end = i;
+            end = i2;
           } else if (code === 92) {
             isEscaping = true;
           } else {
-            throw new SyntaxError(`Unexpected character at index ${i}`);
+            throw new SyntaxError(`Unexpected character at index ${i2}`);
           }
-        } else if (code === 34 && header.charCodeAt(i - 1) === 61) {
+        } else if (code === 34 && header.charCodeAt(i2 - 1) === 61) {
           inQuotes = true;
         } else if (end === -1 && tokenChars[code] === 1) {
           if (start === -1)
-            start = i;
+            start = i2;
         } else if (start !== -1 && (code === 32 || code === 9)) {
           if (end === -1)
-            end = i;
+            end = i2;
         } else if (code === 59 || code === 44) {
           if (start === -1) {
-            throw new SyntaxError(`Unexpected character at index ${i}`);
+            throw new SyntaxError(`Unexpected character at index ${i2}`);
           }
           if (end === -1)
-            end = i;
+            end = i2;
           let value = header.slice(start, end);
           if (mustUnescape) {
             value = value.replace(/\\/g, "");
@@ -15495,7 +15495,7 @@ var require_extension = __commonJS((exports, module) => {
           paramName = undefined;
           start = end = -1;
         } else {
-          throw new SyntaxError(`Unexpected character at index ${i}`);
+          throw new SyntaxError(`Unexpected character at index ${i2}`);
         }
       }
     }
@@ -15503,7 +15503,7 @@ var require_extension = __commonJS((exports, module) => {
       throw new SyntaxError("Unexpected end of input");
     }
     if (end === -1)
-      end = i;
+      end = i2;
     const token = header.slice(start, end);
     if (extensionName === undefined) {
       push2(offers, token, params);
@@ -15544,7 +15544,7 @@ var require_websocket = __commonJS((exports, module) => {
   var http = __require("http");
   var net = __require("net");
   var tls = __require("tls");
-  var { randomBytes, createHash } = __require("crypto");
+  var { randomBytes, createHash: createHash2 } = __require("crypto");
   var { Duplex, Readable: Readable2 } = __require("stream");
   var { URL: URL2 } = __require("url");
   var PerMessageDeflate = require_permessage_deflate();
@@ -15716,8 +15716,8 @@ var require_websocket = __commonJS((exports, module) => {
         return;
       }
       this._readyState = WebSocket.CLOSING;
-      this._sender.close(code, data, !this._isServer, (err) => {
-        if (err)
+      this._sender.close(code, data, !this._isServer, (err2) => {
+        if (err2)
           return;
         this._closeFrameSent = true;
         if (this._closeFrameReceived || this._receiver._writableState.errorEmitted) {
@@ -15947,11 +15947,11 @@ var require_websocket = __commonJS((exports, module) => {
       invalidUrlMessage = "The URL contains a fragment identifier";
     }
     if (invalidUrlMessage) {
-      const err = new SyntaxError(invalidUrlMessage);
+      const err2 = new SyntaxError(invalidUrlMessage);
       if (websocket._redirects === 0) {
-        throw err;
+        throw err2;
       } else {
-        emitErrorAndClose(websocket, err);
+        emitErrorAndClose(websocket, err2);
         return;
       }
     }
@@ -16041,11 +16041,11 @@ var require_websocket = __commonJS((exports, module) => {
         abortHandshake(websocket, req, "Opening handshake has timed out");
       });
     }
-    req.on("error", (err) => {
+    req.on("error", (err2) => {
       if (req === null || req[kAborted])
         return;
       req = websocket._req = null;
-      emitErrorAndClose(websocket, err);
+      emitErrorAndClose(websocket, err2);
     });
     req.on("response", (res) => {
       const location = res.headers.location;
@@ -16060,8 +16060,8 @@ var require_websocket = __commonJS((exports, module) => {
         try {
           addr = new URL2(location, address);
         } catch (e) {
-          const err = new SyntaxError(`Invalid URL: ${location}`);
-          emitErrorAndClose(websocket, err);
+          const err2 = new SyntaxError(`Invalid URL: ${location}`);
+          emitErrorAndClose(websocket, err2);
           return;
         }
         initAsClient(websocket, addr, protocols, options);
@@ -16079,7 +16079,7 @@ var require_websocket = __commonJS((exports, module) => {
         abortHandshake(websocket, socket, "Invalid Upgrade header");
         return;
       }
-      const digest = createHash("sha1").update(key2 + GUID).digest("base64");
+      const digest = createHash2("sha1").update(key2 + GUID).digest("base64");
       if (res.headers["sec-websocket-accept"] !== digest) {
         abortHandshake(websocket, socket, "Invalid Sec-WebSocket-Accept header");
         return;
@@ -16111,7 +16111,7 @@ var require_websocket = __commonJS((exports, module) => {
         let extensions;
         try {
           extensions = parse5(secWebSocketExtensions);
-        } catch (err) {
+        } catch (err2) {
           const message = "Invalid Sec-WebSocket-Extensions header";
           abortHandshake(websocket, socket, message);
           return;
@@ -16124,7 +16124,7 @@ var require_websocket = __commonJS((exports, module) => {
         }
         try {
           perMessageDeflate.accept(extensions[PerMessageDeflate.extensionName]);
-        } catch (err) {
+        } catch (err2) {
           const message = "Invalid Sec-WebSocket-Extensions header";
           abortHandshake(websocket, socket, message);
           return;
@@ -16144,10 +16144,10 @@ var require_websocket = __commonJS((exports, module) => {
       req.end();
     }
   }
-  function emitErrorAndClose(websocket, err) {
+  function emitErrorAndClose(websocket, err2) {
     websocket._readyState = WebSocket.CLOSING;
     websocket._errorEmitted = true;
-    websocket.emit("error", err);
+    websocket.emit("error", err2);
     websocket.emitClose();
   }
   function netConnect(options) {
@@ -16163,17 +16163,17 @@ var require_websocket = __commonJS((exports, module) => {
   }
   function abortHandshake(websocket, stream, message) {
     websocket._readyState = WebSocket.CLOSING;
-    const err = new Error(message);
-    Error.captureStackTrace(err, abortHandshake);
+    const err2 = new Error(message);
+    Error.captureStackTrace(err2, abortHandshake);
     if (stream.setHeader) {
       stream[kAborted] = true;
       stream.abort();
       if (stream.socket && !stream.socket.destroyed) {
         stream.socket.destroy();
       }
-      process.nextTick(emitErrorAndClose, websocket, err);
+      process.nextTick(emitErrorAndClose, websocket, err2);
     } else {
-      stream.destroy(err);
+      stream.destroy(err2);
       stream.once("error", websocket.emit.bind(websocket, "error"));
       stream.once("close", websocket.emitClose.bind(websocket));
     }
@@ -16187,8 +16187,8 @@ var require_websocket = __commonJS((exports, module) => {
         websocket._bufferedAmount += length;
     }
     if (cb) {
-      const err = new Error(`WebSocket is not open: readyState ${websocket.readyState} ` + `(${readyStates[websocket.readyState]})`);
-      process.nextTick(cb, err);
+      const err2 = new Error(`WebSocket is not open: readyState ${websocket.readyState} ` + `(${readyStates[websocket.readyState]})`);
+      process.nextTick(cb, err2);
     }
   }
   function receiverOnConclude(code, reason) {
@@ -16210,16 +16210,16 @@ var require_websocket = __commonJS((exports, module) => {
     if (!websocket.isPaused)
       websocket._socket.resume();
   }
-  function receiverOnError(err) {
+  function receiverOnError(err2) {
     const websocket = this[kWebSocket];
     if (websocket._socket[kWebSocket] !== undefined) {
       websocket._socket.removeListener("data", socketOnData);
       process.nextTick(resume, websocket._socket);
-      websocket.close(err[kStatusCode]);
+      websocket.close(err2[kStatusCode]);
     }
     if (!websocket._errorEmitted) {
       websocket._errorEmitted = true;
-      websocket.emit("error", err);
+      websocket.emit("error", err2);
     }
   }
   function receiverOnFinish() {
@@ -16240,7 +16240,7 @@ var require_websocket = __commonJS((exports, module) => {
   function resume(stream) {
     stream.resume();
   }
-  function senderOnError(err) {
+  function senderOnError(err2) {
     const websocket = this[kWebSocket];
     if (websocket.readyState === WebSocket.CLOSED)
       return;
@@ -16251,7 +16251,7 @@ var require_websocket = __commonJS((exports, module) => {
     this._socket.end();
     if (!websocket._errorEmitted) {
       websocket._errorEmitted = true;
-      websocket.emit("error", err);
+      websocket.emit("error", err2);
     }
   }
   function setCloseTimer(websocket) {
@@ -16311,11 +16311,11 @@ var require_stream = __commonJS((exports, module) => {
       this.destroy();
     }
   }
-  function duplexOnError(err) {
+  function duplexOnError(err2) {
     this.removeListener("error", duplexOnError);
     this.destroy();
     if (this.listenerCount("error") === 0) {
-      this.emit("error", err);
+      this.emit("error", err2);
     }
   }
   function createWebSocketStream(ws, options) {
@@ -16332,31 +16332,31 @@ var require_stream = __commonJS((exports, module) => {
       if (!duplex.push(data))
         ws.pause();
     });
-    ws.once("error", function error(err) {
+    ws.once("error", function error(err2) {
       if (duplex.destroyed)
         return;
       terminateOnDestroy = false;
-      duplex.destroy(err);
+      duplex.destroy(err2);
     });
     ws.once("close", function close() {
       if (duplex.destroyed)
         return;
       duplex.push(null);
     });
-    duplex._destroy = function(err, callback) {
+    duplex._destroy = function(err2, callback) {
       if (ws.readyState === ws.CLOSED) {
-        callback(err);
+        callback(err2);
         process.nextTick(emitClose, duplex);
         return;
       }
       let called = false;
-      ws.once("error", function error(err2) {
+      ws.once("error", function error(err3) {
         called = true;
-        callback(err2);
+        callback(err3);
       });
       ws.once("close", function close() {
         if (!called)
-          callback(err);
+          callback(err2);
         process.nextTick(emitClose, duplex);
       });
       if (terminateOnDestroy)
@@ -16409,21 +16409,21 @@ var require_subprotocol = __commonJS((exports, module) => {
     const protocols = new Set;
     let start = -1;
     let end = -1;
-    let i = 0;
-    for (i;i < header.length; i++) {
-      const code = header.charCodeAt(i);
+    let i2 = 0;
+    for (i2;i2 < header.length; i2++) {
+      const code = header.charCodeAt(i2);
       if (end === -1 && tokenChars[code] === 1) {
         if (start === -1)
-          start = i;
-      } else if (i !== 0 && (code === 32 || code === 9)) {
+          start = i2;
+      } else if (i2 !== 0 && (code === 32 || code === 9)) {
         if (end === -1 && start !== -1)
-          end = i;
+          end = i2;
       } else if (code === 44) {
         if (start === -1) {
-          throw new SyntaxError(`Unexpected character at index ${i}`);
+          throw new SyntaxError(`Unexpected character at index ${i2}`);
         }
         if (end === -1)
-          end = i;
+          end = i2;
         const protocol2 = header.slice(start, end);
         if (protocols.has(protocol2)) {
           throw new SyntaxError(`The "${protocol2}" subprotocol is duplicated`);
@@ -16431,13 +16431,13 @@ var require_subprotocol = __commonJS((exports, module) => {
         protocols.add(protocol2);
         start = end = -1;
       } else {
-        throw new SyntaxError(`Unexpected character at index ${i}`);
+        throw new SyntaxError(`Unexpected character at index ${i2}`);
       }
     }
     if (start === -1 || end !== -1) {
       throw new SyntaxError("Unexpected end of input");
     }
-    const protocol = header.slice(start, i);
+    const protocol = header.slice(start, i2);
     if (protocols.has(protocol)) {
       throw new SyntaxError(`The "${protocol}" subprotocol is duplicated`);
     }
@@ -16452,7 +16452,7 @@ var require_websocket_server = __commonJS((exports, module) => {
   var EventEmitter = __require("events");
   var http = __require("http");
   var { Duplex } = __require("stream");
-  var { createHash } = __require("crypto");
+  var { createHash: createHash2 } = __require("crypto");
   var extension = require_extension();
   var PerMessageDeflate = require_permessage_deflate();
   var subprotocol = require_subprotocol();
@@ -16611,7 +16611,7 @@ var require_websocket_server = __commonJS((exports, module) => {
       if (secWebSocketProtocol !== undefined) {
         try {
           protocols = subprotocol.parse(secWebSocketProtocol);
-        } catch (err) {
+        } catch (err2) {
           const message = "Invalid Sec-WebSocket-Protocol header";
           abortHandshakeOrEmitwsClientError(this, req, socket, 400, message);
           return;
@@ -16627,7 +16627,7 @@ var require_websocket_server = __commonJS((exports, module) => {
             perMessageDeflate.accept(offers[PerMessageDeflate.extensionName]);
             extensions[PerMessageDeflate.extensionName] = perMessageDeflate;
           }
-        } catch (err) {
+        } catch (err2) {
           const message = "Invalid or unacceptable Sec-WebSocket-Extensions header";
           abortHandshakeOrEmitwsClientError(this, req, socket, 400, message);
           return;
@@ -16661,7 +16661,7 @@ var require_websocket_server = __commonJS((exports, module) => {
       }
       if (this._state > RUNNING)
         return abortHandshake(socket, 503);
-      const digest = createHash("sha1").update(key2 + GUID).digest("base64");
+      const digest = createHash2("sha1").update(key2 + GUID).digest("base64");
       const headers = [
         "HTTP/1.1 101 Switching Protocols",
         "Upgrade: websocket",
@@ -16740,9 +16740,9 @@ var require_websocket_server = __commonJS((exports, module) => {
   }
   function abortHandshakeOrEmitwsClientError(server, req, socket, code, message, headers) {
     if (server.listenerCount("wsClientError")) {
-      const err = new Error(message);
-      Error.captureStackTrace(err, abortHandshakeOrEmitwsClientError);
-      server.emit("wsClientError", err, socket, req);
+      const err2 = new Error(message);
+      Error.captureStackTrace(err2, abortHandshakeOrEmitwsClientError);
+      server.emit("wsClientError", err2, socket, req);
     } else {
       abortHandshake(socket, code, message, headers);
     }
@@ -17442,8 +17442,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           function _arrayLikeToArray(arr, len) {
             if (len == null || len > arr.length)
               len = arr.length;
-            for (var i = 0, arr2 = new Array(len);i < len; i++) {
-              arr2[i] = arr[i];
+            for (var i2 = 0, arr2 = new Array(len);i2 < len; i2++) {
+              arr2[i2] = arr[i2];
             }
             return arr2;
           }
@@ -17499,8 +17499,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           function utfDecodeString(array) {
             var string = "";
-            for (var i = 0;i < array.length; i++) {
-              var char = array[i];
+            for (var i2 = 0;i2 < array.length; i2++) {
+              var char = array[i2];
               string += String.fromCodePoint(char);
             }
             return string;
@@ -17514,16 +17514,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               return cached;
             }
             var encoded = [];
-            var i = 0;
+            var i2 = 0;
             var charCode;
-            while (i < string.length) {
-              charCode = string.charCodeAt(i);
+            while (i2 < string.length) {
+              charCode = string.charCodeAt(i2);
               if ((charCode & 63488) === 55296) {
-                encoded.push(surrogatePairToCodePoint(charCode, string.charCodeAt(++i)));
+                encoded.push(surrogatePairToCodePoint(charCode, string.charCodeAt(++i2)));
               } else {
                 encoded.push(charCode);
               }
-              ++i;
+              ++i2;
             }
             encodedStringCache.set(string, encoded);
             return encoded;
@@ -17532,82 +17532,82 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             var rendererID = operations[0];
             var rootID = operations[1];
             var logs = ["operations for renderer:".concat(rendererID, " and root:").concat(rootID)];
-            var i = 2;
+            var i2 = 2;
             var stringTable = [
               null
             ];
-            var stringTableSize = operations[i++];
-            var stringTableEnd = i + stringTableSize;
-            while (i < stringTableEnd) {
-              var nextLength = operations[i++];
-              var nextString = utfDecodeString(operations.slice(i, i + nextLength));
+            var stringTableSize = operations[i2++];
+            var stringTableEnd = i2 + stringTableSize;
+            while (i2 < stringTableEnd) {
+              var nextLength = operations[i2++];
+              var nextString = utfDecodeString(operations.slice(i2, i2 + nextLength));
               stringTable.push(nextString);
-              i += nextLength;
+              i2 += nextLength;
             }
-            while (i < operations.length) {
-              var operation = operations[i];
+            while (i2 < operations.length) {
+              var operation = operations[i2];
               switch (operation) {
                 case _constants__WEBPACK_IMPORTED_MODULE_3__["l"]: {
-                  var _id = operations[i + 1];
-                  var type = operations[i + 2];
-                  i += 3;
+                  var _id = operations[i2 + 1];
+                  var type = operations[i2 + 2];
+                  i2 += 3;
                   if (type === react_devtools_shared_src_types__WEBPACK_IMPORTED_MODULE_4__["m"]) {
                     logs.push("Add new root node ".concat(_id));
-                    i++;
-                    i++;
-                    i++;
-                    i++;
+                    i2++;
+                    i2++;
+                    i2++;
+                    i2++;
                   } else {
-                    var parentID = operations[i];
-                    i++;
-                    i++;
-                    var displayNameStringID = operations[i];
+                    var parentID = operations[i2];
+                    i2++;
+                    i2++;
+                    var displayNameStringID = operations[i2];
                     var displayName = stringTable[displayNameStringID];
-                    i++;
-                    i++;
+                    i2++;
+                    i2++;
                     logs.push("Add node ".concat(_id, " (").concat(displayName || "null", ") as child of ").concat(parentID));
                   }
                   break;
                 }
                 case _constants__WEBPACK_IMPORTED_MODULE_3__["m"]: {
-                  var removeLength = operations[i + 1];
-                  i += 2;
+                  var removeLength = operations[i2 + 1];
+                  i2 += 2;
                   for (var removeIndex = 0;removeIndex < removeLength; removeIndex++) {
-                    var _id2 = operations[i];
-                    i += 1;
+                    var _id2 = operations[i2];
+                    i2 += 1;
                     logs.push("Remove node ".concat(_id2));
                   }
                   break;
                 }
                 case _constants__WEBPACK_IMPORTED_MODULE_3__["n"]: {
-                  i += 1;
+                  i2 += 1;
                   logs.push("Remove root ".concat(rootID));
                   break;
                 }
                 case _constants__WEBPACK_IMPORTED_MODULE_3__["p"]: {
-                  var _id3 = operations[i + 1];
-                  var mode = operations[i + 1];
-                  i += 3;
+                  var _id3 = operations[i2 + 1];
+                  var mode = operations[i2 + 1];
+                  i2 += 3;
                   logs.push("Mode ".concat(mode, " set for subtree with root ").concat(_id3));
                   break;
                 }
                 case _constants__WEBPACK_IMPORTED_MODULE_3__["o"]: {
-                  var _id4 = operations[i + 1];
-                  var numChildren = operations[i + 2];
-                  i += 3;
-                  var children = operations.slice(i, i + numChildren);
-                  i += numChildren;
+                  var _id4 = operations[i2 + 1];
+                  var numChildren = operations[i2 + 2];
+                  i2 += 3;
+                  var children = operations.slice(i2, i2 + numChildren);
+                  i2 += numChildren;
                   logs.push("Re-order node ".concat(_id4, " children ").concat(children.join(",")));
                   break;
                 }
                 case _constants__WEBPACK_IMPORTED_MODULE_3__["r"]:
-                  i += 3;
+                  i2 += 3;
                   break;
                 case _constants__WEBPACK_IMPORTED_MODULE_3__["q"]:
-                  var id = operations[i + 1];
-                  var numErrors = operations[i + 2];
-                  var numWarnings = operations[i + 3];
-                  i += 4;
+                  var id = operations[i2 + 1];
+                  var numErrors = operations[i2 + 2];
+                  var numWarnings = operations[i2 + 3];
+                  i2 += 4;
                   logs.push("Node ".concat(id, " has ").concat(numErrors, " errors and ").concat(numWarnings, " warnings"));
                   break;
                 default:
@@ -17745,8 +17745,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             return false;
           }
-          function getInObject(object, path7) {
-            return path7.reduce(function(reduced, attr) {
+          function getInObject(object, path10) {
+            return path10.reduce(function(reduced, attr) {
               if (reduced) {
                 if (hasOwnProperty.call(reduced, attr)) {
                   return reduced[attr];
@@ -17758,11 +17758,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               return null;
             }, object);
           }
-          function deletePathInObject(object, path7) {
-            var length = path7.length;
-            var last2 = path7[length - 1];
+          function deletePathInObject(object, path10) {
+            var length = path10.length;
+            var last2 = path10[length - 1];
             if (object != null) {
-              var parent = getInObject(object, path7.slice(0, length - 1));
+              var parent = getInObject(object, path10.slice(0, length - 1));
               if (parent) {
                 if (Object(_isArray__WEBPACK_IMPORTED_MODULE_7__["a"])(parent)) {
                   parent.splice(last2, 1);
@@ -17788,11 +17788,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             }
           }
-          function setInObject(object, path7, value) {
-            var length = path7.length;
-            var last2 = path7[length - 1];
+          function setInObject(object, path10, value) {
+            var length = path10.length;
+            var last2 = path10[length - 1];
             if (object != null) {
-              var parent = getInObject(object, path7.slice(0, length - 1));
+              var parent = getInObject(object, path10.slice(0, length - 1));
               if (parent) {
                 parent[last2] = value;
               }
@@ -17938,11 +17938,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               case "array":
                 if (showFormattedValue) {
                   var formatted = "";
-                  for (var i = 0;i < data.length; i++) {
-                    if (i > 0) {
+                  for (var i2 = 0;i2 < data.length; i2++) {
+                    if (i2 > 0) {
                       formatted += ", ";
                     }
-                    formatted += formatDataForPreview(data[i], false);
+                    formatted += formatDataForPreview(data[i2], false);
                     if (formatted.length > MAX_PREVIEW_STRING_LENGTH) {
                       break;
                     }
@@ -18196,9 +18196,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           return keys3;
         }
         function _objectSpread(target) {
-          for (var i = 1;i < arguments.length; i++) {
-            var source = arguments[i] != null ? arguments[i] : {};
-            if (i % 2) {
+          for (var i2 = 1;i2 < arguments.length; i2++) {
+            var source = arguments[i2] != null ? arguments[i2] : {};
+            if (i2 % 2) {
               ownKeys(Object(source), true).forEach(function(key2) {
                 _defineProperty(target, key2, source[key2]);
               });
@@ -18221,11 +18221,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           return obj;
         }
         function cleanForBridge(data, isPathAllowed) {
-          var path7 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+          var path10 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
           if (data !== null) {
             var cleanedPaths = [];
             var unserializablePaths = [];
-            var cleanedData = Object(_hydration__WEBPACK_IMPORTED_MODULE_1__["a"])(data, cleanedPaths, unserializablePaths, path7, isPathAllowed);
+            var cleanedData = Object(_hydration__WEBPACK_IMPORTED_MODULE_1__["a"])(data, cleanedPaths, unserializablePaths, path10, isPathAllowed);
             return {
               data: cleanedData,
               cleaned: cleanedPaths,
@@ -18240,23 +18240,23 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           var text = safeToCopy === undefined ? "undefined" : safeToCopy;
           var clipboardCopyText = window.__REACT_DEVTOOLS_GLOBAL_HOOK__.clipboardCopyText;
           if (typeof clipboardCopyText === "function") {
-            clipboardCopyText(text).catch(function(err) {});
+            clipboardCopyText(text).catch(function(err2) {});
           } else {
             Object(clipboard_js__WEBPACK_IMPORTED_MODULE_0__["copy"])(text);
           }
         }
-        function copyWithDelete(obj, path7) {
+        function copyWithDelete(obj, path10) {
           var index = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-          var key2 = path7[index];
+          var key2 = path10[index];
           var updated = Object(shared_isArray__WEBPACK_IMPORTED_MODULE_2__["a"])(obj) ? obj.slice() : _objectSpread({}, obj);
-          if (index + 1 === path7.length) {
+          if (index + 1 === path10.length) {
             if (Object(shared_isArray__WEBPACK_IMPORTED_MODULE_2__["a"])(updated)) {
               updated.splice(key2, 1);
             } else {
               delete updated[key2];
             }
           } else {
-            updated[key2] = copyWithDelete(obj[key2], path7, index + 1);
+            updated[key2] = copyWithDelete(obj[key2], path10, index + 1);
           }
           return updated;
         }
@@ -18277,14 +18277,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           return updated;
         }
-        function copyWithSet(obj, path7, value) {
+        function copyWithSet(obj, path10, value) {
           var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-          if (index >= path7.length) {
+          if (index >= path10.length) {
             return value;
           }
-          var key2 = path7[index];
+          var key2 = path10[index];
           var updated = Object(shared_isArray__WEBPACK_IMPORTED_MODULE_2__["a"])(obj) ? obj.slice() : _objectSpread({}, obj);
-          updated[key2] = copyWithSet(obj[key2], path7, value, index + 1);
+          updated[key2] = copyWithSet(obj[key2], path10, value, index + 1);
           return updated;
         }
         function getEffectDurations(root) {
@@ -18350,8 +18350,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
           }
           if (args.length) {
-            for (var i = 0;i < args.length; i++) {
-              formatted += " " + String(args[i]);
+            for (var i2 = 0;i2 < args.length; i2++) {
+              formatted += " " + String(args[i2]);
             }
           }
           formatted = formatted.replace(/%{2,2}/g, "%");
@@ -18452,12 +18452,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
                 if (it)
                   o = it;
-                var i = 0;
+                var i2 = 0;
                 var F = function F2() {};
                 return { s: F, n: function n() {
-                  if (i >= o.length)
+                  if (i2 >= o.length)
                     return { done: true };
-                  return { done: false, value: o[i++] };
+                  return { done: false, value: o[i2++] };
                 }, e: function e(_e) {
                   throw _e;
                 }, f: F };
@@ -18465,7 +18465,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               throw new TypeError(`Invalid attempt to iterate non-iterable instance.
 In order to be iterable, non-array objects must have a [Symbol.iterator]() method.`);
             }
-            var normalCompletion = true, didErr = false, err;
+            var normalCompletion = true, didErr = false, err2;
             return { s: function s() {
               it = o[Symbol.iterator]();
             }, n: function n() {
@@ -18474,14 +18474,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               return step;
             }, e: function e(_e2) {
               didErr = true;
-              err = _e2;
+              err2 = _e2;
             }, f: function f() {
               try {
                 if (!normalCompletion && it.return != null)
                   it.return();
               } finally {
                 if (didErr)
-                  throw err;
+                  throw err2;
               }
             } };
           }
@@ -18501,8 +18501,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           function _arrayLikeToArray(arr, len) {
             if (len == null || len > arr.length)
               len = arr.length;
-            for (var i = 0, arr2 = new Array(len);i < len; i++) {
-              arr2[i] = arr[i];
+            for (var i2 = 0, arr2 = new Array(len);i2 < len; i2++) {
+              arr2[i2] = arr[i2];
             }
             return arr2;
           }
@@ -18634,8 +18634,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                           }
                         }
                       }
-                    } catch (err) {
-                      _iterator.e(err);
+                    } catch (err2) {
+                      _iterator.e(err2);
                     } finally {
                       _iterator.f();
                     }
@@ -18827,10 +18827,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           src[t.HYPHENRANGELOOSE] = "^\\s*(" + src[t.XRANGEPLAINLOOSE] + ")" + "\\s+-\\s+" + "(" + src[t.XRANGEPLAINLOOSE] + ")" + "\\s*$";
           tok("STAR");
           src[t.STAR] = "(<|>)?=?\\s*\\*";
-          for (var i = 0;i < R; i++) {
-            debug(i, src[i]);
-            if (!re2[i]) {
-              re2[i] = new RegExp(src[i]);
+          for (var i2 = 0;i2 < R; i2++) {
+            debug(i2, src[i2]);
+            if (!re2[i2]) {
+              re2[i2] = new RegExp(src[i2]);
             }
           }
           exports2.parse = parse5;
@@ -18963,11 +18963,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             } else if (!this.prerelease.length && !other.prerelease.length) {
               return 0;
             }
-            var i2 = 0;
+            var i3 = 0;
             do {
-              var a = this.prerelease[i2];
-              var b = other.prerelease[i2];
-              debug("prerelease compare", i2, a, b);
+              var a = this.prerelease[i3];
+              var b = other.prerelease[i3];
+              debug("prerelease compare", i3, a, b);
               if (a === undefined && b === undefined) {
                 return 0;
               } else if (b === undefined) {
@@ -18979,17 +18979,17 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               } else {
                 return compareIdentifiers(a, b);
               }
-            } while (++i2);
+            } while (++i3);
           };
           SemVer.prototype.compareBuild = function(other) {
             if (!(other instanceof SemVer)) {
               other = new SemVer(other, this.options);
             }
-            var i2 = 0;
+            var i3 = 0;
             do {
-              var a = this.build[i2];
-              var b = other.build[i2];
-              debug("prerelease compare", i2, a, b);
+              var a = this.build[i3];
+              var b = other.build[i3];
+              debug("prerelease compare", i3, a, b);
               if (a === undefined && b === undefined) {
                 return 0;
               } else if (b === undefined) {
@@ -19001,7 +19001,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               } else {
                 return compareIdentifiers(a, b);
               }
-            } while (++i2);
+            } while (++i3);
           };
           SemVer.prototype.inc = function(release, identifier2) {
             switch (release) {
@@ -19054,14 +19054,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 if (this.prerelease.length === 0) {
                   this.prerelease = [0];
                 } else {
-                  var i2 = this.prerelease.length;
-                  while (--i2 >= 0) {
-                    if (typeof this.prerelease[i2] === "number") {
-                      this.prerelease[i2]++;
-                      i2 = -2;
+                  var i3 = this.prerelease.length;
+                  while (--i3 >= 0) {
+                    if (typeof this.prerelease[i3] === "number") {
+                      this.prerelease[i3]++;
+                      i3 = -2;
                     }
                   }
-                  if (i2 === -1) {
+                  if (i3 === -1) {
                     this.prerelease.push(0);
                   }
                 }
@@ -19613,27 +19613,27 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 return false;
               }
             }
-            for (var i2 = 0;i2 < this.set.length; i2++) {
-              if (testSet(this.set[i2], version, this.options)) {
+            for (var i3 = 0;i3 < this.set.length; i3++) {
+              if (testSet(this.set[i3], version, this.options)) {
                 return true;
               }
             }
             return false;
           };
           function testSet(set2, version, options) {
-            for (var i2 = 0;i2 < set2.length; i2++) {
-              if (!set2[i2].test(version)) {
+            for (var i3 = 0;i3 < set2.length; i3++) {
+              if (!set2[i3].test(version)) {
                 return false;
               }
             }
             if (version.prerelease.length && !options.includePrerelease) {
-              for (i2 = 0;i2 < set2.length; i2++) {
-                debug(set2[i2].semver);
-                if (set2[i2].semver === ANY) {
+              for (i3 = 0;i3 < set2.length; i3++) {
+                debug(set2[i3].semver);
+                if (set2[i3].semver === ANY) {
                   continue;
                 }
-                if (set2[i2].semver.prerelease.length > 0) {
-                  var allowed = set2[i2].semver;
+                if (set2[i3].semver.prerelease.length > 0) {
+                  var allowed = set2[i3].semver;
                   if (allowed.major === version.major && allowed.minor === version.minor && allowed.patch === version.patch) {
                     return true;
                   }
@@ -19654,7 +19654,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           exports2.maxSatisfying = maxSatisfying;
           function maxSatisfying(versions, range2, options) {
-            var max2 = null;
+            var max3 = null;
             var maxSV = null;
             try {
               var rangeObj = new Range2(range2, options);
@@ -19663,13 +19663,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             versions.forEach(function(v) {
               if (rangeObj.test(v)) {
-                if (!max2 || maxSV.compare(v) === -1) {
-                  max2 = v;
-                  maxSV = new SemVer(max2, options);
+                if (!max3 || maxSV.compare(v) === -1) {
+                  max3 = v;
+                  maxSV = new SemVer(max3, options);
                 }
               }
             });
-            return max2;
+            return max3;
           }
           exports2.minSatisfying = minSatisfying;
           function minSatisfying(versions, range2, options) {
@@ -19702,8 +19702,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               return minver;
             }
             minver = null;
-            for (var i2 = 0;i2 < range2.set.length; ++i2) {
-              var comparators = range2.set[i2];
+            for (var i3 = 0;i3 < range2.set.length; ++i3) {
+              var comparators = range2.set[i3];
               comparators.forEach(function(comparator) {
                 var compver = new SemVer(comparator.semver.version);
                 switch (comparator.operator) {
@@ -19775,8 +19775,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             if (satisfies(version, range2, options)) {
               return false;
             }
-            for (var i2 = 0;i2 < range2.set.length; ++i2) {
-              var comparators = range2.set[i2];
+            for (var i3 = 0;i3 < range2.set.length; ++i3) {
+              var comparators = range2.set[i3];
               var high = null;
               var low = null;
               comparators.forEach(function(comparator) {
@@ -19866,9 +19866,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           return keys3;
         }
         function _objectSpread(target) {
-          for (var i = 1;i < arguments.length; i++) {
-            var source = arguments[i] != null ? arguments[i] : {};
-            if (i % 2) {
+          for (var i2 = 1;i2 < arguments.length; i2++) {
+            var source = arguments[i2] != null ? arguments[i2] : {};
+            if (i2 % 2) {
               ownKeys(Object(source), true).forEach(function(key2) {
                 _defineProperty(target, key2, source[key2]);
               });
@@ -19902,8 +19902,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           unserializable: Symbol("unserializable")
         };
         var LEVEL_THRESHOLD = 2;
-        function createDehydrated(type, inspectable, data, cleaned, path7) {
-          cleaned.push(path7);
+        function createDehydrated(type, inspectable, data, cleaned, path10) {
+          cleaned.push(path10);
           var dehydrated = {
             inspectable,
             type,
@@ -19921,13 +19921,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           return dehydrated;
         }
-        function dehydrate(data, cleaned, unserializable, path7, isPathAllowed) {
+        function dehydrate(data, cleaned, unserializable, path10, isPathAllowed) {
           var level = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
           var type = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["d"])(data);
           var isPathAllowedCheck;
           switch (type) {
             case "html_element":
-              cleaned.push(path7);
+              cleaned.push(path10);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19936,7 +19936,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "function":
-              cleaned.push(path7);
+              cleaned.push(path10);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19945,14 +19945,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "string":
-              isPathAllowedCheck = isPathAllowed(path7);
+              isPathAllowedCheck = isPathAllowed(path10);
               if (isPathAllowedCheck) {
                 return data;
               } else {
                 return data.length <= 500 ? data : data.slice(0, 500) + "...";
               }
             case "bigint":
-              cleaned.push(path7);
+              cleaned.push(path10);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19961,7 +19961,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "symbol":
-              cleaned.push(path7);
+              cleaned.push(path10);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19970,7 +19970,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "react_element":
-              cleaned.push(path7);
+              cleaned.push(path10);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19980,7 +19980,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               };
             case "array_buffer":
             case "data_view":
-              cleaned.push(path7);
+              cleaned.push(path10);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19990,19 +19990,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "array":
-              isPathAllowedCheck = isPathAllowed(path7);
+              isPathAllowedCheck = isPathAllowed(path10);
               if (level >= LEVEL_THRESHOLD && !isPathAllowedCheck) {
-                return createDehydrated(type, true, data, cleaned, path7);
+                return createDehydrated(type, true, data, cleaned, path10);
               }
-              return data.map(function(item, i) {
-                return dehydrate(item, cleaned, unserializable, path7.concat([i]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
+              return data.map(function(item, i2) {
+                return dehydrate(item, cleaned, unserializable, path10.concat([i2]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
               });
             case "html_all_collection":
             case "typed_array":
             case "iterator":
-              isPathAllowedCheck = isPathAllowed(path7);
+              isPathAllowedCheck = isPathAllowed(path10);
               if (level >= LEVEL_THRESHOLD && !isPathAllowedCheck) {
-                return createDehydrated(type, true, data, cleaned, path7);
+                return createDehydrated(type, true, data, cleaned, path10);
               } else {
                 var unserializableValue = {
                   unserializable: true,
@@ -20013,14 +20013,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   preview_long: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, true),
                   name: !data.constructor || data.constructor.name === "Object" ? "" : data.constructor.name
                 };
-                Array.from(data).forEach(function(item, i) {
-                  return unserializableValue[i] = dehydrate(item, cleaned, unserializable, path7.concat([i]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
+                Array.from(data).forEach(function(item, i2) {
+                  return unserializableValue[i2] = dehydrate(item, cleaned, unserializable, path10.concat([i2]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
                 });
-                unserializable.push(path7);
+                unserializable.push(path10);
                 return unserializableValue;
               }
             case "opaque_iterator":
-              cleaned.push(path7);
+              cleaned.push(path10);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -20029,7 +20029,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "date":
-              cleaned.push(path7);
+              cleaned.push(path10);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -20038,7 +20038,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "regexp":
-              cleaned.push(path7);
+              cleaned.push(path10);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -20047,21 +20047,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "object":
-              isPathAllowedCheck = isPathAllowed(path7);
+              isPathAllowedCheck = isPathAllowed(path10);
               if (level >= LEVEL_THRESHOLD && !isPathAllowedCheck) {
-                return createDehydrated(type, true, data, cleaned, path7);
+                return createDehydrated(type, true, data, cleaned, path10);
               } else {
                 var object = {};
                 Object(_utils__WEBPACK_IMPORTED_MODULE_0__["c"])(data).forEach(function(key2) {
                   var name = key2.toString();
-                  object[name] = dehydrate(data[key2], cleaned, unserializable, path7.concat([name]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
+                  object[name] = dehydrate(data[key2], cleaned, unserializable, path10.concat([name]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
                 });
                 return object;
               }
             case "infinity":
             case "nan":
             case "undefined":
-              cleaned.push(path7);
+              cleaned.push(path10);
               return {
                 type
               };
@@ -20069,8 +20069,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               return data;
           }
         }
-        function fillInPath(object, data, path7, value) {
-          var target = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path7);
+        function fillInPath(object, data, path10, value) {
+          var target = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path10);
           if (target != null) {
             if (!target[meta.unserializable]) {
               delete target[meta.inspectable];
@@ -20085,9 +20085,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           if (value !== null && data.unserializable.length > 0) {
             var unserializablePath = data.unserializable[0];
-            var isMatch2 = unserializablePath.length === path7.length;
-            for (var i = 0;i < path7.length; i++) {
-              if (path7[i] !== unserializablePath[i]) {
+            var isMatch2 = unserializablePath.length === path10.length;
+            for (var i2 = 0;i2 < path10.length; i2++) {
+              if (path10[i2] !== unserializablePath[i2]) {
                 isMatch2 = false;
                 break;
               }
@@ -20096,13 +20096,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               upgradeUnserializable(value, value);
             }
           }
-          Object(_utils__WEBPACK_IMPORTED_MODULE_0__["l"])(object, path7, value);
+          Object(_utils__WEBPACK_IMPORTED_MODULE_0__["l"])(object, path10, value);
         }
         function hydrate(object, cleaned, unserializable) {
-          cleaned.forEach(function(path7) {
-            var length = path7.length;
-            var last2 = path7[length - 1];
-            var parent = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path7.slice(0, length - 1));
+          cleaned.forEach(function(path10) {
+            var length = path10.length;
+            var last2 = path10[length - 1];
+            var parent = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path10.slice(0, length - 1));
             if (!parent || !parent.hasOwnProperty(last2)) {
               return;
             }
@@ -20128,10 +20128,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               parent[last2] = replaced;
             }
           });
-          unserializable.forEach(function(path7) {
-            var length = path7.length;
-            var last2 = path7[length - 1];
-            var parent = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path7.slice(0, length - 1));
+          unserializable.forEach(function(path10) {
+            var length = path10.length;
+            var last2 = path10[length - 1];
+            var parent = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path10.slice(0, length - 1));
             if (!parent || !parent.hasOwnProperty(last2)) {
               return;
             }
@@ -20405,8 +20405,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         var backend_console = __webpack_require__(9);
         var ReactSymbols = __webpack_require__(3);
         var DevToolsFeatureFlags_core_oss = __webpack_require__(12);
-        function is3(x, y) {
-          return x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y;
+        function is3(x2, y) {
+          return x2 === y && (x2 !== 0 || 1 / x2 === 1 / y) || x2 !== x2 && y !== y;
         }
         var objectIs = typeof Object.is === "function" ? Object.is : is3;
         var shared_objectIs = objectIs;
@@ -20491,8 +20491,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         var REACT_TOTAL_NUM_LANES = 31;
         var SCHEDULING_PROFILER_VERSION = 1;
         var SNAPSHOT_MAX_HEIGHT = 60;
-        function _slicedToArray(arr, i) {
-          return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+        function _slicedToArray(arr, i2) {
+          return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i2) || _unsupportedIterableToArray(arr, i2) || _nonIterableRest();
         }
         function _nonIterableRest() {
           throw new TypeError(`Invalid attempt to destructure non-iterable instance.
@@ -20514,12 +20514,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         function _arrayLikeToArray(arr, len) {
           if (len == null || len > arr.length)
             len = arr.length;
-          for (var i = 0, arr2 = new Array(len);i < len; i++) {
-            arr2[i] = arr[i];
+          for (var i2 = 0, arr2 = new Array(len);i2 < len; i2++) {
+            arr2[i2] = arr[i2];
           }
           return arr2;
         }
-        function _iterableToArrayLimit(arr, i) {
+        function _iterableToArrayLimit(arr, i2) {
           if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr)))
             return;
           var _arr = [];
@@ -20529,12 +20529,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           try {
             for (var _i = arr[Symbol.iterator](), _s;!(_n = (_s = _i.next()).done); _n = true) {
               _arr.push(_s.value);
-              if (i && _arr.length === i)
+              if (i2 && _arr.length === i2)
                 break;
             }
-          } catch (err) {
+          } catch (err2) {
             _d = true;
-            _e = err;
+            _e = err2;
           } finally {
             try {
               if (!_n && _i["return"] != null)
@@ -20643,10 +20643,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             markAndClear("--profiler-version-".concat(SCHEDULING_PROFILER_VERSION));
             var ranges = getInternalModuleRanges();
             if (ranges) {
-              for (var i = 0;i < ranges.length; i++) {
-                var range2 = ranges[i];
+              for (var i2 = 0;i2 < ranges.length; i2++) {
+                var range2 = ranges[i2];
                 if (Object(isArray3["a"])(range2) && range2.length === 2) {
-                  var _ranges$i = _slicedToArray(ranges[i], 2), startStackFrame = _ranges$i[0], stopStackFrame = _ranges$i[1];
+                  var _ranges$i = _slicedToArray(ranges[i2], 2), startStackFrame = _ranges$i[0], stopStackFrame = _ranges$i[1];
                   markAndClear("--react-internal-module-start-".concat(startStackFrame));
                   markAndClear("--react-internal-module-stop-".concat(stopStackFrame));
                 }
@@ -21098,10 +21098,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 if (supportsUserTimingV3) {
                   var ranges = getInternalModuleRanges();
                   if (ranges) {
-                    for (var i = 0;i < ranges.length; i++) {
-                      var range2 = ranges[i];
+                    for (var i2 = 0;i2 < ranges.length; i2++) {
+                      var range2 = ranges[i2];
                       if (Object(isArray3["a"])(range2) && range2.length === 2) {
-                        var _ranges$i2 = _slicedToArray(ranges[i], 2), startStackFrame = _ranges$i2[0], stopStackFrame = _ranges$i2[1];
+                        var _ranges$i2 = _slicedToArray(ranges[i2], 2), startStackFrame = _ranges$i2[0], stopStackFrame = _ranges$i2[1];
                         markAndClear("--react-internal-module-start-".concat(startStackFrame));
                         markAndClear("--react-internal-module-stop-".concat(stopStackFrame));
                       }
@@ -21175,11 +21175,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           if (source == null)
             return {};
           var target = _objectWithoutPropertiesLoose(source, excluded);
-          var key2, i;
+          var key2, i2;
           if (Object.getOwnPropertySymbols) {
             var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
-            for (i = 0;i < sourceSymbolKeys.length; i++) {
-              key2 = sourceSymbolKeys[i];
+            for (i2 = 0;i2 < sourceSymbolKeys.length; i2++) {
+              key2 = sourceSymbolKeys[i2];
               if (excluded.indexOf(key2) >= 0)
                 continue;
               if (!Object.prototype.propertyIsEnumerable.call(source, key2))
@@ -21194,9 +21194,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return {};
           var target = {};
           var sourceKeys = Object.keys(source);
-          var key2, i;
-          for (i = 0;i < sourceKeys.length; i++) {
-            key2 = sourceKeys[i];
+          var key2, i2;
+          for (i2 = 0;i2 < sourceKeys.length; i2++) {
+            key2 = sourceKeys[i2];
             if (excluded.indexOf(key2) >= 0)
               continue;
             target[key2] = source[key2];
@@ -21216,9 +21216,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           return keys3;
         }
         function _objectSpread(target) {
-          for (var i = 1;i < arguments.length; i++) {
-            var source = arguments[i] != null ? arguments[i] : {};
-            if (i % 2) {
+          for (var i2 = 1;i2 < arguments.length; i2++) {
+            var source = arguments[i2] != null ? arguments[i2] : {};
+            if (i2 % 2) {
               ownKeys(Object(source), true).forEach(function(key2) {
                 _defineProperty(target, key2, source[key2]);
               });
@@ -21240,14 +21240,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           return obj;
         }
-        function renderer_slicedToArray(arr, i) {
-          return renderer_arrayWithHoles(arr) || renderer_iterableToArrayLimit(arr, i) || renderer_unsupportedIterableToArray(arr, i) || renderer_nonIterableRest();
+        function renderer_slicedToArray(arr, i2) {
+          return renderer_arrayWithHoles(arr) || renderer_iterableToArrayLimit(arr, i2) || renderer_unsupportedIterableToArray(arr, i2) || renderer_nonIterableRest();
         }
         function renderer_nonIterableRest() {
           throw new TypeError(`Invalid attempt to destructure non-iterable instance.
 In order to be iterable, non-array objects must have a [Symbol.iterator]() method.`);
         }
-        function renderer_iterableToArrayLimit(arr, i) {
+        function renderer_iterableToArrayLimit(arr, i2) {
           if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr)))
             return;
           var _arr = [];
@@ -21257,12 +21257,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           try {
             for (var _i = arr[Symbol.iterator](), _s;!(_n = (_s = _i.next()).done); _n = true) {
               _arr.push(_s.value);
-              if (i && _arr.length === i)
+              if (i2 && _arr.length === i2)
                 break;
             }
-          } catch (err) {
+          } catch (err2) {
             _d = true;
-            _e = err;
+            _e = err2;
           } finally {
             try {
               if (!_n && _i["return"] != null)
@@ -21299,12 +21299,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             if (Array.isArray(o) || (it = renderer_unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
               if (it)
                 o = it;
-              var i = 0;
+              var i2 = 0;
               var F = function F2() {};
               return { s: F, n: function n() {
-                if (i >= o.length)
+                if (i2 >= o.length)
                   return { done: true };
-                return { done: false, value: o[i++] };
+                return { done: false, value: o[i2++] };
               }, e: function e(_e2) {
                 throw _e2;
               }, f: F };
@@ -21312,7 +21312,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             throw new TypeError(`Invalid attempt to iterate non-iterable instance.
 In order to be iterable, non-array objects must have a [Symbol.iterator]() method.`);
           }
-          var normalCompletion = true, didErr = false, err;
+          var normalCompletion = true, didErr = false, err2;
           return { s: function s() {
             it = o[Symbol.iterator]();
           }, n: function n() {
@@ -21321,14 +21321,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return step;
           }, e: function e(_e3) {
             didErr = true;
-            err = _e3;
+            err2 = _e3;
           }, f: function f() {
             try {
               if (!normalCompletion && it.return != null)
                 it.return();
             } finally {
               if (didErr)
-                throw err;
+                throw err2;
             }
           } };
         }
@@ -21348,8 +21348,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         function renderer_arrayLikeToArray(arr, len) {
           if (len == null || len > arr.length)
             len = arr.length;
-          for (var i = 0, arr2 = new Array(len);i < len; i++) {
-            arr2[i] = arr[i];
+          for (var i2 = 0, arr2 = new Array(len);i2 < len; i2++) {
+            arr2[i2] = arr[i2];
           }
           return arr2;
         }
@@ -21721,8 +21721,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   updateMostRecentlyInspectedElementIfNecessary(id);
                 }
               }
-            } catch (err) {
-              _iterator.e(err);
+            } catch (err2) {
+              _iterator.e(err2);
             } finally {
               _iterator.f();
             }
@@ -21736,8 +21736,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   updateMostRecentlyInspectedElementIfNecessary(_id);
                 }
               }
-            } catch (err) {
-              _iterator2.e(err);
+            } catch (err2) {
+              _iterator2.e(err2);
             } finally {
               _iterator2.f();
             }
@@ -21925,8 +21925,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                       return true;
                     }
                   }
-                } catch (err) {
-                  _iterator3.e(err);
+                } catch (err2) {
+                  _iterator3.e(err2);
                 } finally {
                   _iterator3.f();
                 }
@@ -21942,8 +21942,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     return true;
                   }
                 }
-              } catch (err) {
-                _iterator4.e(err);
+              } catch (err2) {
+                _iterator4.e(err2);
               } finally {
                 _iterator4.f();
               }
@@ -22239,8 +22239,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             if (prevDeps === null) {
               return false;
             }
-            for (var i = 0;i < prevDeps.length && i < nextDeps.length; i++) {
-              if (shared_objectIs(nextDeps[i], prevDeps[i])) {
+            for (var i2 = 0;i2 < prevDeps.length && i2 < nextDeps.length; i2++) {
+              if (shared_objectIs(nextDeps[i2], prevDeps[i2])) {
                 continue;
               }
               return false;
@@ -22317,8 +22317,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   changedKeys.push(key2);
                 }
               }
-            } catch (err) {
-              _iterator5.e(err);
+            } catch (err2) {
+              _iterator5.e(err2);
             } finally {
               _iterator5.f();
             }
@@ -22460,38 +22460,38 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             var numUnmountIDs = pendingRealUnmountedIDs.length + pendingSimulatedUnmountedIDs.length + (pendingUnmountedRootID === null ? 0 : 1);
             var operations = new Array(2 + 1 + pendingStringTableLength + (numUnmountIDs > 0 ? 2 + numUnmountIDs : 0) + pendingOperations.length);
-            var i = 0;
-            operations[i++] = rendererID;
-            operations[i++] = currentRootID;
-            operations[i++] = pendingStringTableLength;
+            var i2 = 0;
+            operations[i2++] = rendererID;
+            operations[i2++] = currentRootID;
+            operations[i2++] = pendingStringTableLength;
             pendingStringTable.forEach(function(entry, stringKey) {
               var encodedString = entry.encodedString;
               var length = encodedString.length;
-              operations[i++] = length;
+              operations[i2++] = length;
               for (var j2 = 0;j2 < length; j2++) {
-                operations[i + j2] = encodedString[j2];
+                operations[i2 + j2] = encodedString[j2];
               }
-              i += length;
+              i2 += length;
             });
             if (numUnmountIDs > 0) {
-              operations[i++] = constants3["m"];
-              operations[i++] = numUnmountIDs;
+              operations[i2++] = constants3["m"];
+              operations[i2++] = numUnmountIDs;
               for (var j = pendingRealUnmountedIDs.length - 1;j >= 0; j--) {
-                operations[i++] = pendingRealUnmountedIDs[j];
+                operations[i2++] = pendingRealUnmountedIDs[j];
               }
               for (var _j = 0;_j < pendingSimulatedUnmountedIDs.length; _j++) {
-                operations[i + _j] = pendingSimulatedUnmountedIDs[_j];
+                operations[i2 + _j] = pendingSimulatedUnmountedIDs[_j];
               }
-              i += pendingSimulatedUnmountedIDs.length;
+              i2 += pendingSimulatedUnmountedIDs.length;
               if (pendingUnmountedRootID !== null) {
-                operations[i] = pendingUnmountedRootID;
-                i++;
+                operations[i2] = pendingUnmountedRootID;
+                i2++;
               }
             }
             for (var _j2 = 0;_j2 < pendingOperations.length; _j2++) {
-              operations[i + _j2] = pendingOperations[_j2];
+              operations[i2 + _j2] = pendingOperations[_j2];
             }
-            i += pendingOperations.length;
+            i2 += pendingOperations.length;
             flushOrQueueOperations(operations);
             pendingOperations.length = 0;
             pendingRealUnmountedIDs.length = 0;
@@ -22730,8 +22730,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             pushOperation(constants3["o"]);
             pushOperation(getFiberIDThrows(fiber));
             pushOperation(numChildren);
-            for (var i = 0;i < nextChildren.length; i++) {
-              pushOperation(nextChildren[i]);
+            for (var i2 = 0;i2 < nextChildren.length; i2++) {
+              pushOperation(nextChildren[i2]);
             }
           }
           function findReorderedChildrenRecursively(fiber, nextChildren) {
@@ -23023,7 +23023,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               return hostFibers.map(function(hostFiber) {
                 return hostFiber.stateNode;
               }).filter(Boolean);
-            } catch (err) {
+            } catch (err2) {
               return null;
             }
           }
@@ -23174,9 +23174,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             return alternate;
           }
-          function prepareViewAttributeSource(id, path7) {
+          function prepareViewAttributeSource(id, path10) {
             if (isMostRecentlyInspectedElement(id)) {
-              window.$attribute = Object(utils["h"])(mostRecentlyInspectedElement, path7);
+              window.$attribute = Object(utils["h"])(mostRecentlyInspectedElement, path10);
             }
           }
           function prepareViewElementSource(id) {
@@ -23404,9 +23404,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           function isMostRecentlyInspectedElementCurrent(id) {
             return isMostRecentlyInspectedElement(id) && !hasElementUpdatedSinceLastInspected;
           }
-          function mergeInspectedPaths(path7) {
+          function mergeInspectedPaths(path10) {
             var current = currentlyInspectedPaths;
-            path7.forEach(function(key2) {
+            path10.forEach(function(key2) {
               if (!current[key2]) {
                 current[key2] = {};
               }
@@ -23414,16 +23414,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             });
           }
           function createIsPathAllowed(key2, secondaryCategory) {
-            return function isPathAllowed(path7) {
+            return function isPathAllowed(path10) {
               switch (secondaryCategory) {
                 case "hooks":
-                  if (path7.length === 1) {
+                  if (path10.length === 1) {
                     return true;
                   }
-                  if (path7[path7.length - 2] === "hookSource" && path7[path7.length - 1] === "fileName") {
+                  if (path10[path10.length - 2] === "hookSource" && path10[path10.length - 1] === "fileName") {
                     return true;
                   }
-                  if (path7[path7.length - 1] === "subHooks" || path7[path7.length - 2] === "subHooks") {
+                  if (path10[path10.length - 1] === "subHooks" || path10[path10.length - 2] === "subHooks") {
                     return true;
                   }
                   break;
@@ -23434,8 +23434,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               if (!current) {
                 return false;
               }
-              for (var i = 0;i < path7.length; i++) {
-                current = current[path7[i]];
+              for (var i2 = 0;i2 < path10.length; i2++) {
+                current = current[path10[i2]];
                 if (!current) {
                   return false;
                 }
@@ -23484,37 +23484,37 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 break;
             }
           }
-          function storeAsGlobal(id, path7, count) {
+          function storeAsGlobal(id, path10, count) {
             if (isMostRecentlyInspectedElement(id)) {
-              var value = Object(utils["h"])(mostRecentlyInspectedElement, path7);
+              var value = Object(utils["h"])(mostRecentlyInspectedElement, path10);
               var key2 = "$reactTemp".concat(count);
               window[key2] = value;
               console.log(key2);
               console.log(value);
             }
           }
-          function copyElementPath(id, path7) {
+          function copyElementPath(id, path10) {
             if (isMostRecentlyInspectedElement(id)) {
-              Object(backend_utils["b"])(Object(utils["h"])(mostRecentlyInspectedElement, path7));
+              Object(backend_utils["b"])(Object(utils["h"])(mostRecentlyInspectedElement, path10));
             }
           }
-          function inspectElement(requestID, id, path7, forceFullData) {
-            if (path7 !== null) {
-              mergeInspectedPaths(path7);
+          function inspectElement(requestID, id, path10, forceFullData) {
+            if (path10 !== null) {
+              mergeInspectedPaths(path10);
             }
             if (isMostRecentlyInspectedElement(id) && !forceFullData) {
               if (!hasElementUpdatedSinceLastInspected) {
-                if (path7 !== null) {
+                if (path10 !== null) {
                   var secondaryCategory = null;
-                  if (path7[0] === "hooks") {
+                  if (path10[0] === "hooks") {
                     secondaryCategory = "hooks";
                   }
                   return {
                     id,
                     responseID: requestID,
                     type: "hydrated-path",
-                    path: path7,
-                    value: Object(backend_utils["a"])(Object(utils["h"])(mostRecentlyInspectedElement, path7), createIsPathAllowed(null, secondaryCategory), path7)
+                    path: path10,
+                    value: Object(backend_utils["a"])(Object(utils["h"])(mostRecentlyInspectedElement, path10), createIsPathAllowed(null, secondaryCategory), path10)
                   };
                 } else {
                   return {
@@ -23595,17 +23595,17 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               console.groupEnd();
             }
           }
-          function deletePath(type, id, hookID, path7) {
+          function deletePath(type, id, hookID, path10) {
             var fiber = findCurrentFiberUsingSlowPathById(id);
             if (fiber !== null) {
               var instance = fiber.stateNode;
               switch (type) {
                 case "context":
-                  path7 = path7.slice(1);
+                  path10 = path10.slice(1);
                   switch (fiber.tag) {
                     case ClassComponent:
-                      if (path7.length === 0) {} else {
-                        Object(utils["a"])(instance.context, path7);
+                      if (path10.length === 0) {} else {
+                        Object(utils["a"])(instance.context, path10);
                       }
                       instance.forceUpdate();
                       break;
@@ -23615,21 +23615,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   break;
                 case "hooks":
                   if (typeof overrideHookStateDeletePath === "function") {
-                    overrideHookStateDeletePath(fiber, hookID, path7);
+                    overrideHookStateDeletePath(fiber, hookID, path10);
                   }
                   break;
                 case "props":
                   if (instance === null) {
                     if (typeof overridePropsDeletePath === "function") {
-                      overridePropsDeletePath(fiber, path7);
+                      overridePropsDeletePath(fiber, path10);
                     }
                   } else {
-                    fiber.pendingProps = Object(backend_utils["c"])(instance.props, path7);
+                    fiber.pendingProps = Object(backend_utils["c"])(instance.props, path10);
                     instance.forceUpdate();
                   }
                   break;
                 case "state":
-                  Object(utils["a"])(instance.state, path7);
+                  Object(utils["a"])(instance.state, path10);
                   instance.forceUpdate();
                   break;
               }
@@ -23676,19 +23676,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             }
           }
-          function overrideValueAtPath(type, id, hookID, path7, value) {
+          function overrideValueAtPath(type, id, hookID, path10, value) {
             var fiber = findCurrentFiberUsingSlowPathById(id);
             if (fiber !== null) {
               var instance = fiber.stateNode;
               switch (type) {
                 case "context":
-                  path7 = path7.slice(1);
+                  path10 = path10.slice(1);
                   switch (fiber.tag) {
                     case ClassComponent:
-                      if (path7.length === 0) {
+                      if (path10.length === 0) {
                         instance.context = value;
                       } else {
-                        Object(utils["l"])(instance.context, path7, value);
+                        Object(utils["l"])(instance.context, path10, value);
                       }
                       instance.forceUpdate();
                       break;
@@ -23698,18 +23698,18 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   break;
                 case "hooks":
                   if (typeof overrideHookState === "function") {
-                    overrideHookState(fiber, hookID, path7, value);
+                    overrideHookState(fiber, hookID, path10, value);
                   }
                   break;
                 case "props":
                   switch (fiber.tag) {
                     case ClassComponent:
-                      fiber.pendingProps = Object(backend_utils["e"])(instance.props, path7, value);
+                      fiber.pendingProps = Object(backend_utils["e"])(instance.props, path10, value);
                       instance.forceUpdate();
                       break;
                     default:
                       if (typeof overrideProps === "function") {
-                        overrideProps(fiber, path7, value);
+                        overrideProps(fiber, path10, value);
                       }
                       break;
                   }
@@ -23717,7 +23717,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 case "state":
                   switch (fiber.tag) {
                     case ClassComponent:
-                      Object(utils["l"])(instance.state, path7, value);
+                      Object(utils["l"])(instance.state, path10, value);
                       instance.forceUpdate();
                       break;
                   }
@@ -23754,10 +23754,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 var { changeDescriptions, durations, effectDuration, maxActualDuration, passiveEffectDuration, priorityLevel, commitTime, updaters } = commitProfilingData;
                 var fiberActualDurations = [];
                 var fiberSelfDurations = [];
-                for (var i = 0;i < durations.length; i += 3) {
-                  var fiberID = durations[i];
-                  fiberActualDurations.push([fiberID, durations[i + 1]]);
-                  fiberSelfDurations.push([fiberID, durations[i + 2]]);
+                for (var i2 = 0;i2 < durations.length; i2 += 3) {
+                  var fiberID = durations[i2];
+                  fiberActualDurations.push([fiberID, durations[i2 + 1]]);
+                  fiberSelfDurations.push([fiberID, durations[i2 + 2]]);
                 }
                 commitData.push({
                   changeDescriptions: changeDescriptions !== null ? Array.from(changeDescriptions.entries()) : null,
@@ -23899,13 +23899,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           var trackedPathMatchFiber = null;
           var trackedPathMatchDepth = -1;
           var mightBeOnTrackedPath = false;
-          function setTrackedPath(path7) {
-            if (path7 === null) {
+          function setTrackedPath(path10) {
+            if (path10 === null) {
               trackedPathMatchFiber = null;
               trackedPathMatchDepth = -1;
               mightBeOnTrackedPath = false;
             }
-            trackedPath = path7;
+            trackedPath = path10;
           }
           function updateTrackedPathStateBeforeMount(fiber) {
             if (trackedPath === null || !mightBeOnTrackedPath) {
@@ -23966,7 +23966,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             var preferredDisplayName = null;
             var fallbackDisplayName = null;
             var child = fiber.child;
-            for (var i = 0;i < 3; i++) {
+            for (var i2 = 0;i2 < 3; i2++) {
               if (child === null) {
                 break;
               }
@@ -24213,8 +24213,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         process6.nextTick = function(fun) {
           var args = new Array(arguments.length - 1);
           if (arguments.length > 1) {
-            for (var i = 1;i < arguments.length; i++) {
-              args[i - 1] = arguments[i];
+            for (var i2 = 1;i2 < arguments.length; i2++) {
+              args[i2 - 1] = arguments[i2];
             }
           }
           queue.push(new Item(fun, args));
@@ -24440,9 +24440,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             if (typeof ClipboardEvent === "undefined" && typeof window.clipboardData !== "undefined" && typeof window.clipboardData.setData !== "undefined") {
               /*! promise-polyfill 2.0.1 */
               (function(a) {
-                function b(a2, b2) {
+                function b(a2, b3) {
                   return function() {
-                    a2.apply(b2, arguments);
+                    a2.apply(b3, arguments);
                   };
                 }
                 function c(a2) {
@@ -24450,17 +24450,17 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     throw new TypeError("Promises must be constructed via new");
                   if (typeof a2 != "function")
                     throw new TypeError("not a function");
-                  this._state = null, this._value = null, this._deferreds = [], i(a2, b(e, this), b(f, this));
+                  this._state = null, this._value = null, this._deferreds = [], i2(a2, b(e, this), b(f, this));
                 }
                 function d(a2) {
-                  var b2 = this;
+                  var b3 = this;
                   return this._state === null ? void this._deferreds.push(a2) : void j(function() {
-                    var c2 = b2._state ? a2.onFulfilled : a2.onRejected;
+                    var c2 = b3._state ? a2.onFulfilled : a2.onRejected;
                     if (c2 === null)
-                      return void (b2._state ? a2.resolve : a2.reject)(b2._value);
+                      return void (b3._state ? a2.resolve : a2.reject)(b3._value);
                     var d2;
                     try {
-                      d2 = c2(b2._value);
+                      d2 = c2(b3._value);
                     } catch (e2) {
                       return void a2.reject(e2);
                     }
@@ -24474,7 +24474,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                     if (a2 && (_typeof(a2) == "object" || typeof a2 == "function")) {
                       var c2 = a2.then;
                       if (typeof c2 == "function")
-                        return void i(b(c2, a2), b(e, this), b(f, this));
+                        return void i2(b(c2, a2), b(e, this), b(f, this));
                     }
                     this._state = true, this._value = a2, g.call(this);
                   } catch (d2) {
@@ -24485,19 +24485,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   this._state = false, this._value = a2, g.call(this);
                 }
                 function g() {
-                  for (var a2 = 0, b2 = this._deferreds.length;b2 > a2; a2++) {
+                  for (var a2 = 0, b3 = this._deferreds.length;b3 > a2; a2++) {
                     d.call(this, this._deferreds[a2]);
                   }
                   this._deferreds = null;
                 }
-                function h(a2, b2, c2, d2) {
-                  this.onFulfilled = typeof a2 == "function" ? a2 : null, this.onRejected = typeof b2 == "function" ? b2 : null, this.resolve = c2, this.reject = d2;
+                function h(a2, b3, c2, d2) {
+                  this.onFulfilled = typeof a2 == "function" ? a2 : null, this.onRejected = typeof b3 == "function" ? b3 : null, this.resolve = c2, this.reject = d2;
                 }
-                function i(a2, b2, c2) {
+                function i2(a2, b3, c2) {
                   var d2 = false;
                   try {
                     a2(function(a3) {
-                      d2 || (d2 = true, b2(a3));
+                      d2 || (d2 = true, b3(a3));
                     }, function(a3) {
                       d2 || (d2 = true, c2(a3));
                     });
@@ -24514,14 +24514,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 };
                 c.prototype["catch"] = function(a2) {
                   return this.then(null, a2);
-                }, c.prototype.then = function(a2, b2) {
+                }, c.prototype.then = function(a2, b3) {
                   var e2 = this;
                   return new c(function(c2, f2) {
-                    d.call(e2, new h(a2, b2, c2, f2));
+                    d.call(e2, new h(a2, b3, c2, f2));
                   });
                 }, c.all = function() {
                   var a2 = Array.prototype.slice.call(arguments.length === 1 && k(arguments[0]) ? arguments[0] : arguments);
-                  return new c(function(b2, c2) {
+                  return new c(function(b3, c2) {
                     function d2(f3, g2) {
                       try {
                         if (g2 && (_typeof(g2) == "object" || typeof g2 == "function")) {
@@ -24531,29 +24531,29 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                               d2(f3, a3);
                             }, c2);
                         }
-                        a2[f3] = g2, --e2 === 0 && b2(a2);
-                      } catch (i2) {
-                        c2(i2);
+                        a2[f3] = g2, --e2 === 0 && b3(a2);
+                      } catch (i3) {
+                        c2(i3);
                       }
                     }
                     if (a2.length === 0)
-                      return b2([]);
+                      return b3([]);
                     for (var e2 = a2.length, f2 = 0;f2 < a2.length; f2++) {
                       d2(f2, a2[f2]);
                     }
                   });
                 }, c.resolve = function(a2) {
-                  return a2 && _typeof(a2) == "object" && a2.constructor === c ? a2 : new c(function(b2) {
-                    b2(a2);
+                  return a2 && _typeof(a2) == "object" && a2.constructor === c ? a2 : new c(function(b3) {
+                    b3(a2);
                   });
                 }, c.reject = function(a2) {
-                  return new c(function(b2, c2) {
+                  return new c(function(b3, c2) {
                     c2(a2);
                   });
                 }, c.race = function(a2) {
-                  return new c(function(b2, c2) {
+                  return new c(function(b3, c2) {
                     for (var d2 = 0, e2 = a2.length;e2 > d2; d2++) {
-                      a2[d2].then(b2, c2);
+                      a2[d2].then(b3, c2);
                     }
                   });
                 }, module2.exports ? module2.exports = c : a.Promise || (a.Promise = c);
@@ -24594,8 +24594,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
         }
         function _defineProperties(target, props) {
-          for (var i = 0;i < props.length; i++) {
-            var descriptor = props[i];
+          for (var i2 = 0;i2 < props.length; i2++) {
+            var descriptor = props[i2];
             descriptor.enumerable = descriptor.enumerable || false;
             descriptor.configurable = true;
             if ("value" in descriptor)
@@ -24635,7 +24635,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               options = {};
             if (options.max && (typeof options.max !== "number" || options.max < 0))
               throw new TypeError("max must be a non-negative number");
-            var max2 = this[MAX] = options.max || Infinity;
+            var max3 = this[MAX] = options.max || Infinity;
             var lc = options.length || naiveLength;
             this[LENGTH_CALCULATOR] = typeof lc !== "function" ? naiveLength : lc;
             this[ALLOW_STALE] = options.stale || false;
@@ -24959,9 +24959,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           return keys3;
         }
         function _objectSpread(target) {
-          for (var i = 1;i < arguments.length; i++) {
-            var source = arguments[i] != null ? arguments[i] : {};
-            if (i % 2) {
+          for (var i2 = 1;i2 < arguments.length; i2++) {
+            var source = arguments[i2] != null ? arguments[i2] : {};
+            if (i2 % 2) {
               ownKeys(Object(source), true).forEach(function(key2) {
                 _defineProperty(target, key2, source[key2]);
               });
@@ -25074,8 +25074,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           if (prefix === undefined) {
             try {
               throw Error();
-            } catch (x) {
-              var match = x.stack.trim().match(/\n( *(at )?)/);
+            } catch (x2) {
+              var match = x2.stack.trim().match(/\n( *(at )?)/);
               prefix = match && match[1] || "";
             }
           }
@@ -25114,23 +25114,23 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               if ((typeof Reflect === "undefined" ? "undefined" : _typeof(Reflect)) === "object" && Reflect.construct) {
                 try {
                   Reflect.construct(Fake, []);
-                } catch (x) {
-                  control = x;
+                } catch (x2) {
+                  control = x2;
                 }
                 Reflect.construct(fn, [], Fake);
               } else {
                 try {
                   Fake.call();
-                } catch (x) {
-                  control = x;
+                } catch (x2) {
+                  control = x2;
                 }
                 fn.call(Fake.prototype);
               }
             } else {
               try {
                 throw Error();
-              } catch (x) {
-                control = x;
+              } catch (x2) {
+                control = x2;
               }
               fn();
             }
@@ -25220,7 +25220,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 var init = lazyComponent._init;
                 try {
                   return describeUnknownElementTypeFrameInDEV(init(payload), source, ownerFn, currentDispatcherRef);
-                } catch (x) {}
+                } catch (x2) {}
               }
             }
           }
@@ -25260,10 +25260,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               node2 = node2.return;
             } while (node2);
             return info;
-          } catch (x) {
+          } catch (x2) {
             return `
-Error generating stack: ` + x.message + `
-` + x.stack;
+Error generating stack: ` + x2.message + `
+` + x2.stack;
           }
         }
       },
@@ -25329,8 +25329,8 @@ Error generating stack: ` + x.message + `
                 callback = new Function("" + callback);
               }
               var args = new Array(arguments.length - 1);
-              for (var i = 0;i < args.length; i++) {
-                args[i] = arguments[i + 1];
+              for (var i2 = 0;i2 < args.length; i2++) {
+                args[i2] = arguments[i2 + 1];
               }
               var task = {
                 callback,
@@ -25478,8 +25478,8 @@ Error generating stack: ` + x.message + `
               self2.push(item);
             });
           } else if (arguments.length > 0) {
-            for (var i = 0, l = arguments.length;i < l; i++) {
-              self2.push(arguments[i]);
+            for (var i2 = 0, l = arguments.length;i2 < l; i2++) {
+              self2.push(arguments[i2]);
             }
           }
           return self2;
@@ -25547,14 +25547,14 @@ Error generating stack: ` + x.message + `
           this.length++;
         };
         Yallist.prototype.push = function() {
-          for (var i = 0, l = arguments.length;i < l; i++) {
-            push2(this, arguments[i]);
+          for (var i2 = 0, l = arguments.length;i2 < l; i2++) {
+            push2(this, arguments[i2]);
           }
           return this.length;
         };
         Yallist.prototype.unshift = function() {
-          for (var i = 0, l = arguments.length;i < l; i++) {
-            unshift(this, arguments[i]);
+          for (var i2 = 0, l = arguments.length;i2 < l; i2++) {
+            unshift(this, arguments[i2]);
           }
           return this.length;
         };
@@ -25588,31 +25588,31 @@ Error generating stack: ` + x.message + `
         };
         Yallist.prototype.forEach = function(fn, thisp) {
           thisp = thisp || this;
-          for (var walker = this.head, i = 0;walker !== null; i++) {
-            fn.call(thisp, walker.value, i, this);
+          for (var walker = this.head, i2 = 0;walker !== null; i2++) {
+            fn.call(thisp, walker.value, i2, this);
             walker = walker.next;
           }
         };
         Yallist.prototype.forEachReverse = function(fn, thisp) {
           thisp = thisp || this;
-          for (var walker = this.tail, i = this.length - 1;walker !== null; i--) {
-            fn.call(thisp, walker.value, i, this);
+          for (var walker = this.tail, i2 = this.length - 1;walker !== null; i2--) {
+            fn.call(thisp, walker.value, i2, this);
             walker = walker.prev;
           }
         };
         Yallist.prototype.get = function(n) {
-          for (var i = 0, walker = this.head;walker !== null && i < n; i++) {
+          for (var i2 = 0, walker = this.head;walker !== null && i2 < n; i2++) {
             walker = walker.next;
           }
-          if (i === n && walker !== null) {
+          if (i2 === n && walker !== null) {
             return walker.value;
           }
         };
         Yallist.prototype.getReverse = function(n) {
-          for (var i = 0, walker = this.tail;walker !== null && i < n; i++) {
+          for (var i2 = 0, walker = this.tail;walker !== null && i2 < n; i2++) {
             walker = walker.prev;
           }
-          if (i === n && walker !== null) {
+          if (i2 === n && walker !== null) {
             return walker.value;
           }
         };
@@ -25645,8 +25645,8 @@ Error generating stack: ` + x.message + `
           } else {
             throw new TypeError("Reduce of empty list with no initial value");
           }
-          for (var i = 0;walker !== null; i++) {
-            acc = fn(acc, walker.value, i);
+          for (var i2 = 0;walker !== null; i2++) {
+            acc = fn(acc, walker.value, i2);
             walker = walker.next;
           }
           return acc;
@@ -25662,24 +25662,24 @@ Error generating stack: ` + x.message + `
           } else {
             throw new TypeError("Reduce of empty list with no initial value");
           }
-          for (var i = this.length - 1;walker !== null; i--) {
-            acc = fn(acc, walker.value, i);
+          for (var i2 = this.length - 1;walker !== null; i2--) {
+            acc = fn(acc, walker.value, i2);
             walker = walker.prev;
           }
           return acc;
         };
         Yallist.prototype.toArray = function() {
           var arr = new Array(this.length);
-          for (var i = 0, walker = this.head;walker !== null; i++) {
-            arr[i] = walker.value;
+          for (var i2 = 0, walker = this.head;walker !== null; i2++) {
+            arr[i2] = walker.value;
             walker = walker.next;
           }
           return arr;
         };
         Yallist.prototype.toArrayReverse = function() {
           var arr = new Array(this.length);
-          for (var i = 0, walker = this.tail;walker !== null; i++) {
-            arr[i] = walker.value;
+          for (var i2 = 0, walker = this.tail;walker !== null; i2++) {
+            arr[i2] = walker.value;
             walker = walker.prev;
           }
           return arr;
@@ -25703,10 +25703,10 @@ Error generating stack: ` + x.message + `
           if (to > this.length) {
             to = this.length;
           }
-          for (var i = 0, walker = this.head;walker !== null && i < from; i++) {
+          for (var i2 = 0, walker = this.head;walker !== null && i2 < from; i2++) {
             walker = walker.next;
           }
-          for (;walker !== null && i < to; i++, walker = walker.next) {
+          for (;walker !== null && i2 < to; i2++, walker = walker.next) {
             ret.push(walker.value);
           }
           return ret;
@@ -25730,10 +25730,10 @@ Error generating stack: ` + x.message + `
           if (to > this.length) {
             to = this.length;
           }
-          for (var i = this.length, walker = this.tail;walker !== null && i > to; i--) {
+          for (var i2 = this.length, walker = this.tail;walker !== null && i2 > to; i2--) {
             walker = walker.prev;
           }
-          for (;walker !== null && i > from; i--, walker = walker.prev) {
+          for (;walker !== null && i2 > from; i2--, walker = walker.prev) {
             ret.push(walker.value);
           }
           return ret;
@@ -25745,11 +25745,11 @@ Error generating stack: ` + x.message + `
           if (start < 0) {
             start = this.length + start;
           }
-          for (var i = 0, walker = this.head;walker !== null && i < start; i++) {
+          for (var i2 = 0, walker = this.head;walker !== null && i2 < start; i2++) {
             walker = walker.next;
           }
           var ret = [];
-          for (var i = 0;walker && i < deleteCount; i++) {
+          for (var i2 = 0;walker && i2 < deleteCount; i2++) {
             ret.push(walker.value);
             walker = this.removeNode(walker);
           }
@@ -25759,8 +25759,8 @@ Error generating stack: ` + x.message + `
           if (walker !== this.head && walker !== this.tail) {
             walker = walker.prev;
           }
-          for (var i = 2;i < arguments.length; i++) {
-            walker = insert2(this, walker, arguments[i]);
+          for (var i2 = 2;i2 < arguments.length; i2++) {
+            walker = insert2(this, walker, arguments[i2]);
           }
           return ret;
         };
@@ -25971,7 +25971,7 @@ Error generating stack: ` + x.message + `
           }
           return _typeof(obj);
         }
-        var h = __webpack_require__(28), l = __webpack_require__(30), q = Object.assign, w = l.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED, x = [], y = null;
+        var h = __webpack_require__(28), l = __webpack_require__(30), q = Object.assign, w = l.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED, x2 = [], y = null;
         function z() {
           if (y === null) {
             var a = new Map;
@@ -25986,8 +25986,8 @@ Error generating stack: ` + x.message + `
                 return null;
               });
             } finally {
-              var b = x;
-              x = [];
+              var b = x2;
+              x2 = [];
             }
             for (var e = 0;e < b.length; e++) {
               var f = b[e];
@@ -26012,7 +26012,7 @@ Error generating stack: ` + x.message + `
           },
           useCacheRefresh: function useCacheRefresh() {
             var a = C();
-            x.push({
+            x2.push({
               primitive: "CacheRefresh",
               stackError: Error(),
               value: a !== null ? a.memoizedState : function() {}
@@ -26021,7 +26021,7 @@ Error generating stack: ` + x.message + `
           },
           useCallback: function useCallback(a) {
             var b = C();
-            x.push({
+            x2.push({
               primitive: "Callback",
               stackError: Error(),
               value: b !== null ? b.memoizedState[0] : a
@@ -26029,7 +26029,7 @@ Error generating stack: ` + x.message + `
             return a;
           },
           useContext: function useContext(a) {
-            x.push({
+            x2.push({
               primitive: "Context",
               stackError: Error(),
               value: a._currentValue
@@ -26038,7 +26038,7 @@ Error generating stack: ` + x.message + `
           },
           useEffect: function useEffect(a) {
             C();
-            x.push({
+            x2.push({
               primitive: "Effect",
               stackError: Error(),
               value: a
@@ -26048,14 +26048,14 @@ Error generating stack: ` + x.message + `
             C();
             var b = undefined;
             a !== null && _typeof(a) === "object" && (b = a.current);
-            x.push({
+            x2.push({
               primitive: "ImperativeHandle",
               stackError: Error(),
               value: b
             });
           },
           useDebugValue: function useDebugValue(a, b) {
-            x.push({
+            x2.push({
               primitive: "DebugValue",
               stackError: Error(),
               value: typeof b === "function" ? b(a) : a
@@ -26063,7 +26063,7 @@ Error generating stack: ` + x.message + `
           },
           useLayoutEffect: function useLayoutEffect(a) {
             C();
-            x.push({
+            x2.push({
               primitive: "LayoutEffect",
               stackError: Error(),
               value: a
@@ -26071,7 +26071,7 @@ Error generating stack: ` + x.message + `
           },
           useInsertionEffect: function useInsertionEffect(a) {
             C();
-            x.push({
+            x2.push({
               primitive: "InsertionEffect",
               stackError: Error(),
               value: a
@@ -26080,7 +26080,7 @@ Error generating stack: ` + x.message + `
           useMemo: function useMemo(a) {
             var b = C();
             a = b !== null ? b.memoizedState[0] : a();
-            x.push({
+            x2.push({
               primitive: "Memo",
               stackError: Error(),
               value: a
@@ -26090,7 +26090,7 @@ Error generating stack: ` + x.message + `
           useReducer: function useReducer(a, b, e) {
             a = C();
             b = a !== null ? a.memoizedState : e !== undefined ? e(b) : b;
-            x.push({
+            x2.push({
               primitive: "Reducer",
               stackError: Error(),
               value: b
@@ -26102,7 +26102,7 @@ Error generating stack: ` + x.message + `
             a = b !== null ? b.memoizedState : {
               current: a
             };
-            x.push({
+            x2.push({
               primitive: "Ref",
               stackError: Error(),
               value: a.current
@@ -26112,7 +26112,7 @@ Error generating stack: ` + x.message + `
           useState: function useState(a) {
             var b = C();
             a = b !== null ? b.memoizedState : typeof a === "function" ? a() : a;
-            x.push({
+            x2.push({
               primitive: "State",
               stackError: Error(),
               value: a
@@ -26122,7 +26122,7 @@ Error generating stack: ` + x.message + `
           useTransition: function useTransition() {
             C();
             C();
-            x.push({
+            x2.push({
               primitive: "Transition",
               stackError: Error(),
               value: undefined
@@ -26135,7 +26135,7 @@ Error generating stack: ` + x.message + `
             C();
             C();
             a = b(a._source);
-            x.push({
+            x2.push({
               primitive: "MutableSource",
               stackError: Error(),
               value: a
@@ -26146,7 +26146,7 @@ Error generating stack: ` + x.message + `
             C();
             C();
             a = b();
-            x.push({
+            x2.push({
               primitive: "SyncExternalStore",
               stackError: Error(),
               value: a
@@ -26156,7 +26156,7 @@ Error generating stack: ` + x.message + `
           useDeferredValue: function useDeferredValue(a) {
             C();
             C();
-            x.push({
+            x2.push({
               primitive: "DeferredValue",
               stackError: Error(),
               value: a
@@ -26166,7 +26166,7 @@ Error generating stack: ` + x.message + `
           useId: function useId() {
             var a = C();
             a = a !== null ? a.memoizedState : "";
-            x.push({
+            x2.push({
               primitive: "Id",
               stackError: Error(),
               value: a
@@ -26292,8 +26292,8 @@ Error generating stack: ` + x.message + `
             var m = Error();
             a(b);
           } finally {
-            var r = x;
-            x = [];
+            var r = x2;
+            x2 = [];
             e.current = c;
           }
           c = h.parse(m);
@@ -26340,8 +26340,8 @@ Error generating stack: ` + x.message + `
                 var k = Error();
                 v(f, u);
               } finally {
-                var n = x;
-                x = [];
+                var n = x2;
+                x2 = [];
                 t.current = d;
               }
               var p = h.parse(k);
@@ -26466,13 +26466,13 @@ Error generating stack: ` + x.message + `
               var lines = e.message.split(`
 `);
               var result2 = [];
-              for (var i = 2, len = lines.length;i < len; i += 2) {
-                var match = lineRE.exec(lines[i]);
+              for (var i2 = 2, len = lines.length;i2 < len; i2 += 2) {
+                var match = lineRE.exec(lines[i2]);
                 if (match) {
                   result2.push(new StackFrame({
                     fileName: match[2],
                     lineNumber: match[1],
-                    source: lines[i]
+                    source: lines[i2]
                   }));
                 }
               }
@@ -26483,14 +26483,14 @@ Error generating stack: ` + x.message + `
               var lines = e.stacktrace.split(`
 `);
               var result2 = [];
-              for (var i = 0, len = lines.length;i < len; i += 2) {
-                var match = lineRE.exec(lines[i]);
+              for (var i2 = 0, len = lines.length;i2 < len; i2 += 2) {
+                var match = lineRE.exec(lines[i2]);
                 if (match) {
                   result2.push(new StackFrame({
                     functionName: match[3] || undefined,
                     fileName: match[2],
                     lineNumber: match[1],
-                    source: lines[i]
+                    source: lines[i2]
                   }));
                 }
               }
@@ -26563,9 +26563,9 @@ Error generating stack: ` + x.message + `
           function StackFrame(obj) {
             if (!obj)
               return;
-            for (var i2 = 0;i2 < props.length; i2++) {
-              if (obj[props[i2]] !== undefined) {
-                this["set" + _capitalize(props[i2])](obj[props[i2]]);
+            for (var i3 = 0;i3 < props.length; i3++) {
+              if (obj[props[i3]] !== undefined) {
+                this["set" + _capitalize(props[i3])](obj[props[i3]]);
               }
             }
           }
@@ -26628,13 +26628,13 @@ Error generating stack: ` + x.message + `
               columnNumber: columnNumber || undefined
             });
           };
-          for (var i = 0;i < booleanProps.length; i++) {
-            StackFrame.prototype["get" + _capitalize(booleanProps[i])] = _getter(booleanProps[i]);
-            StackFrame.prototype["set" + _capitalize(booleanProps[i])] = function(p) {
+          for (var i2 = 0;i2 < booleanProps.length; i2++) {
+            StackFrame.prototype["get" + _capitalize(booleanProps[i2])] = _getter(booleanProps[i2]);
+            StackFrame.prototype["set" + _capitalize(booleanProps[i2])] = function(p) {
               return function(v) {
                 this[p] = Boolean(v);
               };
-            }(booleanProps[i]);
+            }(booleanProps[i2]);
           }
           for (var j = 0;j < numericProps.length; j++) {
             StackFrame.prototype["get" + _capitalize(numericProps[j])] = _getter(numericProps[j]);
@@ -26677,7 +26677,7 @@ Error generating stack: ` + x.message + `
           }
           return _typeof(obj);
         }
-        var l = Symbol.for("react.element"), n = Symbol.for("react.portal"), p = Symbol.for("react.fragment"), q = Symbol.for("react.strict_mode"), r = Symbol.for("react.profiler"), t = Symbol.for("react.provider"), u = Symbol.for("react.context"), v = Symbol.for("react.server_context"), w = Symbol.for("react.forward_ref"), x = Symbol.for("react.suspense"), y = Symbol.for("react.suspense_list"), z = Symbol.for("react.memo"), A = Symbol.for("react.lazy"), B = Symbol.for("react.debug_trace_mode"), C = Symbol.for("react.offscreen"), aa = Symbol.for("react.cache"), D = Symbol.for("react.default_value"), E = Symbol.iterator;
+        var l = Symbol.for("react.element"), n = Symbol.for("react.portal"), p = Symbol.for("react.fragment"), q = Symbol.for("react.strict_mode"), r = Symbol.for("react.profiler"), t = Symbol.for("react.provider"), u = Symbol.for("react.context"), v = Symbol.for("react.server_context"), w = Symbol.for("react.forward_ref"), x2 = Symbol.for("react.suspense"), y = Symbol.for("react.suspense_list"), z = Symbol.for("react.memo"), A = Symbol.for("react.lazy"), B = Symbol.for("react.debug_trace_mode"), C = Symbol.for("react.offscreen"), aa = Symbol.for("react.cache"), D = Symbol.for("react.default_value"), E = Symbol.iterator;
         function ba(a) {
           if (a === null || _typeof(a) !== "object")
             return null;
@@ -26834,12 +26834,12 @@ Error generating stack: ` + x.message + `
           if (a._status === -1) {
             var b = a._result;
             b = b();
-            b.then(function(b2) {
+            b.then(function(b3) {
               if (a._status === 0 || a._status === -1)
-                a._status = 1, a._result = b2;
-            }, function(b2) {
+                a._status = 1, a._result = b3;
+            }, function(b3) {
               if (a._status === 0 || a._status === -1)
-                a._status = 2, a._result = b2;
+                a._status = 2, a._result = b3;
             });
             a._status === -1 && (a._status = 0, a._result = b);
           }
@@ -26887,7 +26887,7 @@ Error generating stack: ` + x.message + `
         exports2.Profiler = r;
         exports2.PureComponent = K;
         exports2.StrictMode = q;
-        exports2.Suspense = x;
+        exports2.Suspense = x2;
         exports2.SuspenseList = y;
         exports2.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = Y;
         exports2.cloneElement = function(a, b, d) {
@@ -27089,8 +27089,8 @@ Error generating stack: ` + x.message + `
           }
         }
         function _defineProperties(target, props) {
-          for (var i = 0;i < props.length; i++) {
-            var descriptor = props[i];
+          for (var i2 = 0;i2 < props.length; i2++) {
+            var descriptor = props[i2];
             descriptor.enumerable = descriptor.enumerable || false;
             descriptor.configurable = true;
             if ("value" in descriptor)
@@ -27146,8 +27146,8 @@ Error generating stack: ` + x.message + `
                   var didThrow = false;
                   var caughtError = null;
                   var clonedListeners = Array.from(listeners);
-                  for (var i = 0;i < clonedListeners.length; i++) {
-                    var _listener = clonedListeners[i];
+                  for (var i2 = 0;i2 < clonedListeners.length; i2++) {
+                    var _listener = clonedListeners[i2];
                     try {
                       _listener.apply(null, args);
                     } catch (error) {
@@ -27297,12 +27297,12 @@ Error generating stack: ` + x.message + `
             if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") {
               if (it)
                 o = it;
-              var i = 0;
+              var i2 = 0;
               var F = function F2() {};
               return { s: F, n: function n() {
-                if (i >= o.length)
+                if (i2 >= o.length)
                   return { done: true };
-                return { done: false, value: o[i++] };
+                return { done: false, value: o[i2++] };
               }, e: function e(_e) {
                 throw _e;
               }, f: F };
@@ -27310,7 +27310,7 @@ Error generating stack: ` + x.message + `
             throw new TypeError(`Invalid attempt to iterate non-iterable instance.
 In order to be iterable, non-array objects must have a [Symbol.iterator]() method.`);
           }
-          var normalCompletion = true, didErr = false, err;
+          var normalCompletion = true, didErr = false, err2;
           return { s: function s() {
             it = o[Symbol.iterator]();
           }, n: function n() {
@@ -27319,14 +27319,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             return step;
           }, e: function e(_e2) {
             didErr = true;
-            err = _e2;
+            err2 = _e2;
           }, f: function f() {
             try {
               if (!normalCompletion && it.return != null)
                 it.return();
             } finally {
               if (didErr)
-                throw err;
+                throw err2;
             }
           } };
         }
@@ -27346,8 +27346,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         function _arrayLikeToArray(arr, len) {
           if (len == null || len > arr.length)
             len = arr.length;
-          for (var i = 0, arr2 = new Array(len);i < len; i++) {
-            arr2[i] = arr[i];
+          for (var i2 = 0, arr2 = new Array(len);i2 < len; i2++) {
+            arr2[i2] = arr[i2];
           }
           return arr2;
         }
@@ -27357,8 +27357,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
         }
         function Overlay_defineProperties(target, props) {
-          for (var i = 0;i < props.length; i++) {
-            var descriptor = props[i];
+          for (var i2 = 0;i2 < props.length; i2++) {
+            var descriptor = props[i2];
             descriptor.enumerable = descriptor.enumerable || false;
             descriptor.configurable = true;
             if ("value" in descriptor)
@@ -27554,8 +27554,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                         break;
                       }
                     }
-                  } catch (err) {
-                    _iterator.e(err);
+                  } catch (err2) {
+                    _iterator.e(err2);
                   } finally {
                     _iterator.f();
                   }
@@ -27978,8 +27978,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         function bridge_arrayLikeToArray(arr, len) {
           if (len == null || len > arr.length)
             len = arr.length;
-          for (var i = 0, arr2 = new Array(len);i < len; i++) {
-            arr2[i] = arr[i];
+          for (var i2 = 0, arr2 = new Array(len);i2 < len; i2++) {
+            arr2[i2] = arr[i2];
           }
           return arr2;
         }
@@ -27989,8 +27989,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
         }
         function bridge_defineProperties(target, props) {
-          for (var i = 0;i < props.length; i++) {
-            var descriptor = props[i];
+          for (var i2 = 0;i2 < props.length; i2++) {
+            var descriptor = props[i2];
             descriptor.enumerable = descriptor.enumerable || false;
             descriptor.configurable = true;
             if ("value" in descriptor)
@@ -28109,21 +28109,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 _this._timeoutID = null;
               }
               if (_this._messageQueue.length) {
-                for (var i = 0;i < _this._messageQueue.length; i += 2) {
+                for (var i2 = 0;i2 < _this._messageQueue.length; i2 += 2) {
                   var _this$_wall;
-                  (_this$_wall = _this._wall).send.apply(_this$_wall, [_this._messageQueue[i]].concat(_toConsumableArray(_this._messageQueue[i + 1])));
+                  (_this$_wall = _this._wall).send.apply(_this$_wall, [_this._messageQueue[i2]].concat(_toConsumableArray(_this._messageQueue[i2 + 1])));
                 }
                 _this._messageQueue.length = 0;
                 _this._timeoutID = setTimeout(_this._flush, BATCH_DURATION);
               }
             });
             bridge_defineProperty(_assertThisInitialized(_this), "overrideValueAtPath", function(_ref) {
-              var { id, path: path7, rendererID, type, value } = _ref;
+              var { id, path: path10, rendererID, type, value } = _ref;
               switch (type) {
                 case "context":
                   _this.send("overrideContext", {
                     id,
-                    path: path7,
+                    path: path10,
                     rendererID,
                     wasForwarded: true,
                     value
@@ -28132,7 +28132,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 case "hooks":
                   _this.send("overrideHookState", {
                     id,
-                    path: path7,
+                    path: path10,
                     rendererID,
                     wasForwarded: true,
                     value
@@ -28141,7 +28141,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 case "props":
                   _this.send("overrideProps", {
                     id,
-                    path: path7,
+                    path: path10,
                     rendererID,
                     wasForwarded: true,
                     value
@@ -28150,7 +28150,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 case "state":
                   _this.send("overrideState", {
                     id,
-                    path: path7,
+                    path: path10,
                     rendererID,
                     wasForwarded: true,
                     value
@@ -28235,8 +28235,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
         }
         function agent_defineProperties(target, props) {
-          for (var i = 0;i < props.length; i++) {
-            var descriptor = props[i];
+          for (var i2 = 0;i2 < props.length; i2++) {
+            var descriptor = props[i2];
             descriptor.enumerable = descriptor.enumerable || false;
             descriptor.configurable = true;
             if ("value" in descriptor)
@@ -28369,21 +28369,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "copyElementPath", function(_ref4) {
-              var { id, path: path7, rendererID } = _ref4;
+              var { id, path: path10, rendererID } = _ref4;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                renderer.copyElementPath(id, path7);
+                renderer.copyElementPath(id, path10);
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "deletePath", function(_ref5) {
-              var { hookID, id, path: path7, rendererID, type } = _ref5;
+              var { hookID, id, path: path10, rendererID, type } = _ref5;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                renderer.deletePath(type, id, hookID, path7);
+                renderer.deletePath(type, id, hookID, path10);
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "getBackendVersion", function() {
@@ -28420,12 +28420,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "inspectElement", function(_ref8) {
-              var { forceFullData, id, path: path7, rendererID, requestID } = _ref8;
+              var { forceFullData, id, path: path10, rendererID, requestID } = _ref8;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                _this._bridge.send("inspectedElement", renderer.inspectElement(requestID, id, path7, forceFullData));
+                _this._bridge.send("inspectedElement", renderer.inspectElement(requestID, id, path10, forceFullData));
                 if (_this._persistedSelectionMatch === null || _this._persistedSelectionMatch.id !== id) {
                   _this._persistedSelection = null;
                   _this._persistedSelectionMatch = null;
@@ -28462,20 +28462,20 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "overrideValueAtPath", function(_ref12) {
-              var { hookID, id, path: path7, rendererID, type, value } = _ref12;
+              var { hookID, id, path: path10, rendererID, type, value } = _ref12;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                renderer.overrideValueAtPath(type, id, hookID, path7, value);
+                renderer.overrideValueAtPath(type, id, hookID, path10, value);
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "overrideContext", function(_ref13) {
-              var { id, path: path7, rendererID, wasForwarded, value } = _ref13;
+              var { id, path: path10, rendererID, wasForwarded, value } = _ref13;
               if (!wasForwarded) {
                 _this.overrideValueAtPath({
                   id,
-                  path: path7,
+                  path: path10,
                   rendererID,
                   type: "context",
                   value
@@ -28483,11 +28483,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "overrideHookState", function(_ref14) {
-              var { id, hookID, path: path7, rendererID, wasForwarded, value } = _ref14;
+              var { id, hookID, path: path10, rendererID, wasForwarded, value } = _ref14;
               if (!wasForwarded) {
                 _this.overrideValueAtPath({
                   id,
-                  path: path7,
+                  path: path10,
                   rendererID,
                   type: "hooks",
                   value
@@ -28495,11 +28495,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "overrideProps", function(_ref15) {
-              var { id, path: path7, rendererID, wasForwarded, value } = _ref15;
+              var { id, path: path10, rendererID, wasForwarded, value } = _ref15;
               if (!wasForwarded) {
                 _this.overrideValueAtPath({
                   id,
-                  path: path7,
+                  path: path10,
                   rendererID,
                   type: "props",
                   value
@@ -28507,11 +28507,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "overrideState", function(_ref16) {
-              var { id, path: path7, rendererID, wasForwarded, value } = _ref16;
+              var { id, path: path10, rendererID, wasForwarded, value } = _ref16;
               if (!wasForwarded) {
                 _this.overrideValueAtPath({
                   id,
-                  path: path7,
+                  path: path10,
                   rendererID,
                   type: "state",
                   value
@@ -28569,12 +28569,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               _this._bridge.send("profilingStatus", _this._isProfiling);
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "storeAsGlobal", function(_ref18) {
-              var { count, id, path: path7, rendererID } = _ref18;
+              var { count, id, path: path10, rendererID } = _ref18;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                renderer.storeAsGlobal(id, path7, count);
+                renderer.storeAsGlobal(id, path10, count);
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "updateConsolePatchSettings", function(_ref19) {
@@ -28594,12 +28594,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "viewAttributeSource", function(_ref20) {
-              var { id, path: path7, rendererID } = _ref20;
+              var { id, path: path10, rendererID } = _ref20;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                renderer.prepareViewAttributeSource(id, path7);
+                renderer.prepareViewAttributeSource(id, path10);
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "viewElementSource", function(_ref21) {
@@ -28653,11 +28653,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "_throttledPersistSelection", lodash_throttle_default()(function(rendererID, id) {
               var renderer = _this._rendererInterfaces[rendererID];
-              var path7 = renderer != null ? renderer.getPathForElement(id) : null;
-              if (path7 !== null) {
+              var path10 = renderer != null ? renderer.getPathForElement(id) : null;
+              if (path10 !== null) {
                 Object(storage["e"])(constants3["i"], JSON.stringify({
                   rendererID,
-                  path: path7
+                  path: path10
                 }));
               } else {
                 Object(storage["d"])(constants3["i"]);
@@ -28837,7 +28837,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 }
                 return "outdated";
               }
-            } catch (err) {}
+            } catch (err2) {}
             return "production";
           }
           function checkDCE(fn) {
@@ -28850,7 +28850,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   throw new Error("React is running in production mode, but dead code " + "elimination has not been applied. Read how to correctly " + "configure React for production: " + "https://reactjs.org/link/perf-use-production-build");
                 });
               }
-            } catch (err) {}
+            } catch (err2) {}
           }
           function format2(maybeMessage) {
             for (var _len = arguments.length, inputArgs = new Array(_len > 1 ? _len - 1 : 0), _key = 1;_key < _len; _key++) {
@@ -28884,8 +28884,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             }
             if (args.length) {
-              for (var i = 0;i < args.length; i++) {
-                formatted += " " + String(args[i]);
+              for (var i2 = 0;i2 < args.length; i2++) {
+                formatted += " " + String(args[i2]);
               }
             }
             formatted = formatted.replace(/%{2,2}/g, "%");
@@ -29166,9 +29166,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           return keys3;
         }
         function _objectSpread(target) {
-          for (var i = 1;i < arguments.length; i++) {
-            var source = arguments[i] != null ? arguments[i] : {};
-            if (i % 2) {
+          for (var i2 = 1;i2 < arguments.length; i2++) {
+            var source = arguments[i2] != null ? arguments[i2] : {};
+            if (i2 % 2) {
               ownKeys(Object(source), true).forEach(function(key2) {
                 renderer_defineProperty(target, key2, source[key2]);
               });
@@ -29298,8 +29298,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             if (a.length !== b.length) {
               return false;
             }
-            for (var i = 0;i < a.length; i++) {
-              if (a[i] !== b[i]) {
+            for (var i2 = 0;i2 < a.length; i2++) {
+              if (a[i2] !== b[i2]) {
                 return false;
               }
             }
@@ -29327,9 +29327,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   var result2 = fn.apply(this, args);
                   parentIDStack.pop();
                   return result2;
-                } catch (err) {
+                } catch (err2) {
                   parentIDStack = [];
-                  throw err;
+                  throw err2;
                 } finally {
                   if (parentIDStack.length === 0) {
                     var rootID = internalInstanceToRootIDMap.get(internalInstance);
@@ -29356,9 +29356,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   }
                   parentIDStack.pop();
                   return result2;
-                } catch (err) {
+                } catch (err2) {
                   parentIDStack = [];
-                  throw err;
+                  throw err2;
                 } finally {
                   if (parentIDStack.length === 0) {
                     var rootID = internalInstanceToRootIDMap.get(internalInstance);
@@ -29385,9 +29385,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   }
                   parentIDStack.pop();
                   return result2;
-                } catch (err) {
+                } catch (err2) {
                   parentIDStack = [];
-                  throw err;
+                  throw err2;
                 } finally {
                   if (parentIDStack.length === 0) {
                     var rootID = internalInstanceToRootIDMap.get(internalInstance);
@@ -29410,9 +29410,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   parentIDStack.pop();
                   recordUnmount(internalInstance, id);
                   return result2;
-                } catch (err) {
+                } catch (err2) {
                   parentIDStack = [];
-                  throw err;
+                  throw err2;
                 } finally {
                   if (parentIDStack.length === 0) {
                     var rootID = internalInstanceToRootIDMap.get(internalInstance);
@@ -29469,8 +29469,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             pushOperation(id);
             var nextChildIDs = nextChildren.map(getID);
             pushOperation(nextChildIDs.length);
-            for (var i = 0;i < nextChildIDs.length; i++) {
-              pushOperation(nextChildIDs[i]);
+            for (var i2 = 0;i2 < nextChildIDs.length; i2++) {
+              pushOperation(nextChildIDs[i2]);
             }
           }
           function recordUnmount(internalInstance, id) {
@@ -29513,33 +29513,33 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             var numUnmountIDs = pendingUnmountedIDs.length + (pendingUnmountedRootID === null ? 0 : 1);
             var operations = new Array(2 + 1 + pendingStringTableLength + (numUnmountIDs > 0 ? 2 + numUnmountIDs : 0) + pendingOperations.length);
-            var i = 0;
-            operations[i++] = rendererID;
-            operations[i++] = rootID;
-            operations[i++] = pendingStringTableLength;
+            var i2 = 0;
+            operations[i2++] = rendererID;
+            operations[i2++] = rootID;
+            operations[i2++] = pendingStringTableLength;
             pendingStringTable.forEach(function(value, key2) {
-              operations[i++] = key2.length;
+              operations[i2++] = key2.length;
               var encodedKey = Object(src_utils["m"])(key2);
               for (var j2 = 0;j2 < encodedKey.length; j2++) {
-                operations[i + j2] = encodedKey[j2];
+                operations[i2 + j2] = encodedKey[j2];
               }
-              i += key2.length;
+              i2 += key2.length;
             });
             if (numUnmountIDs > 0) {
-              operations[i++] = constants3["m"];
-              operations[i++] = numUnmountIDs;
+              operations[i2++] = constants3["m"];
+              operations[i2++] = numUnmountIDs;
               for (var j = 0;j < pendingUnmountedIDs.length; j++) {
-                operations[i++] = pendingUnmountedIDs[j];
+                operations[i2++] = pendingUnmountedIDs[j];
               }
               if (pendingUnmountedRootID !== null) {
-                operations[i] = pendingUnmountedRootID;
-                i++;
+                operations[i2] = pendingUnmountedRootID;
+                i2++;
               }
             }
             for (var _j = 0;_j < pendingOperations.length; _j++) {
-              operations[i + _j] = pendingOperations[_j];
+              operations[i2 + _j] = pendingOperations[_j];
             }
-            i += pendingOperations.length;
+            i2 += pendingOperations.length;
             if (constants3["s"]) {
               Object(src_utils["j"])(operations);
             }
@@ -29569,9 +29569,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           var currentlyInspectedElementID = null;
           var currentlyInspectedPaths = {};
-          function mergeInspectedPaths(path7) {
+          function mergeInspectedPaths(path10) {
             var current = currentlyInspectedPaths;
-            path7.forEach(function(key2) {
+            path10.forEach(function(key2) {
               if (!current[key2]) {
                 current[key2] = {};
               }
@@ -29579,13 +29579,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             });
           }
           function createIsPathAllowed(key2) {
-            return function isPathAllowed(path7) {
+            return function isPathAllowed(path10) {
               var current = currentlyInspectedPaths[key2];
               if (!current) {
                 return false;
               }
-              for (var i = 0;i < path7.length; i++) {
-                current = current[path7[i]];
+              for (var i2 = 0;i2 < path10.length; i2++) {
+                current = current[path10[i2]];
                 if (!current) {
                   return false;
                 }
@@ -29635,23 +29635,23 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 break;
             }
           }
-          function storeAsGlobal(id, path7, count) {
+          function storeAsGlobal(id, path10, count) {
             var inspectedElement = inspectElementRaw(id);
             if (inspectedElement !== null) {
-              var value = Object(src_utils["h"])(inspectedElement, path7);
+              var value = Object(src_utils["h"])(inspectedElement, path10);
               var key2 = "$reactTemp".concat(count);
               window[key2] = value;
               console.log(key2);
               console.log(value);
             }
           }
-          function copyElementPath(id, path7) {
+          function copyElementPath(id, path10) {
             var inspectedElement = inspectElementRaw(id);
             if (inspectedElement !== null) {
-              Object(utils["b"])(Object(src_utils["h"])(inspectedElement, path7));
+              Object(utils["b"])(Object(src_utils["h"])(inspectedElement, path10));
             }
           }
-          function inspectElement(requestID, id, path7, forceFullData) {
+          function inspectElement(requestID, id, path10, forceFullData) {
             if (forceFullData || currentlyInspectedElementID !== id) {
               currentlyInspectedElementID = id;
               currentlyInspectedPaths = {};
@@ -29664,8 +29664,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type: "not-found"
               };
             }
-            if (path7 !== null) {
-              mergeInspectedPaths(path7);
+            if (path10 !== null) {
+              mergeInspectedPaths(path10);
             }
             updateSelectedElement(id);
             inspectedElement.context = Object(utils["a"])(inspectedElement.context, createIsPathAllowed("context"));
@@ -29780,10 +29780,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               console.groupEnd();
             }
           }
-          function prepareViewAttributeSource(id, path7) {
+          function prepareViewAttributeSource(id, path10) {
             var inspectedElement = inspectElementRaw(id);
             if (inspectedElement !== null) {
-              window.$attribute = Object(src_utils["h"])(inspectedElement, path7);
+              window.$attribute = Object(src_utils["h"])(inspectedElement, path10);
             }
           }
           function prepareViewElementSource(id) {
@@ -29799,14 +29799,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             global2.$type = element.type;
           }
-          function deletePath(type, id, hookID, path7) {
+          function deletePath(type, id, hookID, path10) {
             var internalInstance = idToInternalInstanceMap.get(id);
             if (internalInstance != null) {
               var publicInstance = internalInstance._instance;
               if (publicInstance != null) {
                 switch (type) {
                   case "context":
-                    Object(src_utils["a"])(publicInstance.context, path7);
+                    Object(src_utils["a"])(publicInstance.context, path10);
                     forceUpdate(publicInstance);
                     break;
                   case "hooks":
@@ -29814,12 +29814,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   case "props":
                     var element = internalInstance._currentElement;
                     internalInstance._currentElement = _objectSpread(_objectSpread({}, element), {}, {
-                      props: Object(utils["c"])(element.props, path7)
+                      props: Object(utils["c"])(element.props, path10)
                     });
                     forceUpdate(publicInstance);
                     break;
                   case "state":
-                    Object(src_utils["a"])(publicInstance.state, path7);
+                    Object(src_utils["a"])(publicInstance.state, path10);
                     forceUpdate(publicInstance);
                     break;
                 }
@@ -29853,14 +29853,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             }
           }
-          function overrideValueAtPath(type, id, hookID, path7, value) {
+          function overrideValueAtPath(type, id, hookID, path10, value) {
             var internalInstance = idToInternalInstanceMap.get(id);
             if (internalInstance != null) {
               var publicInstance = internalInstance._instance;
               if (publicInstance != null) {
                 switch (type) {
                   case "context":
-                    Object(src_utils["l"])(publicInstance.context, path7, value);
+                    Object(src_utils["l"])(publicInstance.context, path10, value);
                     forceUpdate(publicInstance);
                     break;
                   case "hooks":
@@ -29868,12 +29868,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   case "props":
                     var element = internalInstance._currentElement;
                     internalInstance._currentElement = _objectSpread(_objectSpread({}, element), {}, {
-                      props: Object(utils["e"])(element.props, path7, value)
+                      props: Object(utils["e"])(element.props, path10, value)
                     });
                     forceUpdate(publicInstance);
                     break;
                   case "state":
-                    Object(src_utils["l"])(publicInstance.state, path7, value);
+                    Object(src_utils["l"])(publicInstance.state, path10, value);
                     forceUpdate(publicInstance);
                     break;
                 }
@@ -29908,7 +29908,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           function updateComponentFilters(componentFilters) {}
           function setTraceUpdatesEnabled(enabled) {}
-          function setTrackedPath(path7) {}
+          function setTrackedPath(path10) {}
           function getOwnersList(id) {
             return null;
           }
@@ -30167,8 +30167,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             });
             return;
           }
-          instance.measure(function(x, y, width, height, left, top) {
-            if (typeof x !== "number") {
+          instance.measure(function(x2, y, width, height, left, top) {
+            if (typeof x2 !== "number") {
               bridge.send("NativeStyleEditor_styleAndLayout", {
                 id,
                 layout: null,
@@ -30181,7 +30181,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             bridge.send("NativeStyleEditor_styleAndLayout", {
               id,
               layout: {
-                x,
+                x: x2,
                 y,
                 width,
                 height,
@@ -30829,14 +30829,14 @@ var require_stack_utils = __commonJS((exports, module) => {
       }
       if (closeParen && file) {
         let closes = 0;
-        for (let i = file.length - 1;i > 0; i--) {
-          if (file.charAt(i) === ")") {
+        for (let i2 = file.length - 1;i2 > 0; i2--) {
+          if (file.charAt(i2) === ")") {
             closes++;
-          } else if (file.charAt(i) === "(" && file.charAt(i - 1) === " ") {
+          } else if (file.charAt(i2) === "(" && file.charAt(i2 - 1) === " ") {
             closes--;
-            if (closes === -1 && file.charAt(i - 1) === " ") {
-              const before3 = file.slice(0, i - 1);
-              const after3 = file.slice(i + 1);
+            if (closes === -1 && file.charAt(i2 - 1) === " ") {
+              const before3 = file.slice(0, i2 - 1);
+              const after3 = file.slice(i2 + 1);
               file = after3;
               fname += ` (${before3}`;
               break;
@@ -30942,7 +30942,7 @@ var require_react_jsx_dev_runtime_development = __commonJS((exports) => {
             type = type._init;
             try {
               return getComponentNameFromType(type(innerType));
-            } catch (x) {}
+            } catch (x2) {}
         }
       return null;
     }
@@ -30972,7 +30972,7 @@ var require_react_jsx_dev_runtime_development = __commonJS((exports) => {
       try {
         var name = getComponentNameFromType(type);
         return name ? "<" + name + ">" : "<...>";
-      } catch (x) {
+      } catch (x2) {
         return "<...>";
       }
     }
@@ -31163,9 +31163,9 @@ var require_object_hash = __commonJS((exports, module) => {
     if (typeof object === "undefined") {
       throw new Error("Object argument required.");
     }
-    for (var i = 0;i < hashes.length; ++i) {
-      if (hashes[i].toLowerCase() === options.algorithm.toLowerCase()) {
-        options.algorithm = hashes[i];
+    for (var i2 = 0;i2 < hashes.length; ++i2) {
+      if (hashes[i2].toLowerCase() === options.algorithm.toLowerCase()) {
+        options.algorithm = hashes[i2];
       }
     }
     if (hashes.indexOf(options.algorithm) === -1) {
@@ -31317,8 +31317,8 @@ var require_object_hash = __commonJS((exports, module) => {
       _symbol: function(sym) {
         return write("symbol:" + sym.toString());
       },
-      _error: function(err) {
-        return write("error:" + err.toString());
+      _error: function(err2) {
+        return write("error:" + err2.toString());
       },
       _boolean: function(bool) {
         return write("bool:" + bool.toString());
@@ -42551,6 +42551,9 @@ var cli = meow(`
     -s, --search <query>       search for a book interactively
         --best <query>         find and ingest the best copy of a book
     -l, --list <BOOKS.md>      ingest the best copy of every book in a Markdown list
+    -i, --import <file>        import and convert a locally owned book
+        --title <title>        override title metadata for --import
+        --author <author>      override author metadata for --import
     -o, --output <directory>   library root (default: ~/libgen)
         --pages <number>       result pages to evaluate (default: 2)
         --source-only          retain the source without Markdown conversion
@@ -42564,6 +42567,7 @@ var cli = meow(`
     $ libgen-downloader -s "The Art of War"
     $ libgen-downloader --best "The Art of War by Sun Tzu"
     $ libgen-downloader --list ./reading-list.md
+    $ libgen-downloader --import ~/my-library/book.epub
     $ libgen-downloader -b ./MD5_LIST_1695686580524.txt
     $ libgen-downloader -u 1234567890abcdef1234567890abcdef
     $ libgen-downloader -d 1234567890abcdef1234567890abcdef
@@ -42580,6 +42584,16 @@ var cli = meow(`
     list: {
       type: "string",
       shortFlag: "l"
+    },
+    import: {
+      type: "string",
+      shortFlag: "i"
+    },
+    title: {
+      type: "string"
+    },
+    author: {
+      type: "string"
     },
     output: {
       type: "string",
@@ -42613,7 +42627,7 @@ var cli = meow(`
 });
 
 // src/cli/operate.ts
-import fs9 from "node:fs";
+import fs13 from "node:fs";
 
 // node_modules/linkedom/esm/shared/symbols.js
 var CHANGED = Symbol("changed");
@@ -50829,8 +50843,8 @@ async function getDocument(searchURL) {
 }
 
 // src/library/ingest.ts
-import fs5 from "node:fs";
-import path6 from "node:path";
+import fs7 from "node:fs";
+import path7 from "node:path";
 
 // node_modules/nanoid/index.js
 import { webcrypto as crypto } from "node:crypto";
@@ -51441,17 +51455,805 @@ function rankCandidates(entries2, request) {
 
 // src/library/converter.ts
 import { execFile } from "node:child_process";
-import fs4 from "node:fs";
+import fs6 from "node:fs";
+import path6 from "node:path";
+
+// src/library/epub.ts
+import fs3 from "node:fs";
 import path5 from "node:path";
 
+// node_modules/fflate/esm/index.mjs
+import { createRequire as createRequire3 } from "module";
+var require3 = createRequire3("/");
+var _a3;
+var Worker;
+var isMarkedAsUntransferable;
+var workerAdd = ";var __w=require('worker_threads');__w.parentPort.on('message',function(m){onmessage({data:m})}),postMessage=function(m,t){__w.parentPort.postMessage(m,t)},close=process.exit;self=global";
+try {
+  _a3 = require3("worker_threads"), Worker = _a3.Worker, isMarkedAsUntransferable = _a3.isMarkedAsUntransferable;
+} catch (e) {}
+var wk = Worker ? function(c, _, msg, transfer, cb) {
+  var done = false;
+  var w = new Worker(c + workerAdd, { eval: true }).on("error", function(e) {
+    return cb(e, null);
+  }).on("message", function(m) {
+    return cb(null, m);
+  }).on("exit", function(c2) {
+    if (c2 && !done)
+      cb(new Error("exited with code " + c2), null);
+  });
+  if (isMarkedAsUntransferable)
+    transfer = transfer.filter(function(t) {
+      return !isMarkedAsUntransferable(t);
+    });
+  w.postMessage(msg, transfer);
+  w.terminate = function() {
+    done = true;
+    return Worker.prototype.terminate.call(w);
+  };
+  return w;
+} : function(_, __, ___, ____, cb) {
+  setImmediate(function() {
+    return cb(new Error("async operations unsupported - update to Node 12+ (or Node 10-11 with the --experimental-worker CLI flag)"), null);
+  });
+  var NOP = function() {};
+  return {
+    terminate: NOP,
+    postMessage: NOP
+  };
+};
+var u8 = Uint8Array;
+var u16 = Uint16Array;
+var i32 = Int32Array;
+var fleb = new u8([0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 0, 0, 0, 0]);
+var fdeb = new u8([0, 0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 0, 0]);
+var clim = new u8([16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15]);
+var freb = function(eb, start) {
+  var b = new u16(31);
+  for (var i = 0;i < 31; ++i) {
+    b[i] = start += 1 << eb[i - 1];
+  }
+  var r = new i32(b[30]);
+  for (var i = 1;i < 30; ++i) {
+    for (var j = b[i];j < b[i + 1]; ++j) {
+      r[j] = j - b[i] << 5 | i;
+    }
+  }
+  return { b, r };
+};
+var _a3 = freb(fleb, 2);
+var fl = _a3.b;
+var revfl = _a3.r;
+fl[28] = 258, revfl[258] = 28;
+var _b2 = freb(fdeb, 0);
+var fd = _b2.b;
+var revfd = _b2.r;
+var rev = new u16(32768);
+for (i = 0;i < 32768; ++i) {
+  x = (i & 43690) >> 1 | (i & 21845) << 1;
+  x = (x & 52428) >> 2 | (x & 13107) << 2;
+  x = (x & 61680) >> 4 | (x & 3855) << 4;
+  rev[i] = ((x & 65280) >> 8 | (x & 255) << 8) >> 1;
+}
+var x;
+var i;
+var hMap = function(cd, mb, r) {
+  var s = cd.length;
+  var i2 = 0;
+  var l = new u16(mb);
+  for (;i2 < s; ++i2) {
+    if (cd[i2])
+      ++l[cd[i2] - 1];
+  }
+  var le = new u16(mb);
+  for (i2 = 1;i2 < mb; ++i2) {
+    le[i2] = le[i2 - 1] + l[i2 - 1] << 1;
+  }
+  var co;
+  if (r) {
+    co = new u16(1 << mb);
+    var rvb = 15 - mb;
+    for (i2 = 0;i2 < s; ++i2) {
+      if (cd[i2]) {
+        var sv = i2 << 4 | cd[i2];
+        var r_1 = mb - cd[i2];
+        var v = le[cd[i2] - 1]++ << r_1;
+        for (var m = v | (1 << r_1) - 1;v <= m; ++v) {
+          co[rev[v] >> rvb] = sv;
+        }
+      }
+    }
+  } else {
+    co = new u16(s);
+    for (i2 = 0;i2 < s; ++i2) {
+      if (cd[i2]) {
+        co[i2] = rev[le[cd[i2] - 1]++] >> 15 - cd[i2];
+      }
+    }
+  }
+  return co;
+};
+var flt = new u8(288);
+for (i = 0;i < 144; ++i)
+  flt[i] = 8;
+var i;
+for (i = 144;i < 256; ++i)
+  flt[i] = 9;
+var i;
+for (i = 256;i < 280; ++i)
+  flt[i] = 7;
+var i;
+for (i = 280;i < 288; ++i)
+  flt[i] = 8;
+var i;
+var fdt = new u8(32);
+for (i = 0;i < 32; ++i)
+  fdt[i] = 5;
+var i;
+var flrm = /* @__PURE__ */ hMap(flt, 9, 1);
+var fdrm = /* @__PURE__ */ hMap(fdt, 5, 1);
+var max = function(a) {
+  var m = a[0];
+  for (var i2 = 1;i2 < a.length; ++i2) {
+    if (a[i2] > m)
+      m = a[i2];
+  }
+  return m;
+};
+var bits = function(d, p, m) {
+  var o = p / 8 | 0;
+  return (d[o] | d[o + 1] << 8) >> (p & 7) & m;
+};
+var bits16 = function(d, p) {
+  var o = p / 8 | 0;
+  return (d[o] | d[o + 1] << 8 | d[o + 2] << 16) >> (p & 7);
+};
+var shft = function(p) {
+  return (p + 7) / 8 | 0;
+};
+var slc = function(v, s, e) {
+  if (s == null || s < 0)
+    s = 0;
+  if (e == null || e > v.length)
+    e = v.length;
+  return new u8(v.subarray(s, e));
+};
+var ec = [
+  "unexpected EOF",
+  "invalid block type",
+  "invalid length/literal",
+  "invalid distance",
+  "stream finished",
+  "no stream handler",
+  ,
+  "no callback",
+  "invalid UTF-8 data",
+  "extra field too long",
+  "date not in range 1980-2099",
+  "filename too long",
+  "stream finishing",
+  "invalid zip data"
+];
+var err = function(ind, msg, nt) {
+  var e = new Error(msg || ec[ind]);
+  e.code = ind;
+  if (Error.captureStackTrace)
+    Error.captureStackTrace(e, err);
+  if (!nt)
+    throw e;
+  return e;
+};
+var inflt = function(dat, st, buf, dict) {
+  var sl = dat.length, dl = dict ? dict.length : 0;
+  if (!sl || st.f && !st.l)
+    return buf || new u8(0);
+  var noBuf = !buf;
+  var resize = noBuf || st.i != 2;
+  var noSt = st.i;
+  if (noBuf)
+    buf = new u8(sl * 3);
+  var cbuf = function(l2) {
+    var bl = buf.length;
+    if (l2 > bl) {
+      var nbuf = new u8(Math.max(bl * 2, l2));
+      nbuf.set(buf);
+      buf = nbuf;
+    }
+  };
+  var final = st.f || 0, pos = st.p || 0, bt = st.b || 0, lm = st.l, dm = st.d, lbt = st.m, dbt = st.n;
+  var tbts = sl * 8;
+  do {
+    if (!lm) {
+      final = bits(dat, pos, 1);
+      var type = bits(dat, pos + 1, 3);
+      pos += 3;
+      if (!type) {
+        var s = shft(pos) + 4, l = dat[s - 4] | dat[s - 3] << 8, t = s + l;
+        if (t > sl) {
+          if (noSt)
+            err(0);
+          break;
+        }
+        if (resize)
+          cbuf(bt + l);
+        buf.set(dat.subarray(s, t), bt);
+        st.b = bt += l, st.p = pos = t * 8, st.f = final;
+        continue;
+      } else if (type == 1)
+        lm = flrm, dm = fdrm, lbt = 9, dbt = 5;
+      else if (type == 2) {
+        var hLit = bits(dat, pos, 31) + 257, hcLen = bits(dat, pos + 10, 15) + 4;
+        var tl = hLit + bits(dat, pos + 5, 31) + 1;
+        pos += 14;
+        var ldt = new u8(tl);
+        var clt = new u8(19);
+        for (var i2 = 0;i2 < hcLen; ++i2) {
+          clt[clim[i2]] = bits(dat, pos + i2 * 3, 7);
+        }
+        pos += hcLen * 3;
+        var clb = max(clt), clbmsk = (1 << clb) - 1;
+        var clm = hMap(clt, clb, 1);
+        for (var i2 = 0;i2 < tl; ) {
+          var r = clm[bits(dat, pos, clbmsk)];
+          pos += r & 15;
+          var s = r >> 4;
+          if (s < 16) {
+            ldt[i2++] = s;
+          } else {
+            var c = 0, n = 0;
+            if (s == 16)
+              n = 3 + bits(dat, pos, 3), pos += 2, c = ldt[i2 - 1];
+            else if (s == 17)
+              n = 3 + bits(dat, pos, 7), pos += 3;
+            else if (s == 18)
+              n = 11 + bits(dat, pos, 127), pos += 7;
+            while (n--)
+              ldt[i2++] = c;
+          }
+        }
+        var lt = ldt.subarray(0, hLit), dt = ldt.subarray(hLit);
+        lbt = max(lt);
+        dbt = max(dt);
+        lm = hMap(lt, lbt, 1);
+        dm = hMap(dt, dbt, 1);
+      } else
+        err(1);
+      if (pos > tbts) {
+        if (noSt)
+          err(0);
+        break;
+      }
+    }
+    if (resize)
+      cbuf(bt + 131072);
+    var lms = (1 << lbt) - 1, dms = (1 << dbt) - 1;
+    var lpos = pos;
+    for (;; lpos = pos) {
+      var c = lm[bits16(dat, pos) & lms], sym = c >> 4;
+      pos += c & 15;
+      if (pos > tbts) {
+        if (noSt)
+          err(0);
+        break;
+      }
+      if (!c)
+        err(2);
+      if (sym < 256)
+        buf[bt++] = sym;
+      else if (sym == 256) {
+        lpos = pos, lm = null;
+        break;
+      } else {
+        var add2 = sym - 254;
+        if (sym > 264) {
+          var i2 = sym - 257, b = fleb[i2];
+          add2 = bits(dat, pos, (1 << b) - 1) + fl[i2];
+          pos += b;
+        }
+        var d = dm[bits16(dat, pos) & dms], dsym = d >> 4;
+        if (!d)
+          err(3);
+        pos += d & 15;
+        var dt = fd[dsym];
+        if (dsym > 3) {
+          var b = fdeb[dsym];
+          dt += bits16(dat, pos) & (1 << b) - 1, pos += b;
+        }
+        if (pos > tbts) {
+          if (noSt)
+            err(0);
+          break;
+        }
+        if (resize)
+          cbuf(bt + 131072);
+        var end = bt + add2;
+        if (bt < dt) {
+          var shift = dl - dt, dend = Math.min(dt, end);
+          if (shift + bt < 0)
+            err(3);
+          for (;bt < dend; ++bt)
+            buf[bt] = dict[shift + bt];
+        }
+        for (;bt < end; ++bt)
+          buf[bt] = buf[bt - dt];
+      }
+    }
+    st.l = lm, st.p = lpos, st.b = bt, st.f = final;
+    if (lm)
+      final = 1, st.m = lbt, st.d = dm, st.n = dbt;
+  } while (!final);
+  return bt != buf.length && noBuf ? slc(buf, 0, bt) : buf.subarray(0, bt);
+};
+var et = /* @__PURE__ */ new u8(0);
+var mrg = function(a, b) {
+  var o = {};
+  for (var k in a)
+    o[k] = a[k];
+  for (var k in b)
+    o[k] = b[k];
+  return o;
+};
+var wcln = function(fn, fnStr, td) {
+  var dt = fn();
+  var st = fn.toString();
+  var ks = st.slice(st.indexOf("[") + 1, st.lastIndexOf("]")).replace(/\s+/g, "").split(",");
+  for (var i2 = 0;i2 < dt.length; ++i2) {
+    var v = dt[i2], k = ks[i2];
+    if (typeof v == "function") {
+      fnStr += ";" + k + "=";
+      var st_1 = v.toString();
+      if (v.prototype) {
+        if (st_1.indexOf("[native code]") != -1) {
+          var spInd = st_1.indexOf(" ", 8) + 1;
+          fnStr += st_1.slice(spInd, st_1.indexOf("(", spInd));
+        } else {
+          fnStr += st_1;
+          for (var t in v.prototype)
+            fnStr += ";" + k + ".prototype." + t + "=" + v.prototype[t].toString();
+        }
+      } else
+        fnStr += st_1;
+    } else
+      td[k] = v;
+  }
+  return fnStr;
+};
+var ch = [];
+var cbfs = function(v) {
+  var tl = [];
+  for (var k in v) {
+    if (v[k].buffer) {
+      tl.push((v[k] = new v[k].constructor(v[k])).buffer);
+    }
+  }
+  return tl;
+};
+var wrkr = function(fns, init, id, cb) {
+  if (!ch[id]) {
+    var fnStr = "", td_1 = {}, m = fns.length - 1;
+    for (var i2 = 0;i2 < m; ++i2)
+      fnStr = wcln(fns[i2], fnStr, td_1);
+    ch[id] = { c: wcln(fns[m], fnStr, td_1), e: td_1 };
+  }
+  var td = mrg({}, ch[id].e);
+  return wk(ch[id].c + ";onmessage=function(e){for(var k in e.data)self[k]=e.data[k];onmessage=" + init.toString() + "}", id, td, cbfs(td), cb);
+};
+var bInflt = function() {
+  return [u8, u16, i32, fleb, fdeb, clim, fl, fd, flrm, fdrm, rev, ec, hMap, max, bits, bits16, shft, slc, err, inflt, inflateSync, pbf, gopt];
+};
+var pbf = function(msg) {
+  return postMessage(msg, [msg.buffer]);
+};
+var gopt = function(o) {
+  return o && {
+    out: o.size && new u8(o.size),
+    dictionary: o.dictionary
+  };
+};
+var cbify = function(dat, opts, fns, init, id, cb) {
+  var w = wrkr(fns, init, id, function(err2, dat2) {
+    w.terminate();
+    cb(err2, dat2);
+  });
+  w.postMessage([dat, opts], opts.consume ? [dat.buffer] : []);
+  return function() {
+    w.terminate();
+  };
+};
+var b2 = function(d, b) {
+  return d[b] | d[b + 1] << 8;
+};
+var b4 = function(d, b) {
+  return (d[b] | d[b + 1] << 8 | d[b + 2] << 16 | d[b + 3] << 24) >>> 0;
+};
+var b8 = function(d, b) {
+  return b4(d, b) + b4(d, b + 4) * 4294967296;
+};
+function inflate(data, opts, cb) {
+  if (!cb)
+    cb = opts, opts = {};
+  if (typeof cb != "function")
+    err(7);
+  return cbify(data, opts, [
+    bInflt
+  ], function(ev) {
+    return pbf(inflateSync(ev.data[0], gopt(ev.data[1])));
+  }, 1, cb);
+}
+function inflateSync(data, opts) {
+  return inflt(data, { i: 2 }, opts && opts.out, opts && opts.dictionary);
+}
+var td = typeof TextDecoder != "undefined" && /* @__PURE__ */ new TextDecoder;
+var tds = 0;
+try {
+  td.decode(et, { stream: true });
+  tds = 1;
+} catch (e) {}
+var dutf8 = function(d) {
+  for (var r = "", i2 = 0;; ) {
+    var c = d[i2++];
+    var eb = (c > 127) + (c > 223) + (c > 239);
+    if (i2 + eb > d.length)
+      return { s: r, r: slc(d, i2 - 1) };
+    if (!eb)
+      r += String.fromCharCode(c);
+    else if (eb == 3) {
+      c = ((c & 15) << 18 | (d[i2++] & 63) << 12 | (d[i2++] & 63) << 6 | d[i2++] & 63) - 65536, r += String.fromCharCode(55296 | c >> 10, 56320 | c & 1023);
+    } else if (eb & 1)
+      r += String.fromCharCode((c & 31) << 6 | d[i2++] & 63);
+    else
+      r += String.fromCharCode((c & 15) << 12 | (d[i2++] & 63) << 6 | d[i2++] & 63);
+  }
+};
+function strFromU8(dat, latin1) {
+  if (latin1) {
+    var r = "";
+    for (var i2 = 0;i2 < dat.length; i2 += 16384)
+      r += String.fromCharCode.apply(null, dat.subarray(i2, i2 + 16384));
+    return r;
+  } else if (td) {
+    return td.decode(dat);
+  } else {
+    var _a4 = dutf8(dat), s = _a4.s, r = _a4.r;
+    if (r.length)
+      err(8);
+    return s;
+  }
+}
+var slzh = function(d, b) {
+  return b + 30 + b2(d, b + 26) + b2(d, b + 28);
+};
+var zh = function(d, b, z) {
+  var fnl = b2(d, b + 28), efl = b2(d, b + 30), fn = strFromU8(d.subarray(b + 46, b + 46 + fnl), !(b2(d, b + 8) & 2048)), es = b + 46 + fnl;
+  var _a4 = z64hs(d, es, efl, z, b4(d, b + 20), b4(d, b + 24), b4(d, b + 42)), sc = _a4[0], su = _a4[1], off = _a4[2];
+  return [b2(d, b + 10), sc, su, fn, es + efl + b2(d, b + 32), off];
+};
+var z64hs = function(d, b, l, z, sc, su, off) {
+  var nsc = sc == 4294967295, nsu = su == 4294967295, noff = off == 4294967295, e = b + l;
+  var nf = nsc + nsu + noff;
+  if (z && nf) {
+    for (;b + 4 < e; b += 4 + b2(d, b + 2)) {
+      if (b2(d, b) == 1) {
+        return [
+          nsc ? b8(d, b + 4 + 8 * nsu) : sc,
+          nsu ? b8(d, b + 4) : su,
+          noff ? b8(d, b + 4 + 8 * (nsu + nsc)) : off,
+          1
+        ];
+      }
+    }
+    if (z < 2)
+      err(13);
+  }
+  return [sc, su, off, 0];
+};
+var mt = typeof queueMicrotask == "function" ? queueMicrotask : typeof setTimeout == "function" ? setTimeout : function(fn) {
+  fn();
+};
+function unzip(data, opts, cb) {
+  if (!cb)
+    cb = opts, opts = {};
+  if (typeof cb != "function")
+    err(7);
+  var term = [];
+  var tAll = function() {
+    for (var i3 = 0;i3 < term.length; ++i3)
+      term[i3]();
+  };
+  var files = {};
+  var cbd = function(a, b) {
+    mt(function() {
+      cb(a, b);
+    });
+  };
+  mt(function() {
+    cbd = cb;
+  });
+  var e = data.length - 22;
+  for (;b4(data, e) != 101010256; --e) {
+    if (!e || data.length - e > 65558) {
+      cbd(err(13, 0, 1), null);
+      return tAll;
+    }
+  }
+  var lft = b2(data, e + 8);
+  if (lft) {
+    var c = lft;
+    var o = b4(data, e + 16);
+    var z = b4(data, e - 20) == 117853008;
+    if (z) {
+      var ze = b4(data, e - 12);
+      z = b4(data, ze) == 101075792;
+      if (z) {
+        c = lft = b4(data, ze + 32);
+        o = b4(data, ze + 48);
+      }
+    }
+    var fltr = opts && opts.filter;
+    var _loop_3 = function(i3) {
+      var _a4 = zh(data, o, z), c_1 = _a4[0], sc = _a4[1], su = _a4[2], fn = _a4[3], no = _a4[4], off = _a4[5], b = slzh(data, off);
+      o = no;
+      var cbl = function(e2, d) {
+        if (e2) {
+          tAll();
+          cbd(e2, null);
+        } else {
+          if (d)
+            files[fn] = d;
+          if (!--lft)
+            cbd(null, files);
+        }
+      };
+      if (!fltr || fltr({
+        name: fn,
+        size: sc,
+        originalSize: su,
+        compression: c_1
+      })) {
+        if (!c_1)
+          cbl(null, slc(data, b, b + sc));
+        else if (c_1 == 8) {
+          var infl = data.subarray(b, b + sc);
+          if (su < 524288 || sc > 0.8 * su) {
+            try {
+              cbl(null, inflateSync(infl, { out: new u8(su) }));
+            } catch (e2) {
+              cbl(e2, null);
+            }
+          } else
+            term.push(inflate(infl, { size: su }, cbl));
+        } else
+          cbl(err(14, "unknown compression type " + c_1, 1), null);
+      } else
+        cbl(null, null);
+    };
+    for (var i2 = 0;i2 < c; ++i2) {
+      _loop_3(i2);
+    }
+  } else
+    cbd(null, {});
+  return tAll;
+}
+
+// src/library/epub.ts
+function unzipArchive(sourcePath) {
+  return fs3.promises.readFile(sourcePath).then((buffer) => new Promise((resolve2, reject) => {
+    unzip(new Uint8Array(buffer), (error, files) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve2(files);
+    });
+  }));
+}
+function decodeXMLText(value) {
+  return value.replaceAll("&amp;", "&").replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("&quot;", '"').replaceAll("&apos;", "'").trim();
+}
+function getElementText(xml, elementName) {
+  const expression = new RegExp(String.raw`<${elementName}(?:\s[^>]*)?>([\s\S]*?)<\/${elementName}>`, "i");
+  const match = xml.match(expression);
+  if (!match?.[1]) {
+    return;
+  }
+  const value = decodeXMLText(match[1].replaceAll(/<[^>]+>/g, ""));
+  return value || undefined;
+}
+function getAttribute(tag, attribute2) {
+  const expression = new RegExp(`${attribute2}=["']([^"']+)["']`, "i");
+  return tag.match(expression)?.[1];
+}
+function findPackageFile(files) {
+  return Object.keys(files).find((filename) => filename.toLowerCase().endsWith(".opf"));
+}
+function getPackageXML(files) {
+  const filename = findPackageFile(files);
+  if (!filename || !files[filename]) {
+    return;
+  }
+  return { filename, xml: new TextDecoder().decode(files[filename]) };
+}
+async function readEpubPackage(sourcePath) {
+  const files = await unzipArchive(sourcePath);
+  const packageFile = getPackageXML(files);
+  if (!packageFile) {
+    return {};
+  }
+  return {
+    title: getElementText(packageFile.xml, "dc:title"),
+    authors: getElementText(packageFile.xml, "dc:creator"),
+    publisher: getElementText(packageFile.xml, "dc:publisher"),
+    language: getElementText(packageFile.xml, "dc:language")
+  };
+}
+function findSupplementalImagePaths(files, packageFilename, packageXML) {
+  const manifest = new Map;
+  for (const itemTag of packageXML.match(/<item\b[^>]*>/gi) || []) {
+    const id = getAttribute(itemTag, "id");
+    const href = getAttribute(itemTag, "href");
+    if (id && href) {
+      manifest.set(id, href);
+    }
+  }
+  const packageDirectory = path5.posix.dirname(packageFilename);
+  const documentPaths = [];
+  for (const itemReference of packageXML.match(/<itemref\b[^>]*>/gi) || []) {
+    if (!/linear=["']no["']/i.test(itemReference)) {
+      continue;
+    }
+    const id = getAttribute(itemReference, "idref");
+    let href;
+    if (id) {
+      href = manifest.get(id);
+    }
+    if (href) {
+      documentPaths.push(path5.posix.normalize(path5.posix.join(packageDirectory, href)));
+    }
+  }
+  const imagePaths = new Set;
+  for (const documentPath of documentPaths) {
+    const documentData = files[documentPath];
+    if (!documentData) {
+      continue;
+    }
+    const document2 = new TextDecoder().decode(documentData);
+    for (const imageTag of document2.match(/<img\b[^>]*>/gi) || []) {
+      const source = getAttribute(imageTag, "src");
+      if (source) {
+        imagePaths.add(path5.posix.normalize(path5.posix.join(path5.posix.dirname(documentPath), source)));
+      }
+    }
+  }
+  return [...imagePaths].filter((imagePath) => files[imagePath]);
+}
+async function extractSupplementalEpubAssets(paths) {
+  let files;
+  try {
+    files = await unzipArchive(paths.sourcePath);
+  } catch {
+    return [];
+  }
+  const packageFile = getPackageXML(files);
+  if (!packageFile) {
+    return [];
+  }
+  const imagePaths = findSupplementalImagePaths(files, packageFile.filename, packageFile.xml);
+  const assets = [];
+  for (const [index, imagePath] of imagePaths.entries()) {
+    const extension = path5.extname(imagePath).toLowerCase() || ".bin";
+    const filename = `front-matter-${String(index + 1).padStart(3, "0")}${extension}`;
+    await fs3.promises.writeFile(path5.join(paths.assetsDirectory, filename), files[imagePath]);
+    let label = `Front matter ${index + 1}`;
+    if (index === 0) {
+      label = "Book cover";
+    }
+    assets.push({
+      markdownPath: `assets/${filename}`,
+      label
+    });
+  }
+  return assets;
+}
+
+// src/library/markdown.ts
+import fs4 from "node:fs";
+function getNumberedHeading(block) {
+  const match = block.match(/^(\d{1,2})\\?\.\s+(.{1,140})$/);
+  if (!match?.[1] || !match[2]) {
+    return;
+  }
+  return { number: match[1], title: match[2].replace(/\.$/, "").trim() };
+}
+function isMarkdownStructure(block) {
+  return /^(?:#{1,6}\s|[-*+]\s|!\[|```|---$)/.test(block);
+}
+function shouldJoinPageBreak(previous, current) {
+  if (isMarkdownStructure(previous) || isMarkdownStructure(current)) {
+    return false;
+  }
+  if (!/^['“‘(]*[a-z]/.test(current)) {
+    return false;
+  }
+  return !/[.!?…:;”’"')\]]$/.test(previous);
+}
+function joinPageBreakParagraphs(blocks) {
+  const joined = [];
+  for (const block of blocks) {
+    const previous = joined.at(-1);
+    if (previous && shouldJoinPageBreak(previous, block)) {
+      let separator = " ";
+      if (previous.endsWith("-")) {
+        separator = "";
+      }
+      joined[joined.length - 1] = previous + separator + block;
+    } else {
+      joined.push(block);
+    }
+  }
+  return joined;
+}
+async function normalizeBookMarkdown(markdownPath, title, supplementalAssets = []) {
+  const markdown = await fs4.promises.readFile(markdownPath, "utf8");
+  const blocks = markdown.replaceAll(`\r
+`, `
+`).split(/\n{2,}/);
+  const contentsIndex = blocks.findIndex((block) => /\bcontents\s*$/i.test(block.trim()));
+  const seenChapterNumbers = new Set;
+  const normalizedBlocks = [`# ${title}`];
+  for (const asset of supplementalAssets) {
+    normalizedBlocks.push(`![${asset.label}](${asset.markdownPath})`);
+  }
+  for (const [index, originalBlock] of blocks.entries()) {
+    const block = originalBlock.trim();
+    if (!block || /^<span\b[^>]*><\/span>$/i.test(block)) {
+      continue;
+    }
+    if (index === contentsIndex) {
+      const beforeContents = block.replace(/\bcontents\s*$/i, "").trim();
+      if (beforeContents) {
+        normalizedBlocks.push(beforeContents);
+      }
+      normalizedBlocks.push("## Contents");
+      continue;
+    }
+    const numbered = getNumberedHeading(block);
+    if (numbered && contentsIndex !== -1 && index > contentsIndex) {
+      if (seenChapterNumbers.has(numbered.number)) {
+        normalizedBlocks.push(`## ${numbered.number}. ${numbered.title}`);
+      } else {
+        seenChapterNumbers.add(numbered.number);
+        normalizedBlocks.push(`- ${numbered.number}. ${numbered.title}`);
+      }
+      continue;
+    }
+    if (/^(?:preface|introduction|afterword|epilogue)\b.{0,100}$/i.test(block)) {
+      normalizedBlocks.push(`## ${block.replace(/\.$/, "")}`);
+      continue;
+    }
+    normalizedBlocks.push(block);
+  }
+  const joinedBlocks = joinPageBreakParagraphs(normalizedBlocks);
+  await fs4.promises.writeFile(markdownPath, `${joinedBlocks.join(`
+
+`)}
+`);
+}
+
 // src/library/metadata.ts
-import fs3 from "node:fs";
+import fs5 from "node:fs";
 async function writeBookRecords({
   paths,
   request,
   selected,
   conversion
 }) {
+  const sourceKind = selected.sourceKind || "libgen";
+  let libgenMD5;
+  let libgenMirrorPath;
+  if (sourceKind === "libgen") {
+    libgenMD5 = selected.md5;
+    libgenMirrorPath = selected.entry.mirror;
+  }
   const metadata = {
     schemaVersion: 1,
     title: selected.entry.title,
@@ -51462,8 +52264,17 @@ async function writeBookRecords({
     language: selected.entry.language,
     sourceFormat: selected.entry.extension.toLowerCase(),
     sourceFile: "source." + selected.entry.extension.toLowerCase(),
-    libgenMD5: selected.md5,
-    libgenMirrorPath: selected.entry.mirror,
+    source: {
+      kind: sourceKind,
+      file: "source." + selected.entry.extension.toLowerCase(),
+      format: selected.entry.extension.toLowerCase(),
+      md5: selected.md5,
+      sha256: selected.sourceSHA256,
+      originalFilename: selected.originalFilename,
+      libgenMirrorPath
+    },
+    libgenMD5,
+    libgenMirrorPath,
     requestedAs: request.sourceLine,
     selection: {
       score: selected.score,
@@ -51471,35 +52282,47 @@ async function writeBookRecords({
     },
     ingestedAt: new Date().toISOString()
   };
-  await fs3.promises.writeFile(paths.metadataPath, `${JSON.stringify(metadata, undefined, 2)}
+  await fs5.promises.writeFile(paths.metadataPath, `${JSON.stringify(metadata, undefined, 2)}
 `);
-  await fs3.promises.writeFile(paths.conversionPath, `${JSON.stringify(conversion, undefined, 2)}
+  await fs5.promises.writeFile(paths.conversionPath, `${JSON.stringify(conversion, undefined, 2)}
 `);
 }
 function yamlString(value) {
   return JSON.stringify(value);
 }
-function createMarkdownFrontmatter(entry, md5) {
-  return [
+function createMarkdownFrontmatter(candidate) {
+  const lines = [
     "---",
-    `title: ${yamlString(entry.title)}`,
-    `authors: ${yamlString(entry.authors)}`,
-    `publisher: ${yamlString(entry.publisher)}`,
-    `year: ${yamlString(entry.year)}`,
-    `language: ${yamlString(entry.language)}`,
-    `libgen_md5: ${yamlString(md5)}`,
-    `source_format: ${yamlString(entry.extension.toLowerCase())}`,
-    "---",
-    ""
-  ].join(`
+    `title: ${yamlString(candidate.entry.title)}`,
+    `authors: ${yamlString(candidate.entry.authors)}`,
+    `publisher: ${yamlString(candidate.entry.publisher)}`,
+    `year: ${yamlString(candidate.entry.year)}`,
+    `language: ${yamlString(candidate.entry.language)}`,
+    `source_kind: ${yamlString(candidate.sourceKind || "libgen")}`,
+    `source_format: ${yamlString(candidate.entry.extension.toLowerCase())}`
+  ];
+  if (candidate.sourceKind === "local") {
+    lines.push(`source_md5: ${yamlString(candidate.md5)}`);
+    if (candidate.sourceSHA256) {
+      lines.push(`source_sha256: ${yamlString(candidate.sourceSHA256)}`);
+    }
+  } else {
+    lines.push(`libgen_md5: ${yamlString(candidate.md5)}`);
+  }
+  lines.push("---", "");
+  return lines.join(`
 `);
 }
-async function addMarkdownFrontmatter(markdownPath, entry, md5) {
-  const markdown = await fs3.promises.readFile(markdownPath, "utf8");
-  if (markdown.includes(`libgen_md5: ${yamlString(md5)}`)) {
+async function addMarkdownFrontmatter(markdownPath, candidate) {
+  const markdown = await fs5.promises.readFile(markdownPath, "utf8");
+  let checksumLine = `libgen_md5: ${yamlString(candidate.md5)}`;
+  if (candidate.sourceKind === "local") {
+    checksumLine = `source_md5: ${yamlString(candidate.md5)}`;
+  }
+  if (markdown.includes(checksumLine)) {
     return;
   }
-  await fs3.promises.writeFile(markdownPath, createMarkdownFrontmatter(entry, md5) + markdown);
+  await fs5.promises.writeFile(markdownPath, createMarkdownFrontmatter(candidate) + markdown);
 }
 
 // src/library/converter.ts
@@ -51521,30 +52344,31 @@ async function commandIsAvailable(command, runner, workingDirectory) {
 }
 async function validateMarkdown(markdownPath) {
   try {
-    const contents = await fs4.promises.readFile(markdownPath, "utf8");
+    const contents = await fs6.promises.readFile(markdownPath, "utf8");
     return contents.trim().length >= 20;
   } catch {
     return false;
   }
 }
 async function normalizeDoclingOutput(paths) {
-  const generatedMarkdown = path5.join(paths.bookDirectory, "source.md");
-  if (generatedMarkdown !== paths.markdownPath && fs4.existsSync(generatedMarkdown)) {
-    await fs4.promises.rename(generatedMarkdown, paths.markdownPath);
+  const generatedMarkdown = path6.join(paths.bookDirectory, "source.md");
+  if (generatedMarkdown !== paths.markdownPath && fs6.existsSync(generatedMarkdown)) {
+    await fs6.promises.rename(generatedMarkdown, paths.markdownPath);
   }
-  const generatedAssets = path5.join(paths.bookDirectory, "source_artifacts");
-  if (!fs4.existsSync(generatedAssets)) {
+  const generatedAssets = path6.join(paths.bookDirectory, "source_artifacts");
+  if (!fs6.existsSync(generatedAssets)) {
     return;
   }
-  await fs4.promises.mkdir(paths.assetsDirectory, { recursive: true });
-  await fs4.promises.cp(generatedAssets, paths.assetsDirectory, { recursive: true });
-  await fs4.promises.rm(generatedAssets, { recursive: true, force: true });
-  const markdown = await fs4.promises.readFile(paths.markdownPath, "utf8");
-  await fs4.promises.writeFile(paths.markdownPath, markdown.replaceAll("source_artifacts/", "assets/"));
+  await fs6.promises.mkdir(paths.assetsDirectory, { recursive: true });
+  await fs6.promises.cp(generatedAssets, paths.assetsDirectory, { recursive: true });
+  await fs6.promises.rm(generatedAssets, { recursive: true, force: true });
+  const markdown = await fs6.promises.readFile(paths.markdownPath, "utf8");
+  await fs6.promises.writeFile(paths.markdownPath, markdown.replaceAll("source_artifacts/", "assets/"));
 }
 async function convertTextSource(paths, candidate) {
-  await fs4.promises.copyFile(paths.sourcePath, paths.markdownPath);
-  await addMarkdownFrontmatter(paths.markdownPath, candidate.entry, candidate.md5);
+  await fs6.promises.copyFile(paths.sourcePath, paths.markdownPath);
+  await normalizeBookMarkdown(paths.markdownPath, candidate.entry.title);
+  await addMarkdownFrontmatter(paths.markdownPath, candidate);
   return {
     status: "converted",
     converter: "copy",
@@ -51561,11 +52385,11 @@ async function convertWithPandoc(paths, candidate, runner) {
     };
   }
   const result = await runner("pandoc", [
-    path5.basename(paths.sourcePath),
-    "--to=gfm+tex_math_dollars",
+    path6.basename(paths.sourcePath),
+    "--to=gfm-raw_html+tex_math_dollars",
     "--wrap=none",
     "--extract-media=assets",
-    `--output=${path5.basename(paths.markdownPath)}`
+    `--output=${path6.basename(paths.markdownPath)}`
   ], paths.bookDirectory);
   if (result.exitCode !== 0 || !await validateMarkdown(paths.markdownPath)) {
     return {
@@ -51574,7 +52398,12 @@ async function convertWithPandoc(paths, candidate, runner) {
       message: result.stderr.trim() || "Pandoc did not produce usable Markdown."
     };
   }
-  await addMarkdownFrontmatter(paths.markdownPath, candidate.entry, candidate.md5);
+  let supplementalAssets = [];
+  if (candidate.entry.extension.toLowerCase() === "epub") {
+    supplementalAssets = await extractSupplementalEpubAssets(paths);
+  }
+  await normalizeBookMarkdown(paths.markdownPath, candidate.entry.title, supplementalAssets);
+  await addMarkdownFrontmatter(paths.markdownPath, candidate);
   return {
     status: "converted",
     converter: "pandoc",
@@ -51592,7 +52421,7 @@ async function convertWithDocling(paths, candidate, runner) {
   }
   const arguments_ = [
     "convert",
-    path5.basename(paths.sourcePath),
+    path6.basename(paths.sourcePath),
     "--to=md",
     "--output=.",
     "--image-export-mode=referenced",
@@ -51604,7 +52433,7 @@ async function convertWithDocling(paths, candidate, runner) {
   if (result.exitCode !== 0) {
     result = await runner("docling", [
       "convert",
-      path5.basename(paths.sourcePath),
+      path6.basename(paths.sourcePath),
       "--to=md",
       "--output=.",
       "--image-export-mode=referenced",
@@ -51621,7 +52450,8 @@ async function convertWithDocling(paths, candidate, runner) {
       message: result.stderr.trim() || "Docling did not produce usable Markdown."
     };
   }
-  await addMarkdownFrontmatter(paths.markdownPath, candidate.entry, candidate.md5);
+  await normalizeBookMarkdown(paths.markdownPath, candidate.entry.title);
+  await addMarkdownFrontmatter(paths.markdownPath, candidate);
   return {
     status: "converted",
     converter: "docling",
@@ -51630,7 +52460,7 @@ async function convertWithDocling(paths, candidate, runner) {
   };
 }
 async function convertBook(paths, candidate, runner = runCommand) {
-  await fs4.promises.mkdir(paths.assetsDirectory, { recursive: true });
+  await fs6.promises.mkdir(paths.assetsDirectory, { recursive: true });
   const extension = candidate.entry.extension.toLowerCase();
   if (["md", "markdown", "txt"].includes(extension)) {
     return convertTextSource(paths, candidate);
@@ -51683,7 +52513,7 @@ async function searchBookCandidates(session, request, pageCount = DEFAULT_PAGE_C
   return rankCandidates(entries2, request).filter((candidate) => candidate.score >= 40);
 }
 async function validateDownloadedSource(candidate, sourcePath) {
-  const file = await fs5.promises.open(sourcePath, "r");
+  const file = await fs7.promises.open(sourcePath, "r");
   try {
     const buffer = Buffer.alloc(8);
     const { bytesRead } = await file.read(buffer, 0, buffer.length, 0);
@@ -51722,7 +52552,7 @@ async function downloadCandidate(session, candidate, paths, options) {
   await downloadFile({
     downloadStream: response,
     destinationPath: paths.sourcePath,
-    filename: path6.basename(paths.sourcePath),
+    filename: path7.basename(paths.sourcePath),
     onStart() {},
     onData() {}
   });
@@ -51735,15 +52565,15 @@ function sourceOnlyConversion() {
   };
 }
 async function finalizeStagingDirectory(stagingPaths, finalPaths, stagingRoot) {
-  if (fs5.existsSync(finalPaths.bookDirectory)) {
+  if (fs7.existsSync(finalPaths.bookDirectory)) {
     throw new Error(`The canonical book directory already exists: ${finalPaths.bookDirectory}`);
   }
-  await fs5.promises.rename(stagingPaths.bookDirectory, finalPaths.bookDirectory);
-  await fs5.promises.rm(stagingRoot, { recursive: true, force: true });
+  await fs7.promises.rename(stagingPaths.bookDirectory, finalPaths.bookDirectory);
+  await fs7.promises.rm(stagingRoot, { recursive: true, force: true });
 }
 async function ingestBestBook(request, options = {}) {
   const libraryRoot = getLibraryRoot(options.libraryRoot);
-  await fs5.promises.mkdir(libraryRoot, { recursive: true });
+  await fs7.promises.mkdir(libraryRoot, { recursive: true });
   const session = options.session || await createLibgenSession();
   report(options, `Searching ${session.mirror.src} for "${request.query}"...`);
   const candidates = await searchBookCandidates(session, request, options.pageCount || DEFAULT_PAGE_COUNT);
@@ -51759,7 +52589,7 @@ async function ingestBestBook(request, options = {}) {
   let lastError = "All finalist candidates failed.";
   for (const [index, candidate] of finalists.entries()) {
     const finalPaths = createBookPaths(candidate.entry, libraryRoot);
-    if (fs5.existsSync(finalPaths.bookDirectory)) {
+    if (fs7.existsSync(finalPaths.bookDirectory)) {
       return {
         request,
         status: "skipped",
@@ -51768,9 +52598,9 @@ async function ingestBestBook(request, options = {}) {
         paths: finalPaths
       };
     }
-    const stagingRoot = await fs5.promises.mkdtemp(path6.join(libraryRoot, ".staging-"));
+    const stagingRoot = await fs7.promises.mkdtemp(path7.join(libraryRoot, ".staging-"));
     const stagingPaths = createBookPaths(candidate.entry, stagingRoot);
-    await fs5.promises.mkdir(stagingPaths.assetsDirectory, { recursive: true });
+    await fs7.promises.mkdir(stagingPaths.assetsDirectory, { recursive: true });
     try {
       report(options, `Evaluating candidate ${index + 1}/${finalists.length}: ${candidate.reasons.join(", ")}`);
       await downloadCandidate(session, candidate, stagingPaths, options);
@@ -51782,7 +52612,7 @@ async function ingestBestBook(request, options = {}) {
       const hasMoreFinalists = index < finalists.length - 1;
       if (conversion.status === "failed" && hasMoreFinalists) {
         lastError = conversion.message;
-        await fs5.promises.rm(stagingRoot, { recursive: true, force: true });
+        await fs7.promises.rm(stagingRoot, { recursive: true, force: true });
         continue;
       }
       const recordedConversion = { ...conversion };
@@ -51817,10 +52647,195 @@ async function ingestBestBook(request, options = {}) {
       if (error instanceof Error) {
         lastError = error.message;
       }
-      await fs5.promises.rm(stagingRoot, { recursive: true, force: true });
+      await fs7.promises.rm(stagingRoot, { recursive: true, force: true });
     }
   }
   return { request, status: "failed", message: lastError };
+}
+
+// src/library/local-import.ts
+import { createHash } from "node:crypto";
+import fs9 from "node:fs";
+import path9 from "node:path";
+
+// src/library/validation.ts
+import fs8 from "node:fs";
+import path8 from "node:path";
+async function validateCanonicalBook(paths) {
+  const issues = [];
+  const markdown = await fs8.promises.readFile(paths.markdownPath, "utf8");
+  const words = markdown.split(/\s+/).filter(Boolean).length;
+  const headings = (markdown.match(/^#{1,6}\s+.+$/gm) || []).length;
+  const imageMatches = [...markdown.matchAll(/!\[[^\]]*]\((assets\/[^)]+)\)/g)];
+  for (const imageMatch of imageMatches) {
+    const relativePath = imageMatch[1];
+    if (relativePath && !fs8.existsSync(path8.join(paths.bookDirectory, relativePath))) {
+      issues.push(`Missing linked asset: ${relativePath}`);
+    }
+  }
+  if (words < 20) {
+    issues.push("Markdown output contains fewer than 20 words.");
+  }
+  if (headings === 0) {
+    issues.push("Markdown output contains no headings.");
+  }
+  if (/<(?:html|body|script|iframe)\b/i.test(markdown)) {
+    issues.push("Markdown output contains unwanted raw HTML.");
+  }
+  let assets = 0;
+  try {
+    const directoryEntries = await fs8.promises.readdir(paths.assetsDirectory);
+    assets = directoryEntries.length;
+  } catch {
+    issues.push("Assets directory is missing.");
+  }
+  return {
+    valid: issues.length === 0,
+    words,
+    headings,
+    images: imageMatches.length,
+    assets,
+    issues
+  };
+}
+
+// src/library/local-import.ts
+function restoreCommaSeparatedAuthor(value) {
+  const parts = value.split(",").map((part) => part.trim()).filter(Boolean);
+  if (parts.length !== 2) {
+    return value.trim();
+  }
+  return `${parts[1]} ${parts[0]}`;
+}
+function inferFilenameMetadata(sourcePath) {
+  const stem = path9.basename(sourcePath, path9.extname(sourcePath)).trim();
+  const byMatch = stem.match(/^(.+?)\s+by\s+(.+)$/i);
+  if (byMatch?.[1] && byMatch[2]) {
+    return { title: byMatch[1].trim(), author: byMatch[2].trim() };
+  }
+  const dashMatch = stem.match(/^(.+?)\s+-\s+(.+)$/);
+  if (dashMatch?.[1] && dashMatch[2]) {
+    return {
+      title: dashMatch[2].trim(),
+      author: restoreCommaSeparatedAuthor(dashMatch[1])
+    };
+  }
+  return { title: stem };
+}
+async function getChecksums(sourcePath) {
+  const contents = await fs9.promises.readFile(sourcePath);
+  return {
+    md5: createHash("md5").update(contents).digest("hex"),
+    sha256: createHash("sha256").update(contents).digest("hex")
+  };
+}
+async function createLocalEntry(sourcePath, options) {
+  const filename = inferFilenameMetadata(sourcePath);
+  const extension = normalizeExtension(path9.extname(sourcePath).slice(1));
+  let embedded = {};
+  if (extension === "epub") {
+    embedded = await readEpubPackage(sourcePath);
+  }
+  const stat = await fs9.promises.stat(sourcePath);
+  let inferredTitle = embedded.title || filename.title;
+  if (filename.author) {
+    inferredTitle = filename.title;
+  }
+  return {
+    id: path9.basename(sourcePath),
+    title: options.title || inferredTitle || "Unknown title",
+    authors: options.author || filename.author || embedded.authors || "unknown-author",
+    publisher: embedded.publisher || "",
+    year: "",
+    pages: "",
+    language: embedded.language || "",
+    size: String(stat.size),
+    extension,
+    mirror: ""
+  };
+}
+async function importLocalBook(sourcePathInput, options = {}) {
+  const sourcePath = path9.resolve(sourcePathInput.replace(/^~(?=$|\/)/, process.env.HOME || ""));
+  const stat = await fs9.promises.stat(sourcePath);
+  if (!stat.isFile()) {
+    throw new Error(`Local import source is not a file: ${sourcePath}`);
+  }
+  const entry = await createLocalEntry(sourcePath, options);
+  const checksums = await getChecksums(sourcePath);
+  const candidate = {
+    entry,
+    md5: checksums.md5,
+    score: 0,
+    reasons: ["locally owned source"],
+    sourceKind: "local",
+    sourceSHA256: checksums.sha256,
+    originalFilename: path9.basename(sourcePath)
+  };
+  const request = {
+    query: entry.title,
+    title: entry.title,
+    author: entry.authors,
+    sourceLine: path9.basename(sourcePath)
+  };
+  const libraryRoot = getLibraryRoot(options.libraryRoot);
+  const finalPaths = createBookPaths(entry, libraryRoot);
+  if (fs9.existsSync(finalPaths.bookDirectory)) {
+    return {
+      request,
+      status: "skipped",
+      message: `Canonical directory already exists; left it untouched at ${finalPaths.bookDirectory}`,
+      selected: candidate,
+      paths: finalPaths
+    };
+  }
+  await fs9.promises.mkdir(libraryRoot, { recursive: true });
+  const stagingRoot = await fs9.promises.mkdtemp(path9.join(libraryRoot, ".staging-import-"));
+  const stagingPaths = createBookPaths(entry, stagingRoot);
+  try {
+    options.onProgress?.(`Copying ${path9.basename(sourcePath)} without modifying the original...`);
+    await fs9.promises.mkdir(stagingPaths.assetsDirectory, { recursive: true });
+    await fs9.promises.copyFile(sourcePath, stagingPaths.sourcePath);
+    let conversion = {
+      status: "unavailable",
+      message: "Markdown conversion was disabled; the standardized source was retained."
+    };
+    if (options.convert !== false) {
+      options.onProgress?.("Converting the local source to canonical Markdown...");
+      conversion = await convertBook(stagingPaths, candidate, options.runner || runCommand);
+      if (conversion.status === "failed") {
+        throw new Error(conversion.message);
+      }
+      if (conversion.status === "converted") {
+        conversion.validation = await validateCanonicalBook(stagingPaths);
+        if (!conversion.validation.valid) {
+          throw new Error(`Canonical validation failed: ${conversion.validation.issues.join("; ")}`);
+        }
+      }
+    }
+    const recordedConversion = { ...conversion };
+    if (recordedConversion.markdownPath) {
+      recordedConversion.markdownPath = "book.md";
+    }
+    await writeBookRecords({
+      paths: stagingPaths,
+      request,
+      selected: candidate,
+      conversion: recordedConversion
+    });
+    await fs9.promises.rename(stagingPaths.bookDirectory, finalPaths.bookDirectory);
+    await fs9.promises.rm(stagingRoot, { recursive: true, force: true });
+    return {
+      request,
+      status: "downloaded",
+      message: `Imported the local source to ${finalPaths.bookDirectory}`,
+      selected: candidate,
+      paths: finalPaths,
+      conversion: { ...conversion, markdownPath: finalPaths.markdownPath }
+    };
+  } catch (error) {
+    await fs9.promises.rm(stagingRoot, { recursive: true, force: true });
+    throw error;
+  }
 }
 
 // src/library/reading-list.ts
@@ -52073,24 +53088,24 @@ var wrapOsc = (sequence) => {
   }
   return sequence;
 };
-var cursorTo = (x, y) => {
-  if (typeof x !== "number") {
+var cursorTo = (x2, y) => {
+  if (typeof x2 !== "number") {
     throw new TypeError("The `x` argument is required");
   }
   if (typeof y !== "number") {
-    return ESC + (x + 1) + "G";
+    return ESC + (x2 + 1) + "G";
   }
-  return ESC + (y + 1) + SEP + (x + 1) + "H";
+  return ESC + (y + 1) + SEP + (x2 + 1) + "H";
 };
-var cursorMove = (x, y) => {
-  if (typeof x !== "number") {
+var cursorMove = (x2, y) => {
+  if (typeof x2 !== "number") {
     throw new TypeError("The `x` argument is required");
   }
   let returnValue = "";
-  if (x < 0) {
-    returnValue += ESC + -x + "D";
-  } else if (x > 0) {
-    returnValue += ESC + x + "C";
+  if (x2 < 0) {
+    returnValue += ESC + -x2 + "D";
+  } else if (x2 > 0) {
+    returnValue += ESC + x2 + "C";
   }
   if (y < 0) {
     returnValue += ESC + -y + "A";
@@ -52113,8 +53128,8 @@ var cursorHide = ESC + "?25l";
 var cursorShow = ESC + "?25h";
 var eraseLines = (count) => {
   let clear = "";
-  for (let i = 0;i < count; i++) {
-    clear += eraseLine + (i < count - 1 ? cursorUp() : "");
+  for (let i2 = 0;i2 < count; i2++) {
+    clear += eraseLine + (i2 < count - 1 ? cursorUp() : "");
   }
   if (count) {
     clear += cursorLeft;
@@ -52305,7 +53320,7 @@ var loadYoga = (() => {
     var w;
     h.wasmBinary && (w = h.wasmBinary);
     var noExitRuntime = h.noExitRuntime || true;
-    typeof WebAssembly != "object" && x("no native wasm support detected");
+    typeof WebAssembly != "object" && x2("no native wasm support detected");
     var fa, ha = false;
     function z(a, b, c) {
       c = b + c;
@@ -52346,7 +53361,7 @@ var loadYoga = (() => {
       pa.unshift(a);
     }
     var F = 0, ta = null, G = null;
-    function x(a) {
+    function x2(a) {
       if (h.onAbort)
         h.onAbort(a);
       a = "Aborted(" + a + ")";
@@ -52386,7 +53401,7 @@ var loadYoga = (() => {
           return e;
         throw "both async and sync fetching of the wasm failed";
       } catch (f) {
-        x(f);
+        x2(f);
       }
     }
     function ya() {
@@ -53008,7 +54023,7 @@ var loadYoga = (() => {
       return b;
     }, Jb = {
       l: function(a, b, c, d) {
-        x("Assertion failed: " + (a ? z(A, a) : "") + ", at: " + [b ? b ? z(A, b) : "" : "unknown filename", c, d ? d ? z(A, d) : "" : "unknown function"]);
+        x2("Assertion failed: " + (a ? z(A, a) : "") + ", at: " + [b ? b ? z(A, b) : "" : "unknown filename", c, d ? d ? z(A, d) : "" : "unknown function"]);
       },
       q: function(a, b, c) {
         a = N(a);
@@ -53170,7 +54185,7 @@ var loadYoga = (() => {
         });
       },
       p: function(a, b, c, d, e, f) {
-        0 < b || x();
+        0 < b || x2();
         var g = pb(b, c);
         e = Z(d, e);
         V([], [a], function(k) {
@@ -53435,7 +54450,7 @@ var loadYoga = (() => {
         qb(a);
       },
       c: function() {
-        x("");
+        x2("");
       },
       x: function(a, b, c) {
         A.copyWithin(a, b, b + c);
@@ -53506,7 +54521,7 @@ var loadYoga = (() => {
           return f;
         }).then(e, function(f) {
           v("failed to asynchronously prepare wasm: " + f);
-          x(f);
+          x2(f);
         });
       }
       var d = { a: Jb };
@@ -53916,14 +54931,14 @@ function stripAnsi(string) {
 }
 
 // node_modules/get-east-asian-width/lookup.js
-function isAmbiguous(x) {
-  return x === 161 || x === 164 || x === 167 || x === 168 || x === 170 || x === 173 || x === 174 || x >= 176 && x <= 180 || x >= 182 && x <= 186 || x >= 188 && x <= 191 || x === 198 || x === 208 || x === 215 || x === 216 || x >= 222 && x <= 225 || x === 230 || x >= 232 && x <= 234 || x === 236 || x === 237 || x === 240 || x === 242 || x === 243 || x >= 247 && x <= 250 || x === 252 || x === 254 || x === 257 || x === 273 || x === 275 || x === 283 || x === 294 || x === 295 || x === 299 || x >= 305 && x <= 307 || x === 312 || x >= 319 && x <= 322 || x === 324 || x >= 328 && x <= 331 || x === 333 || x === 338 || x === 339 || x === 358 || x === 359 || x === 363 || x === 462 || x === 464 || x === 466 || x === 468 || x === 470 || x === 472 || x === 474 || x === 476 || x === 593 || x === 609 || x === 708 || x === 711 || x >= 713 && x <= 715 || x === 717 || x === 720 || x >= 728 && x <= 731 || x === 733 || x === 735 || x >= 768 && x <= 879 || x >= 913 && x <= 929 || x >= 931 && x <= 937 || x >= 945 && x <= 961 || x >= 963 && x <= 969 || x === 1025 || x >= 1040 && x <= 1103 || x === 1105 || x === 8208 || x >= 8211 && x <= 8214 || x === 8216 || x === 8217 || x === 8220 || x === 8221 || x >= 8224 && x <= 8226 || x >= 8228 && x <= 8231 || x === 8240 || x === 8242 || x === 8243 || x === 8245 || x === 8251 || x === 8254 || x === 8308 || x === 8319 || x >= 8321 && x <= 8324 || x === 8364 || x === 8451 || x === 8453 || x === 8457 || x === 8467 || x === 8470 || x === 8481 || x === 8482 || x === 8486 || x === 8491 || x === 8531 || x === 8532 || x >= 8539 && x <= 8542 || x >= 8544 && x <= 8555 || x >= 8560 && x <= 8569 || x === 8585 || x >= 8592 && x <= 8601 || x === 8632 || x === 8633 || x === 8658 || x === 8660 || x === 8679 || x === 8704 || x === 8706 || x === 8707 || x === 8711 || x === 8712 || x === 8715 || x === 8719 || x === 8721 || x === 8725 || x === 8730 || x >= 8733 && x <= 8736 || x === 8739 || x === 8741 || x >= 8743 && x <= 8748 || x === 8750 || x >= 8756 && x <= 8759 || x === 8764 || x === 8765 || x === 8776 || x === 8780 || x === 8786 || x === 8800 || x === 8801 || x >= 8804 && x <= 8807 || x === 8810 || x === 8811 || x === 8814 || x === 8815 || x === 8834 || x === 8835 || x === 8838 || x === 8839 || x === 8853 || x === 8857 || x === 8869 || x === 8895 || x === 8978 || x >= 9312 && x <= 9449 || x >= 9451 && x <= 9547 || x >= 9552 && x <= 9587 || x >= 9600 && x <= 9615 || x >= 9618 && x <= 9621 || x === 9632 || x === 9633 || x >= 9635 && x <= 9641 || x === 9650 || x === 9651 || x === 9654 || x === 9655 || x === 9660 || x === 9661 || x === 9664 || x === 9665 || x >= 9670 && x <= 9672 || x === 9675 || x >= 9678 && x <= 9681 || x >= 9698 && x <= 9701 || x === 9711 || x === 9733 || x === 9734 || x === 9737 || x === 9742 || x === 9743 || x === 9756 || x === 9758 || x === 9792 || x === 9794 || x === 9824 || x === 9825 || x >= 9827 && x <= 9829 || x >= 9831 && x <= 9834 || x === 9836 || x === 9837 || x === 9839 || x === 9886 || x === 9887 || x === 9919 || x >= 9926 && x <= 9933 || x >= 9935 && x <= 9939 || x >= 9941 && x <= 9953 || x === 9955 || x === 9960 || x === 9961 || x >= 9963 && x <= 9969 || x === 9972 || x >= 9974 && x <= 9977 || x === 9979 || x === 9980 || x === 9982 || x === 9983 || x === 10045 || x >= 10102 && x <= 10111 || x >= 11094 && x <= 11097 || x >= 12872 && x <= 12879 || x >= 57344 && x <= 63743 || x >= 65024 && x <= 65039 || x === 65533 || x >= 127232 && x <= 127242 || x >= 127248 && x <= 127277 || x >= 127280 && x <= 127337 || x >= 127344 && x <= 127373 || x === 127375 || x === 127376 || x >= 127387 && x <= 127404 || x >= 917760 && x <= 917999 || x >= 983040 && x <= 1048573 || x >= 1048576 && x <= 1114109;
+function isAmbiguous(x2) {
+  return x2 === 161 || x2 === 164 || x2 === 167 || x2 === 168 || x2 === 170 || x2 === 173 || x2 === 174 || x2 >= 176 && x2 <= 180 || x2 >= 182 && x2 <= 186 || x2 >= 188 && x2 <= 191 || x2 === 198 || x2 === 208 || x2 === 215 || x2 === 216 || x2 >= 222 && x2 <= 225 || x2 === 230 || x2 >= 232 && x2 <= 234 || x2 === 236 || x2 === 237 || x2 === 240 || x2 === 242 || x2 === 243 || x2 >= 247 && x2 <= 250 || x2 === 252 || x2 === 254 || x2 === 257 || x2 === 273 || x2 === 275 || x2 === 283 || x2 === 294 || x2 === 295 || x2 === 299 || x2 >= 305 && x2 <= 307 || x2 === 312 || x2 >= 319 && x2 <= 322 || x2 === 324 || x2 >= 328 && x2 <= 331 || x2 === 333 || x2 === 338 || x2 === 339 || x2 === 358 || x2 === 359 || x2 === 363 || x2 === 462 || x2 === 464 || x2 === 466 || x2 === 468 || x2 === 470 || x2 === 472 || x2 === 474 || x2 === 476 || x2 === 593 || x2 === 609 || x2 === 708 || x2 === 711 || x2 >= 713 && x2 <= 715 || x2 === 717 || x2 === 720 || x2 >= 728 && x2 <= 731 || x2 === 733 || x2 === 735 || x2 >= 768 && x2 <= 879 || x2 >= 913 && x2 <= 929 || x2 >= 931 && x2 <= 937 || x2 >= 945 && x2 <= 961 || x2 >= 963 && x2 <= 969 || x2 === 1025 || x2 >= 1040 && x2 <= 1103 || x2 === 1105 || x2 === 8208 || x2 >= 8211 && x2 <= 8214 || x2 === 8216 || x2 === 8217 || x2 === 8220 || x2 === 8221 || x2 >= 8224 && x2 <= 8226 || x2 >= 8228 && x2 <= 8231 || x2 === 8240 || x2 === 8242 || x2 === 8243 || x2 === 8245 || x2 === 8251 || x2 === 8254 || x2 === 8308 || x2 === 8319 || x2 >= 8321 && x2 <= 8324 || x2 === 8364 || x2 === 8451 || x2 === 8453 || x2 === 8457 || x2 === 8467 || x2 === 8470 || x2 === 8481 || x2 === 8482 || x2 === 8486 || x2 === 8491 || x2 === 8531 || x2 === 8532 || x2 >= 8539 && x2 <= 8542 || x2 >= 8544 && x2 <= 8555 || x2 >= 8560 && x2 <= 8569 || x2 === 8585 || x2 >= 8592 && x2 <= 8601 || x2 === 8632 || x2 === 8633 || x2 === 8658 || x2 === 8660 || x2 === 8679 || x2 === 8704 || x2 === 8706 || x2 === 8707 || x2 === 8711 || x2 === 8712 || x2 === 8715 || x2 === 8719 || x2 === 8721 || x2 === 8725 || x2 === 8730 || x2 >= 8733 && x2 <= 8736 || x2 === 8739 || x2 === 8741 || x2 >= 8743 && x2 <= 8748 || x2 === 8750 || x2 >= 8756 && x2 <= 8759 || x2 === 8764 || x2 === 8765 || x2 === 8776 || x2 === 8780 || x2 === 8786 || x2 === 8800 || x2 === 8801 || x2 >= 8804 && x2 <= 8807 || x2 === 8810 || x2 === 8811 || x2 === 8814 || x2 === 8815 || x2 === 8834 || x2 === 8835 || x2 === 8838 || x2 === 8839 || x2 === 8853 || x2 === 8857 || x2 === 8869 || x2 === 8895 || x2 === 8978 || x2 >= 9312 && x2 <= 9449 || x2 >= 9451 && x2 <= 9547 || x2 >= 9552 && x2 <= 9587 || x2 >= 9600 && x2 <= 9615 || x2 >= 9618 && x2 <= 9621 || x2 === 9632 || x2 === 9633 || x2 >= 9635 && x2 <= 9641 || x2 === 9650 || x2 === 9651 || x2 === 9654 || x2 === 9655 || x2 === 9660 || x2 === 9661 || x2 === 9664 || x2 === 9665 || x2 >= 9670 && x2 <= 9672 || x2 === 9675 || x2 >= 9678 && x2 <= 9681 || x2 >= 9698 && x2 <= 9701 || x2 === 9711 || x2 === 9733 || x2 === 9734 || x2 === 9737 || x2 === 9742 || x2 === 9743 || x2 === 9756 || x2 === 9758 || x2 === 9792 || x2 === 9794 || x2 === 9824 || x2 === 9825 || x2 >= 9827 && x2 <= 9829 || x2 >= 9831 && x2 <= 9834 || x2 === 9836 || x2 === 9837 || x2 === 9839 || x2 === 9886 || x2 === 9887 || x2 === 9919 || x2 >= 9926 && x2 <= 9933 || x2 >= 9935 && x2 <= 9939 || x2 >= 9941 && x2 <= 9953 || x2 === 9955 || x2 === 9960 || x2 === 9961 || x2 >= 9963 && x2 <= 9969 || x2 === 9972 || x2 >= 9974 && x2 <= 9977 || x2 === 9979 || x2 === 9980 || x2 === 9982 || x2 === 9983 || x2 === 10045 || x2 >= 10102 && x2 <= 10111 || x2 >= 11094 && x2 <= 11097 || x2 >= 12872 && x2 <= 12879 || x2 >= 57344 && x2 <= 63743 || x2 >= 65024 && x2 <= 65039 || x2 === 65533 || x2 >= 127232 && x2 <= 127242 || x2 >= 127248 && x2 <= 127277 || x2 >= 127280 && x2 <= 127337 || x2 >= 127344 && x2 <= 127373 || x2 === 127375 || x2 === 127376 || x2 >= 127387 && x2 <= 127404 || x2 >= 917760 && x2 <= 917999 || x2 >= 983040 && x2 <= 1048573 || x2 >= 1048576 && x2 <= 1114109;
 }
-function isFullWidth(x) {
-  return x === 12288 || x >= 65281 && x <= 65376 || x >= 65504 && x <= 65510;
+function isFullWidth(x2) {
+  return x2 === 12288 || x2 >= 65281 && x2 <= 65376 || x2 >= 65504 && x2 <= 65510;
 }
-function isWide(x) {
-  return x >= 4352 && x <= 4447 || x === 8986 || x === 8987 || x === 9001 || x === 9002 || x >= 9193 && x <= 9196 || x === 9200 || x === 9203 || x === 9725 || x === 9726 || x === 9748 || x === 9749 || x >= 9776 && x <= 9783 || x >= 9800 && x <= 9811 || x === 9855 || x >= 9866 && x <= 9871 || x === 9875 || x === 9889 || x === 9898 || x === 9899 || x === 9917 || x === 9918 || x === 9924 || x === 9925 || x === 9934 || x === 9940 || x === 9962 || x === 9970 || x === 9971 || x === 9973 || x === 9978 || x === 9981 || x === 9989 || x === 9994 || x === 9995 || x === 10024 || x === 10060 || x === 10062 || x >= 10067 && x <= 10069 || x === 10071 || x >= 10133 && x <= 10135 || x === 10160 || x === 10175 || x === 11035 || x === 11036 || x === 11088 || x === 11093 || x >= 11904 && x <= 11929 || x >= 11931 && x <= 12019 || x >= 12032 && x <= 12245 || x >= 12272 && x <= 12287 || x >= 12289 && x <= 12350 || x >= 12353 && x <= 12438 || x >= 12441 && x <= 12543 || x >= 12549 && x <= 12591 || x >= 12593 && x <= 12686 || x >= 12688 && x <= 12773 || x >= 12783 && x <= 12830 || x >= 12832 && x <= 12871 || x >= 12880 && x <= 42124 || x >= 42128 && x <= 42182 || x >= 43360 && x <= 43388 || x >= 44032 && x <= 55203 || x >= 63744 && x <= 64255 || x >= 65040 && x <= 65049 || x >= 65072 && x <= 65106 || x >= 65108 && x <= 65126 || x >= 65128 && x <= 65131 || x >= 94176 && x <= 94180 || x >= 94192 && x <= 94198 || x >= 94208 && x <= 101589 || x >= 101631 && x <= 101662 || x >= 101760 && x <= 101874 || x >= 110576 && x <= 110579 || x >= 110581 && x <= 110587 || x === 110589 || x === 110590 || x >= 110592 && x <= 110882 || x === 110898 || x >= 110928 && x <= 110930 || x === 110933 || x >= 110948 && x <= 110951 || x >= 110960 && x <= 111355 || x >= 119552 && x <= 119638 || x >= 119648 && x <= 119670 || x === 126980 || x === 127183 || x === 127374 || x >= 127377 && x <= 127386 || x >= 127488 && x <= 127490 || x >= 127504 && x <= 127547 || x >= 127552 && x <= 127560 || x === 127568 || x === 127569 || x >= 127584 && x <= 127589 || x >= 127744 && x <= 127776 || x >= 127789 && x <= 127797 || x >= 127799 && x <= 127868 || x >= 127870 && x <= 127891 || x >= 127904 && x <= 127946 || x >= 127951 && x <= 127955 || x >= 127968 && x <= 127984 || x === 127988 || x >= 127992 && x <= 128062 || x === 128064 || x >= 128066 && x <= 128252 || x >= 128255 && x <= 128317 || x >= 128331 && x <= 128334 || x >= 128336 && x <= 128359 || x === 128378 || x === 128405 || x === 128406 || x === 128420 || x >= 128507 && x <= 128591 || x >= 128640 && x <= 128709 || x === 128716 || x >= 128720 && x <= 128722 || x >= 128725 && x <= 128728 || x >= 128732 && x <= 128735 || x === 128747 || x === 128748 || x >= 128756 && x <= 128764 || x >= 128992 && x <= 129003 || x === 129008 || x >= 129292 && x <= 129338 || x >= 129340 && x <= 129349 || x >= 129351 && x <= 129535 || x >= 129648 && x <= 129660 || x >= 129664 && x <= 129674 || x >= 129678 && x <= 129734 || x === 129736 || x >= 129741 && x <= 129756 || x >= 129759 && x <= 129770 || x >= 129775 && x <= 129784 || x >= 131072 && x <= 196605 || x >= 196608 && x <= 262141;
+function isWide(x2) {
+  return x2 >= 4352 && x2 <= 4447 || x2 === 8986 || x2 === 8987 || x2 === 9001 || x2 === 9002 || x2 >= 9193 && x2 <= 9196 || x2 === 9200 || x2 === 9203 || x2 === 9725 || x2 === 9726 || x2 === 9748 || x2 === 9749 || x2 >= 9776 && x2 <= 9783 || x2 >= 9800 && x2 <= 9811 || x2 === 9855 || x2 >= 9866 && x2 <= 9871 || x2 === 9875 || x2 === 9889 || x2 === 9898 || x2 === 9899 || x2 === 9917 || x2 === 9918 || x2 === 9924 || x2 === 9925 || x2 === 9934 || x2 === 9940 || x2 === 9962 || x2 === 9970 || x2 === 9971 || x2 === 9973 || x2 === 9978 || x2 === 9981 || x2 === 9989 || x2 === 9994 || x2 === 9995 || x2 === 10024 || x2 === 10060 || x2 === 10062 || x2 >= 10067 && x2 <= 10069 || x2 === 10071 || x2 >= 10133 && x2 <= 10135 || x2 === 10160 || x2 === 10175 || x2 === 11035 || x2 === 11036 || x2 === 11088 || x2 === 11093 || x2 >= 11904 && x2 <= 11929 || x2 >= 11931 && x2 <= 12019 || x2 >= 12032 && x2 <= 12245 || x2 >= 12272 && x2 <= 12287 || x2 >= 12289 && x2 <= 12350 || x2 >= 12353 && x2 <= 12438 || x2 >= 12441 && x2 <= 12543 || x2 >= 12549 && x2 <= 12591 || x2 >= 12593 && x2 <= 12686 || x2 >= 12688 && x2 <= 12773 || x2 >= 12783 && x2 <= 12830 || x2 >= 12832 && x2 <= 12871 || x2 >= 12880 && x2 <= 42124 || x2 >= 42128 && x2 <= 42182 || x2 >= 43360 && x2 <= 43388 || x2 >= 44032 && x2 <= 55203 || x2 >= 63744 && x2 <= 64255 || x2 >= 65040 && x2 <= 65049 || x2 >= 65072 && x2 <= 65106 || x2 >= 65108 && x2 <= 65126 || x2 >= 65128 && x2 <= 65131 || x2 >= 94176 && x2 <= 94180 || x2 >= 94192 && x2 <= 94198 || x2 >= 94208 && x2 <= 101589 || x2 >= 101631 && x2 <= 101662 || x2 >= 101760 && x2 <= 101874 || x2 >= 110576 && x2 <= 110579 || x2 >= 110581 && x2 <= 110587 || x2 === 110589 || x2 === 110590 || x2 >= 110592 && x2 <= 110882 || x2 === 110898 || x2 >= 110928 && x2 <= 110930 || x2 === 110933 || x2 >= 110948 && x2 <= 110951 || x2 >= 110960 && x2 <= 111355 || x2 >= 119552 && x2 <= 119638 || x2 >= 119648 && x2 <= 119670 || x2 === 126980 || x2 === 127183 || x2 === 127374 || x2 >= 127377 && x2 <= 127386 || x2 >= 127488 && x2 <= 127490 || x2 >= 127504 && x2 <= 127547 || x2 >= 127552 && x2 <= 127560 || x2 === 127568 || x2 === 127569 || x2 >= 127584 && x2 <= 127589 || x2 >= 127744 && x2 <= 127776 || x2 >= 127789 && x2 <= 127797 || x2 >= 127799 && x2 <= 127868 || x2 >= 127870 && x2 <= 127891 || x2 >= 127904 && x2 <= 127946 || x2 >= 127951 && x2 <= 127955 || x2 >= 127968 && x2 <= 127984 || x2 === 127988 || x2 >= 127992 && x2 <= 128062 || x2 === 128064 || x2 >= 128066 && x2 <= 128252 || x2 >= 128255 && x2 <= 128317 || x2 >= 128331 && x2 <= 128334 || x2 >= 128336 && x2 <= 128359 || x2 === 128378 || x2 === 128405 || x2 === 128406 || x2 === 128420 || x2 >= 128507 && x2 <= 128591 || x2 >= 128640 && x2 <= 128709 || x2 === 128716 || x2 >= 128720 && x2 <= 128722 || x2 >= 128725 && x2 <= 128728 || x2 >= 128732 && x2 <= 128735 || x2 === 128747 || x2 === 128748 || x2 >= 128756 && x2 <= 128764 || x2 >= 128992 && x2 <= 129003 || x2 === 129008 || x2 >= 129292 && x2 <= 129338 || x2 >= 129340 && x2 <= 129349 || x2 >= 129351 && x2 <= 129535 || x2 >= 129648 && x2 <= 129660 || x2 >= 129664 && x2 <= 129674 || x2 >= 129678 && x2 <= 129734 || x2 === 129736 || x2 >= 129741 && x2 <= 129756 || x2 >= 129759 && x2 <= 129770 || x2 >= 129775 && x2 <= 129784 || x2 >= 131072 && x2 <= 196605 || x2 >= 196608 && x2 <= 262141;
 }
 
 // node_modules/get-east-asian-width/index.js
@@ -55925,7 +56940,7 @@ var colorize = (str, color, type) => {
 var colorize_default = colorize;
 
 // node_modules/ink/build/render-border.js
-var renderBorder = (x, y, node2, output) => {
+var renderBorder = (x2, y, node2, output) => {
   if (node2.style.borderStyle) {
     const width = node2.yogaNode.getComputedWidth();
     const height = node2.yogaNode.getComputedHeight();
@@ -55970,25 +56985,25 @@ var renderBorder = (x, y, node2, output) => {
     }
     const offsetY = showTopBorder ? 1 : 0;
     if (topBorder) {
-      output.write(x, y, topBorder, { transformers: [] });
+      output.write(x2, y, topBorder, { transformers: [] });
     }
     if (showLeftBorder) {
-      output.write(x, y + offsetY, leftBorder, { transformers: [] });
+      output.write(x2, y + offsetY, leftBorder, { transformers: [] });
     }
     if (showRightBorder) {
-      output.write(x + width - 1, y + offsetY, rightBorder, {
+      output.write(x2 + width - 1, y + offsetY, rightBorder, {
         transformers: []
       });
     }
     if (bottomBorder) {
-      output.write(x, y + height - 1, bottomBorder, { transformers: [] });
+      output.write(x2, y + height - 1, bottomBorder, { transformers: [] });
     }
   }
 };
 var render_border_default = renderBorder;
 
 // node_modules/ink/build/render-background.js
-var renderBackground = (x, y, node2, output) => {
+var renderBackground = (x2, y, node2, output) => {
   if (!node2.style.backgroundColor) {
     return;
   }
@@ -56005,7 +57020,7 @@ var renderBackground = (x, y, node2, output) => {
   }
   const backgroundLine = colorize_default(" ".repeat(contentWidth), node2.style.backgroundColor, "background");
   for (let row = 0;row < contentHeight; row++) {
-    output.write(x + leftBorderWidth, y + topBorderHeight + row, backgroundLine, { transformers: [] });
+    output.write(x2 + leftBorderWidth, y + topBorderHeight + row, backgroundLine, { transformers: [] });
   }
 };
 var render_background_default = renderBackground;
@@ -56068,7 +57083,7 @@ var renderNodeToOutput = (node2, output, options) => {
     if (yogaNode.getDisplay() === src_default.DISPLAY_NONE) {
       return;
     }
-    const x = offsetX + yogaNode.getComputedLeft();
+    const x2 = offsetX + yogaNode.getComputedLeft();
     const y = offsetY + yogaNode.getComputedTop();
     let newTransformers = transformers;
     if (typeof node2.internal_transform === "function") {
@@ -56084,29 +57099,29 @@ var renderNodeToOutput = (node2, output, options) => {
           text = wrap_text_default(text, maxWidth, textWrap);
         }
         text = applyPaddingToText(node2, text);
-        output.write(x, y, text, { transformers: newTransformers });
+        output.write(x2, y, text, { transformers: newTransformers });
       }
       return;
     }
     let clipped = false;
     if (node2.nodeName === "ink-box") {
-      render_background_default(x, y, node2, output);
-      render_border_default(x, y, node2, output);
+      render_background_default(x2, y, node2, output);
+      render_border_default(x2, y, node2, output);
       const clipHorizontally = node2.style.overflowX === "hidden" || node2.style.overflow === "hidden";
       const clipVertically = node2.style.overflowY === "hidden" || node2.style.overflow === "hidden";
       if (clipHorizontally || clipVertically) {
-        const x1 = clipHorizontally ? x + yogaNode.getComputedBorder(src_default.EDGE_LEFT) : undefined;
-        const x2 = clipHorizontally ? x + yogaNode.getComputedWidth() - yogaNode.getComputedBorder(src_default.EDGE_RIGHT) : undefined;
+        const x1 = clipHorizontally ? x2 + yogaNode.getComputedBorder(src_default.EDGE_LEFT) : undefined;
+        const x22 = clipHorizontally ? x2 + yogaNode.getComputedWidth() - yogaNode.getComputedBorder(src_default.EDGE_RIGHT) : undefined;
         const y1 = clipVertically ? y + yogaNode.getComputedBorder(src_default.EDGE_TOP) : undefined;
         const y2 = clipVertically ? y + yogaNode.getComputedHeight() - yogaNode.getComputedBorder(src_default.EDGE_BOTTOM) : undefined;
-        output.clip({ x1, x2, y1, y2 });
+        output.clip({ x1, x2: x22, y1, y2 });
         clipped = true;
       }
     }
     if (node2.nodeName === "ink-root" || node2.nodeName === "ink-box") {
       for (const childNode of node2.childNodes) {
         renderNodeToOutput(childNode, output, {
-          offsetX: x,
+          offsetX: x2,
           offsetY: y,
           transformers: newTransformers,
           skipStaticElements
@@ -56228,15 +57243,15 @@ function styledCharsFromTokens(tokens) {
 }
 function styledCharsToString(chars) {
   let ret = "";
-  for (let i = 0;i < chars.length; i++) {
-    const char = chars[i];
-    if (i === 0) {
+  for (let i2 = 0;i2 < chars.length; i2++) {
+    const char = chars[i2];
+    if (i2 === 0) {
       ret += ansiCodesToString(char.styles);
     } else {
-      ret += ansiCodesToString(diffAnsiCodes(chars[i - 1].styles, char.styles));
+      ret += ansiCodesToString(diffAnsiCodes(chars[i2 - 1].styles, char.styles));
     }
     ret += char.value;
-    if (i === chars.length - 1) {
+    if (i2 === chars.length - 1) {
       ret += ansiCodesToString(diffAnsiCodes(char.styles, []));
     }
   }
@@ -56285,16 +57300,16 @@ function splitCompoundSGRSequences(code) {
   }
   const codeParts = code.slice(2, -1).split(";");
   const ret = [];
-  for (let i = 0;i < codeParts.length; i++) {
-    const rawCode = codeParts[i];
+  for (let i2 = 0;i2 < codeParts.length; i2++) {
+    const rawCode = codeParts[i2];
     if (rawCode === "38" || rawCode === "48") {
-      if (i + 2 < codeParts.length && codeParts[i + 1] === "5") {
-        ret.push(codeParts.slice(i, i + 3).join(";"));
-        i += 2;
+      if (i2 + 2 < codeParts.length && codeParts[i2 + 1] === "5") {
+        ret.push(codeParts.slice(i2, i2 + 3).join(";"));
+        i2 += 2;
         continue;
-      } else if (i + 4 < codeParts.length && codeParts[i + 1] === "2") {
-        ret.push(codeParts.slice(i, i + 5).join(";"));
-        i += 4;
+      } else if (i2 + 4 < codeParts.length && codeParts[i2 + 1] === "2") {
+        ret.push(codeParts.slice(i2, i2 + 5).join(";"));
+        i2 += 4;
         continue;
       }
     }
@@ -56363,14 +57378,14 @@ class Output {
     this.width = width;
     this.height = height;
   }
-  write(x, y, text, options) {
+  write(x2, y, text, options) {
     const { transformers } = options;
     if (!text) {
       return;
     }
     this.operations.push({
       type: "write",
-      x,
+      x: x2,
       y,
       text,
       transformers
@@ -56391,7 +57406,7 @@ class Output {
     const output = [];
     for (let y = 0;y < this.height; y++) {
       const row = [];
-      for (let x = 0;x < this.width; x++) {
+      for (let x2 = 0;x2 < this.width; x2++) {
         row.push({
           type: "char",
           value: " ",
@@ -56411,7 +57426,7 @@ class Output {
       }
       if (operation.type === "write") {
         const { text, transformers } = operation;
-        let { x, y } = operation;
+        let { x: x2, y } = operation;
         let lines = text.split(`
 `);
         const clip = clips.at(-1);
@@ -56420,7 +57435,7 @@ class Output {
           const clipVertically = typeof clip?.y1 === "number" && typeof clip?.y2 === "number";
           if (clipHorizontally) {
             const width = widestLine(text);
-            if (x + width < clip.x1 || x > clip.x2) {
+            if (x2 + width < clip.x1 || x2 > clip.x2) {
               continue;
             }
           }
@@ -56432,13 +57447,13 @@ class Output {
           }
           if (clipHorizontally) {
             lines = lines.map((line) => {
-              const from = x < clip.x1 ? clip.x1 - x : 0;
+              const from = x2 < clip.x1 ? clip.x1 - x2 : 0;
               const width = stringWidth3(line);
-              const to = x + width > clip.x2 ? clip.x2 - x : width;
+              const to = x2 + width > clip.x2 ? clip.x2 - x2 : width;
               return sliceAnsi(line, from, to);
             });
-            if (x < clip.x1) {
-              x = clip.x1;
+            if (x2 < clip.x1) {
+              x2 = clip.x1;
             }
           }
           if (clipVertically) {
@@ -56461,7 +57476,7 @@ class Output {
             line = transformer(line, index);
           }
           const characters = styledCharsFromTokens(tokenize2(line));
-          let offsetX = x;
+          let offsetX = x2;
           for (const character of characters) {
             currentLine[offsetX] = character;
             const characterWidth = Math.max(1, stringWidth3(character.value));
@@ -56666,12 +57681,12 @@ var createIncremental = (stream, { showCursor = false } = {}) => {
     } else {
       buffer.push(exports_base.cursorUp(previousCount - 1));
     }
-    for (let i = 0;i < visibleCount; i++) {
-      if (nextLines[i] === previousLines[i]) {
+    for (let i2 = 0;i2 < visibleCount; i2++) {
+      if (nextLines[i2] === previousLines[i2]) {
         buffer.push(exports_base.cursorNextLine);
         continue;
       }
-      buffer.push(exports_base.cursorTo(0) + nextLines[i] + exports_base.eraseEndLine + `
+      buffer.push(exports_base.cursorTo(0) + nextLines[i2] + exports_base.eraseEndLine + `
 `);
     }
     stream.write(buffer.join(""));
@@ -56780,7 +57795,7 @@ var FocusContext_default = FocusContext;
 // node_modules/ink/build/components/ErrorOverview.js
 var import_react11 = __toESM(require_react(), 1);
 var import_stack_utils = __toESM(require_stack_utils(), 1);
-import * as fs6 from "node:fs";
+import * as fs10 from "node:fs";
 import { cwd } from "node:process";
 
 // node_modules/convert-to-spaces/dist/index.js
@@ -56793,14 +57808,14 @@ var dist_default2 = convertToSpaces;
 var generateLineNumbers = (line, around) => {
   const lineNumbers = [];
   const min2 = line - around;
-  const max2 = line + around;
-  for (let lineNumber = min2;lineNumber <= max2; lineNumber++) {
+  const max3 = line + around;
+  for (let lineNumber = min2;lineNumber <= max3; lineNumber++) {
     lineNumbers.push(lineNumber);
   }
   return lineNumbers;
 };
 var codeExcerpt = (source, line, options = {}) => {
-  var _a3;
+  var _a4;
   if (typeof source !== "string") {
     throw new TypeError("Source code is missing.");
   }
@@ -56811,7 +57826,7 @@ var codeExcerpt = (source, line, options = {}) => {
   if (line > lines.length) {
     return;
   }
-  return generateLineNumbers(line, (_a3 = options.around) !== null && _a3 !== undefined ? _a3 : 3).filter((line2) => lines[line2 - 1] !== undefined).map((line2) => ({ line: line2, value: lines[line2 - 1] }));
+  return generateLineNumbers(line, (_a4 = options.around) !== null && _a4 !== undefined ? _a4 : 3).filter((line2) => lines[line2 - 1] !== undefined).map((line2) => ({ line: line2, value: lines[line2 - 1] }));
 };
 var dist_default3 = codeExcerpt;
 
@@ -56900,8 +57915,8 @@ function Text5({ color, backgroundColor, dimColor = false, bold = false, italic 
 }
 
 // node_modules/ink/build/components/ErrorOverview.js
-var cleanupPath = (path7) => {
-  return path7?.replace(`file://${cwd()}/`, "");
+var cleanupPath = (path10) => {
+  return path10?.replace(`file://${cwd()}/`, "");
 };
 var stackUtils = new import_stack_utils.default({
   cwd: cwd(),
@@ -56914,8 +57929,8 @@ function ErrorOverview({ error }) {
   const filePath = cleanupPath(origin?.file);
   let excerpt;
   let lineWidth = 0;
-  if (filePath && origin?.line && fs6.existsSync(filePath)) {
-    const sourceCode = fs6.readFileSync(filePath, "utf8");
+  if (filePath && origin?.line && fs10.existsSync(filePath)) {
+    const sourceCode = fs10.readFileSync(filePath, "utf8");
     excerpt = dist_default3(sourceCode, origin.line);
     if (excerpt) {
       for (const { line } of excerpt) {
@@ -57955,23 +58970,23 @@ var downloadStatusIndicators = {
 };
 
 // src/api/data/file.ts
-import fs7 from "fs";
+import fs11 from "fs";
 async function createMD5ListFile(md5List) {
   const filename = `libgen_downloader_md5_list_${Date.now().toString()}.txt`;
-  await fs7.promises.writeFile(`./${filename}`, md5List.join(`
+  await fs11.promises.writeFile(`./${filename}`, md5List.join(`
 `));
   return filename;
 }
 
 // src/library/direct-download.ts
-import path7 from "node:path";
-import fs8 from "node:fs";
+import path10 from "node:path";
+import fs12 from "node:fs";
 async function saveSource(entry, md5, paths, downloadStream, callbacks) {
-  await fs8.promises.mkdir(paths.assetsDirectory, { recursive: true });
+  await fs12.promises.mkdir(paths.assetsDirectory, { recursive: true });
   await downloadFile({
     downloadStream,
     destinationPath: paths.sourcePath,
-    filename: path7.basename(paths.sourcePath),
+    filename: path10.basename(paths.sourcePath),
     ...callbacks
   });
   const selected = {
@@ -57997,7 +59012,7 @@ async function saveEntrySource(entry, downloadStream, callbacks) {
 }
 async function saveMD5Source(md5, downloadStream, callbacks) {
   const responseFilename = getResponseFilename(downloadStream) || "source.bin";
-  const extension = normalizeExtension(path7.extname(responseFilename).slice(1));
+  const extension = normalizeExtension(path10.extname(responseFilename).slice(1));
   const paths = createMD5BookPaths(md5, extension);
   const entry = {
     id: md5,
@@ -59213,10 +60228,10 @@ function TextInput({ value: originalValue, placeholder = "", focus = true, mask,
   if (showCursor && focus) {
     renderedPlaceholder = placeholder.length > 0 ? source_default2.inverse(placeholder[0]) + source_default2.grey(placeholder.slice(1)) : source_default2.inverse(" ");
     renderedValue = value.length > 0 ? "" : source_default2.inverse(" ");
-    let i = 0;
+    let i2 = 0;
     for (const char of value) {
-      renderedValue += i >= cursorOffset - cursorActualWidth && i <= cursorOffset ? source_default2.inverse(char) : char;
-      i++;
+      renderedValue += i2 >= cursorOffset - cursorActualWidth && i2 <= cursorOffset ? source_default2.inverse(char) : char;
+      i2++;
     }
     if (value.length > 0 && cursorOffset === value.length) {
       renderedValue += source_default2.inverse(" ");
@@ -59991,10 +61006,10 @@ function getBaseConfiguration(standard, base2) {
   }
   return { isDecimal: true, ceil: 1000, actualStandard: JEDEC };
 }
-function handleZeroValue(precision, actualStandard, bits, symbols, full, fullforms, output, spacer) {
+function handleZeroValue(precision, actualStandard, bits2, symbols, full, fullforms, output, spacer) {
   const result2 = [];
   result2[0] = precision > 0 ? 0 .toPrecision(precision) : 0;
-  const u = result2[1] = STRINGS.symbol[actualStandard][bits ? BITS : BYTES][0];
+  const u = result2[1] = STRINGS.symbol[actualStandard][bits2 ? BITS : BYTES][0];
   if (output === EXPONENT) {
     return 0;
   }
@@ -60002,7 +61017,7 @@ function handleZeroValue(precision, actualStandard, bits, symbols, full, fullfor
     result2[1] = symbols[result2[1]];
   }
   if (full) {
-    result2[1] = fullforms[0] || STRINGS.fullform[actualStandard][0] + (bits ? BIT : BYTE);
+    result2[1] = fullforms[0] || STRINGS.fullform[actualStandard][0] + (bits2 ? BIT : BYTE);
   }
   return output === ARRAY ? result2 : output === OBJECT ? {
     value: result2[0],
@@ -60011,10 +61026,10 @@ function handleZeroValue(precision, actualStandard, bits, symbols, full, fullfor
     unit: u
   } : result2.join(spacer);
 }
-function calculateOptimizedValue(num, e, isDecimal, bits, ceil2) {
+function calculateOptimizedValue(num, e, isDecimal, bits2, ceil2) {
   const d = isDecimal ? DECIMAL_POWERS[e] : BINARY_POWERS[e];
   let result2 = num / d;
-  if (bits) {
+  if (bits2) {
     result2 *= 8;
     if (result2 >= ceil2 && e < 8) {
       result2 /= ceil2;
@@ -60023,11 +61038,11 @@ function calculateOptimizedValue(num, e, isDecimal, bits, ceil2) {
   }
   return { result: result2, e };
 }
-function applyPrecisionHandling(value, precision, e, num, isDecimal, bits, ceil2, roundingFunc, round2) {
+function applyPrecisionHandling(value, precision, e, num, isDecimal, bits2, ceil2, roundingFunc, round2) {
   let result2 = value.toPrecision(precision);
   if (result2.includes(E) && e < 8) {
     e++;
-    const { result: valueResult } = calculateOptimizedValue(num, e, isDecimal, bits, ceil2);
+    const { result: valueResult } = calculateOptimizedValue(num, e, isDecimal, bits2, ceil2);
     const p = round2 > 0 ? Math.pow(10, round2) : 1;
     result2 = (p === 1 ? roundingFunc(valueResult) : roundingFunc(valueResult * p) / p).toPrecision(precision);
   }
@@ -60044,17 +61059,17 @@ function applyNumberFormatting(value, locale, localeOptions, separator, pad2, ro
   }
   if (pad2 && round2 > 0) {
     const resultStr = result2.toString();
-    const x = separator || ((resultStr.match(/(\D)/g) || []).pop() || PERIOD);
-    const tmp = resultStr.split(x);
+    const x2 = separator || ((resultStr.match(/(\D)/g) || []).pop() || PERIOD);
+    const tmp = resultStr.split(x2);
     const s = tmp[1] || EMPTY;
     const l = s.length;
     const n = round2 - l;
-    result2 = `${tmp[0]}${x}${s.padEnd(l + n, ZERO2)}`;
+    result2 = `${tmp[0]}${x2}${s.padEnd(l + n, ZERO2)}`;
   }
   return result2;
 }
 function filesize(arg, {
-  bits = false,
+  bits: bits2 = false,
   pad: pad2 = false,
   base: base2 = -1,
   round: round2 = 2,
@@ -60084,7 +61099,7 @@ function filesize(arg, {
     num = -num;
   }
   if (num === 0) {
-    return handleZeroValue(precision, actualStandard, bits, symbols, full, fullforms, output, spacer);
+    return handleZeroValue(precision, actualStandard, bits2, symbols, full, fullforms, output, spacer);
   }
   if (e === -1 || isNaN(e)) {
     e = isDecimal ? Math.floor(Math.log(num) / LOG_10_1000) : Math.floor(Math.log(num) / LOG_2_1024);
@@ -60101,7 +61116,7 @@ function filesize(arg, {
   if (output === EXPONENT) {
     return e;
   }
-  const { result: valueResult, e: valueExponent } = calculateOptimizedValue(num, e, isDecimal, bits, ceil2);
+  const { result: valueResult, e: valueExponent } = calculateOptimizedValue(num, e, isDecimal, bits2, ceil2);
   val = valueResult;
   e = valueExponent;
   const p = e > 0 && round2 > 0 ? Math.pow(10, round2) : 1;
@@ -60111,12 +61126,12 @@ function filesize(arg, {
     e++;
   }
   if (precision > 0) {
-    const precisionResult = applyPrecisionHandling(result2[0], precision, e, num, isDecimal, bits, ceil2, roundingFunc, round2);
+    const precisionResult = applyPrecisionHandling(result2[0], precision, e, num, isDecimal, bits2, ceil2, roundingFunc, round2);
     result2[0] = precisionResult.value;
     e = precisionResult.e;
   }
-  const symbolTable = STRINGS.symbol[actualStandard][bits ? BITS : BYTES];
-  u = result2[1] = isDecimal && e === 1 ? bits ? SI_KBIT : SI_KBYTE : symbolTable[e];
+  const symbolTable = STRINGS.symbol[actualStandard][bits2 ? BITS : BYTES];
+  u = result2[1] = isDecimal && e === 1 ? bits2 ? SI_KBIT : SI_KBYTE : symbolTable[e];
   if (neg) {
     result2[0] = -result2[0];
   }
@@ -60125,7 +61140,7 @@ function filesize(arg, {
   }
   result2[0] = applyNumberFormatting(result2[0], locale, localeOptions, separator, pad2, round2);
   if (full) {
-    result2[1] = fullforms[e] || STRINGS.fullform[actualStandard][e] + (bits ? BIT : BYTE) + (result2[0] === 1 ? EMPTY : S);
+    result2[1] = fullforms[e] || STRINGS.fullform[actualStandard][e] + (bits2 ? BIT : BYTE) + (result2[0] === 1 ? EMPTY : S);
   }
   if (output === ARRAY) {
     return result2;
@@ -61316,6 +62331,19 @@ Complete: ${downloaded} downloaded, ${skipped} skipped, ${failed} failed.`);
   return results;
 }
 var operate = async (flags) => {
+  if (flags.import) {
+    const result2 = await importLocalBook(flags.import, {
+      libraryRoot: flags.output,
+      title: flags.title,
+      author: flags.author,
+      convert: flags.sourceOnly !== true,
+      onProgress(message) {
+        console.log(`  ${message}`);
+      }
+    });
+    console.log(`${result2.status.toUpperCase()}: ${result2.message}`);
+    return;
+  }
   if (flags.best) {
     const request = parseBookRequest(flags.best);
     if (!request) {
@@ -61325,7 +62353,7 @@ var operate = async (flags) => {
     return;
   }
   if (flags.list) {
-    const markdown = await fs9.promises.readFile(flags.list, "utf8");
+    const markdown = await fs13.promises.readFile(flags.list, "utf8");
     await ingestRequests(parseReadingList(markdown), flags);
     return;
   }
@@ -61347,7 +62375,7 @@ var operate = async (flags) => {
   }
   if (flags.bulk) {
     const filePath = flags.bulk;
-    const data = await fs9.promises.readFile(filePath, "utf8");
+    const data = await fs13.promises.readFile(filePath, "utf8");
     const md5List = data.split(`
 `).filter((line) => line.trim());
     const store = useBoundStore.getState();

@@ -1,6 +1,8 @@
 import { execFile } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { extractSupplementalEpubAssets, type SupplementalAsset } from "./epub";
+import { normalizeBookMarkdown } from "./markdown";
 import { addMarkdownFrontmatter } from "./metadata";
 import type { BookPaths, ConversionResult, RankedCandidate } from "./types";
 
@@ -80,7 +82,8 @@ async function convertTextSource(
   candidate: RankedCandidate
 ): Promise<ConversionResult> {
   await fs.promises.copyFile(paths.sourcePath, paths.markdownPath);
-  await addMarkdownFrontmatter(paths.markdownPath, candidate.entry, candidate.md5);
+  await normalizeBookMarkdown(paths.markdownPath, candidate.entry.title);
+  await addMarkdownFrontmatter(paths.markdownPath, candidate);
   return {
     status: "converted",
     converter: "copy",
@@ -106,7 +109,7 @@ async function convertWithPandoc(
     "pandoc",
     [
       path.basename(paths.sourcePath),
-      "--to=gfm+tex_math_dollars",
+      "--to=gfm-raw_html+tex_math_dollars",
       "--wrap=none",
       "--extract-media=assets",
       `--output=${path.basename(paths.markdownPath)}`,
@@ -122,7 +125,12 @@ async function convertWithPandoc(
     };
   }
 
-  await addMarkdownFrontmatter(paths.markdownPath, candidate.entry, candidate.md5);
+  let supplementalAssets: SupplementalAsset[] = [];
+  if (candidate.entry.extension.toLowerCase() === "epub") {
+    supplementalAssets = await extractSupplementalEpubAssets(paths);
+  }
+  await normalizeBookMarkdown(paths.markdownPath, candidate.entry.title, supplementalAssets);
+  await addMarkdownFrontmatter(paths.markdownPath, candidate);
   return {
     status: "converted",
     converter: "pandoc",
@@ -183,7 +191,8 @@ async function convertWithDocling(
     };
   }
 
-  await addMarkdownFrontmatter(paths.markdownPath, candidate.entry, candidate.md5);
+  await normalizeBookMarkdown(paths.markdownPath, candidate.entry.title);
+  await addMarkdownFrontmatter(paths.markdownPath, candidate);
   return {
     status: "converted",
     converter: "docling",

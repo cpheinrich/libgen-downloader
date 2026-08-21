@@ -1,5 +1,4 @@
 import fs from "node:fs";
-import type { Entry } from "../api/models/entry";
 import type { BookPaths, BookRequest, ConversionResult, RankedCandidate } from "./types";
 
 interface MetadataArguments {
@@ -15,6 +14,13 @@ export async function writeBookRecords({
   selected,
   conversion,
 }: MetadataArguments): Promise<void> {
+  const sourceKind = selected.sourceKind || "libgen";
+  let libgenMD5: string | undefined;
+  let libgenMirrorPath: string | undefined;
+  if (sourceKind === "libgen") {
+    libgenMD5 = selected.md5;
+    libgenMirrorPath = selected.entry.mirror;
+  }
   const metadata = {
     schemaVersion: 1,
     title: selected.entry.title,
@@ -25,8 +31,17 @@ export async function writeBookRecords({
     language: selected.entry.language,
     sourceFormat: selected.entry.extension.toLowerCase(),
     sourceFile: "source." + selected.entry.extension.toLowerCase(),
-    libgenMD5: selected.md5,
-    libgenMirrorPath: selected.entry.mirror,
+    source: {
+      kind: sourceKind,
+      file: "source." + selected.entry.extension.toLowerCase(),
+      format: selected.entry.extension.toLowerCase(),
+      md5: selected.md5,
+      sha256: selected.sourceSHA256,
+      originalFilename: selected.originalFilename,
+      libgenMirrorPath,
+    },
+    libgenMD5,
+    libgenMirrorPath,
     requestedAs: request.sourceLine,
     selection: {
       score: selected.score,
@@ -46,30 +61,41 @@ function yamlString(value: string): string {
   return JSON.stringify(value);
 }
 
-export function createMarkdownFrontmatter(entry: Entry, md5: string): string {
-  return [
+export function createMarkdownFrontmatter(candidate: RankedCandidate): string {
+  const lines = [
     "---",
-    `title: ${yamlString(entry.title)}`,
-    `authors: ${yamlString(entry.authors)}`,
-    `publisher: ${yamlString(entry.publisher)}`,
-    `year: ${yamlString(entry.year)}`,
-    `language: ${yamlString(entry.language)}`,
-    `libgen_md5: ${yamlString(md5)}`,
-    `source_format: ${yamlString(entry.extension.toLowerCase())}`,
-    "---",
-    "",
-  ].join("\n");
+    `title: ${yamlString(candidate.entry.title)}`,
+    `authors: ${yamlString(candidate.entry.authors)}`,
+    `publisher: ${yamlString(candidate.entry.publisher)}`,
+    `year: ${yamlString(candidate.entry.year)}`,
+    `language: ${yamlString(candidate.entry.language)}`,
+    `source_kind: ${yamlString(candidate.sourceKind || "libgen")}`,
+    `source_format: ${yamlString(candidate.entry.extension.toLowerCase())}`,
+  ];
+  if (candidate.sourceKind === "local") {
+    lines.push(`source_md5: ${yamlString(candidate.md5)}`);
+    if (candidate.sourceSHA256) {
+      lines.push(`source_sha256: ${yamlString(candidate.sourceSHA256)}`);
+    }
+  } else {
+    lines.push(`libgen_md5: ${yamlString(candidate.md5)}`);
+  }
+  lines.push("---", "");
+  return lines.join("\n");
 }
 
 export async function addMarkdownFrontmatter(
   markdownPath: string,
-  entry: Entry,
-  md5: string
+  candidate: RankedCandidate
 ): Promise<void> {
   const markdown = await fs.promises.readFile(markdownPath, "utf8");
-  if (markdown.includes(`libgen_md5: ${yamlString(md5)}`)) {
+  let checksumLine = `libgen_md5: ${yamlString(candidate.md5)}`;
+  if (candidate.sourceKind === "local") {
+    checksumLine = `source_md5: ${yamlString(candidate.md5)}`;
+  }
+  if (markdown.includes(checksumLine)) {
     return;
   }
 
-  await fs.promises.writeFile(markdownPath, createMarkdownFrontmatter(entry, md5) + markdown);
+  await fs.promises.writeFile(markdownPath, createMarkdownFrontmatter(candidate) + markdown);
 }
