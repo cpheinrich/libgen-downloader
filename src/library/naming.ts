@@ -68,6 +68,7 @@ export function createBookPaths(entry: Entry, libraryRootOverride?: string): Boo
     assetsDirectory: path.join(bookDirectory, "assets"),
     sourcePath: path.join(bookDirectory, `source.${extension}`),
     markdownPath: path.join(bookDirectory, "book.md"),
+    doclingPath: path.join(bookDirectory, "document.json"),
     metadataPath: path.join(bookDirectory, "metadata.json"),
     conversionPath: path.join(bookDirectory, "conversion.json"),
   };

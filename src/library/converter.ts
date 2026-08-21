@@ -4,7 +4,33 @@ import path from "node:path";
 import { extractSupplementalEpubAssets, type SupplementalAsset } from "./epub";
 import { normalizeBookMarkdown } from "./markdown";
 import { addMarkdownFrontmatter } from "./metadata";
-import type { BookPaths, ConversionResult, RankedCandidate } from "./types";
+import type { BookPaths, ConversionOutputFormat, ConversionResult, RankedCandidate } from "./types";
+
+const CONVERSION_TIMEOUT_MS = 15 * 60 * 1000;
+const DOCLING_INPUT_EXTENSIONS = new Set([
+  "adoc",
+  "asciidoc",
+  "bmp",
+  "csv",
+  "docx",
+  "htm",
+  "html",
+  "jpeg",
+  "jpg",
+  "md",
+  "pdf",
+  "png",
+  "pptx",
+  "tif",
+  "tiff",
+  "webp",
+  "xlsx",
+  "xml",
+]);
+
+export function canConvertWithDocling(extension: string): boolean {
+  return DOCLING_INPUT_EXTENSIONS.has(extension.toLowerCase());
+}
 
 interface CommandResult {
   exitCode: number;
@@ -23,7 +49,11 @@ export const runCommand: CommandRunner = (command, arguments_, workingDirectory)
     execFile(
       command,
       arguments_,
-      { cwd: workingDirectory, maxBuffer: 10 * 1024 * 1024 },
+      {
+        cwd: workingDirectory,
+        maxBuffer: 10 * 1024 * 1024,
+        timeout: CONVERSION_TIMEOUT_MS,
+      },
       (error, stdout, stderr) => {
         let exitCode = 0;
         if (error) {
@@ -55,10 +85,26 @@ async function validateMarkdown(markdownPath: string): Promise<boolean> {
   }
 }
 
-async function normalizeDoclingOutput(paths: BookPaths): Promise<void> {
+async function normalizeDoclingOutput(
+  paths: BookPaths,
+  outputFormat: ConversionOutputFormat
+): Promise<void> {
   const generatedMarkdown = path.join(paths.bookDirectory, "source.md");
-  if (generatedMarkdown !== paths.markdownPath && fs.existsSync(generatedMarkdown)) {
+  if (
+    outputFormat !== "docling" &&
+    generatedMarkdown !== paths.markdownPath &&
+    fs.existsSync(generatedMarkdown)
+  ) {
     await fs.promises.rename(generatedMarkdown, paths.markdownPath);
+  }
+
+  const generatedDocling = path.join(paths.bookDirectory, "source.json");
+  if (
+    outputFormat !== "canonical" &&
+    generatedDocling !== paths.doclingPath &&
+    fs.existsSync(generatedDocling)
+  ) {
+    await fs.promises.rename(generatedDocling, paths.doclingPath);
   }
 
   const generatedAssets = path.join(paths.bookDirectory, "source_artifacts");
@@ -70,11 +116,29 @@ async function normalizeDoclingOutput(paths: BookPaths): Promise<void> {
   await fs.promises.cp(generatedAssets, paths.assetsDirectory, { recursive: true });
   await fs.promises.rm(generatedAssets, { recursive: true, force: true });
 
-  const markdown = await fs.promises.readFile(paths.markdownPath, "utf8");
-  await fs.promises.writeFile(
-    paths.markdownPath,
-    markdown.replaceAll("source_artifacts/", "assets/")
-  );
+  if (fs.existsSync(paths.markdownPath)) {
+    const markdown = await fs.promises.readFile(paths.markdownPath, "utf8");
+    await fs.promises.writeFile(
+      paths.markdownPath,
+      markdown.replaceAll("source_artifacts/", "assets/")
+    );
+  }
+  if (fs.existsSync(paths.doclingPath)) {
+    const document = await fs.promises.readFile(paths.doclingPath, "utf8");
+    await fs.promises.writeFile(
+      paths.doclingPath,
+      document.replaceAll("source_artifacts/", "assets/")
+    );
+  }
+}
+
+async function validateDoclingDocument(doclingPath: string): Promise<boolean> {
+  try {
+    const document = JSON.parse(await fs.promises.readFile(doclingPath, "utf8"));
+    return document !== null && typeof document === "object";
+  } catch {
+    return false;
+  }
 }
 
 async function convertTextSource(
@@ -142,25 +206,31 @@ async function convertWithPandoc(
 async function convertWithDocling(
   paths: BookPaths,
   candidate: RankedCandidate,
-  runner: CommandRunner
+  runner: CommandRunner,
+  outputFormat: ConversionOutputFormat
 ): Promise<ConversionResult> {
   if (!(await commandIsAvailable("docling", runner, paths.bookDirectory))) {
     return {
       status: "unavailable",
       converter: "docling",
+      outputFormat,
       message: "Docling is not installed; the original source was retained for later conversion.",
     };
   }
 
+  const requestedOutputs = [];
+  if (outputFormat !== "docling") {
+    requestedOutputs.push("--to=md");
+  }
+  if (outputFormat !== "canonical") {
+    requestedOutputs.push("--to=json");
+  }
   const arguments_ = [
-    "convert",
     path.basename(paths.sourcePath),
-    "--to=md",
+    ...requestedOutputs,
     "--output=.",
     "--image-export-mode=referenced",
     "--enrich-formula",
-    "--enrich-chart-extraction",
-    "--quiet",
   ];
   let result = await runner("docling", arguments_, paths.bookDirectory);
 
@@ -168,52 +238,83 @@ async function convertWithDocling(
     result = await runner(
       "docling",
       [
-        "convert",
         path.basename(paths.sourcePath),
-        "--to=md",
+        ...requestedOutputs,
         "--output=.",
         "--image-export-mode=referenced",
-        "--quiet",
       ],
       paths.bookDirectory
     );
   }
 
   if (result.exitCode === 0) {
-    await normalizeDoclingOutput(paths);
+    await normalizeDoclingOutput(paths, outputFormat);
   }
 
-  if (result.exitCode !== 0 || !(await validateMarkdown(paths.markdownPath))) {
+  const markdownIsValid =
+    outputFormat === "docling" || (await validateMarkdown(paths.markdownPath));
+  const doclingIsValid =
+    outputFormat === "canonical" || (await validateDoclingDocument(paths.doclingPath));
+  if (result.exitCode !== 0 || !markdownIsValid || !doclingIsValid) {
     return {
       status: "failed",
       converter: "docling",
-      message: result.stderr.trim() || "Docling did not produce usable Markdown.",
+      outputFormat,
+      message: result.stderr.trim() || "Docling did not produce the requested output.",
     };
   }
 
-  await normalizeBookMarkdown(paths.markdownPath, candidate.entry.title);
-  await addMarkdownFrontmatter(paths.markdownPath, candidate);
-  return {
+  if (outputFormat !== "docling") {
+    await normalizeBookMarkdown(paths.markdownPath, candidate.entry.title);
+    await addMarkdownFrontmatter(paths.markdownPath, candidate);
+  }
+  let message = "Converted the document to canonical Markdown with Docling.";
+  if (outputFormat === "docling") {
+    message = "Converted the document to native DoclingDocument JSON.";
+  } else if (outputFormat === "both") {
+    message = "Converted the document to canonical Markdown and native DoclingDocument JSON.";
+  }
+  const conversion: ConversionResult = {
     status: "converted",
     converter: "docling",
-    message: "Converted the document with Docling, including referenced assets.",
-    markdownPath: paths.markdownPath,
+    outputFormat,
+    message,
   };
+  if (outputFormat !== "docling") {
+    conversion.markdownPath = paths.markdownPath;
+  }
+  if (outputFormat !== "canonical") {
+    conversion.doclingPath = paths.doclingPath;
+  }
+  return conversion;
 }
 
 export async function convertBook(
   paths: BookPaths,
   candidate: RankedCandidate,
-  runner: CommandRunner = runCommand
+  runner: CommandRunner = runCommand,
+  outputFormat: ConversionOutputFormat = "canonical"
 ): Promise<ConversionResult> {
   await fs.promises.mkdir(paths.assetsDirectory, { recursive: true });
   const extension = candidate.entry.extension.toLowerCase();
 
+  if (outputFormat !== "canonical") {
+    if (!canConvertWithDocling(extension)) {
+      return {
+        status: "failed",
+        converter: "docling",
+        outputFormat,
+        message: `Docling does not support native conversion from .${extension}; try --format canonical or select a PDF copy.`,
+      };
+    }
+    return convertWithDocling(paths, candidate, runner, outputFormat);
+  }
+
   if (["md", "markdown", "txt"].includes(extension)) {
     return convertTextSource(paths, candidate);
   }
-  if (["pdf", "djvu"].includes(extension)) {
-    return convertWithDocling(paths, candidate, runner);
+  if (extension === "pdf") {
+    return convertWithDocling(paths, candidate, runner, outputFormat);
   }
   if (["epub", "docx", "html", "htm", "mobi", "azw3", "fb2", "rtf", "odt"].includes(extension)) {
     return convertWithPandoc(paths, candidate, runner);

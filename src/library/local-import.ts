@@ -136,15 +136,21 @@ export async function importLocalBook(
 
     let conversion: ConversionResult = {
       status: "unavailable",
-      message: "Markdown conversion was disabled; the standardized source was retained.",
+      message: "Document conversion was disabled; the standardized source was retained.",
     };
     if (options.convert !== false) {
-      options.onProgress?.("Converting the local source to canonical Markdown...");
-      conversion = await convertBook(stagingPaths, candidate, options.runner || runCommand);
+      const outputFormat = options.outputFormat || "canonical";
+      options.onProgress?.(`Converting the local source to ${outputFormat} output...`);
+      conversion = await convertBook(
+        stagingPaths,
+        candidate,
+        options.runner || runCommand,
+        outputFormat
+      );
       if (conversion.status === "failed") {
         throw new Error(conversion.message);
       }
-      if (conversion.status === "converted") {
+      if (conversion.status === "converted" && conversion.markdownPath) {
         conversion.validation = await validateCanonicalBook(stagingPaths);
         if (!conversion.validation.valid) {
           throw new Error(
@@ -158,6 +164,9 @@ export async function importLocalBook(
     if (recordedConversion.markdownPath) {
       recordedConversion.markdownPath = "book.md";
     }
+    if (recordedConversion.doclingPath) {
+      recordedConversion.doclingPath = "document.json";
+    }
     await writeBookRecords({
       paths: stagingPaths,
       request,
@@ -167,13 +176,21 @@ export async function importLocalBook(
     await fs.promises.rename(stagingPaths.bookDirectory, finalPaths.bookDirectory);
     await fs.promises.rm(stagingRoot, { recursive: true, force: true });
 
+    const finalConversion = { ...conversion };
+    if (conversion.markdownPath) {
+      finalConversion.markdownPath = finalPaths.markdownPath;
+    }
+    if (conversion.doclingPath) {
+      finalConversion.doclingPath = finalPaths.doclingPath;
+    }
+
     return {
       request,
       status: "downloaded",
       message: `Imported the local source to ${finalPaths.bookDirectory}`,
       selected: candidate,
       paths: finalPaths,
-      conversion: { ...conversion, markdownPath: finalPaths.markdownPath },
+      conversion: finalConversion,
     };
   } catch (error) {
     await fs.promises.rm(stagingRoot, { recursive: true, force: true });

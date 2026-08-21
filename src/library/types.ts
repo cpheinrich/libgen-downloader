@@ -25,18 +25,22 @@ export interface BookPaths {
   assetsDirectory: string;
   sourcePath: string;
   markdownPath: string;
+  doclingPath: string;
   metadataPath: string;
   conversionPath: string;
   canonicalStem: string;
 }
 
 export type ConversionStatus = "converted" | "unavailable" | "failed";
+export type ConversionOutputFormat = "canonical" | "docling" | "both";
 
 export interface ConversionResult {
   status: ConversionStatus;
   converter?: "copy" | "pandoc" | "docling";
   message: string;
   markdownPath?: string;
+  doclingPath?: string;
+  outputFormat?: ConversionOutputFormat;
   validation?: CanonicalValidation;
 }
 
@@ -70,6 +74,7 @@ export interface IngestionOptions {
   pageCount?: number;
   finalistCount?: number;
   convert?: boolean;
+  outputFormat?: ConversionOutputFormat;
   session?: LibgenSession;
   onProgress?: (message: string) => void;
 }
@@ -79,5 +84,6 @@ export interface LocalImportOptions {
   title?: string;
   author?: string;
   convert?: boolean;
+  outputFormat?: ConversionOutputFormat;
   onProgress?: (message: string) => void;
 }

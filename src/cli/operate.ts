@@ -3,7 +3,7 @@ import { getDocument } from "../api/data/document";
 import { createLibgenSession, ingestBestBook } from "../library/ingest";
 import { importLocalBook } from "../library/local-import";
 import { parseBookRequest, parseReadingList } from "../library/reading-list";
-import type { BookRequest, IngestionResult } from "../library/types";
+import type { BookRequest, ConversionOutputFormat, IngestionResult } from "../library/types";
 import renderTUI from "../tui/index";
 import { LAYOUT_KEY } from "../tui/layouts/keys";
 import { useBoundStore } from "../tui/store/index";
@@ -17,6 +17,14 @@ function getPageCount(flags: Record<string, unknown>): number {
   return pageCount;
 }
 
+function getOutputFormat(flags: Record<string, unknown>): ConversionOutputFormat {
+  const outputFormat = String(flags.format || "canonical").toLowerCase();
+  if (!["canonical", "docling", "both"].includes(outputFormat)) {
+    throw new Error("--format must be canonical, docling, or both.");
+  }
+  return outputFormat as ConversionOutputFormat;
+}
+
 async function ingestRequests(
   requests: BookRequest[],
   flags: Record<string, unknown>
@@ -25,6 +33,7 @@ async function ingestRequests(
     throw new Error("The reading list did not contain any book entries.");
   }
 
+  const outputFormat = getOutputFormat(flags);
   const session = await createLibgenSession((mirror) => {
     console.log(`Mirror unavailable: ${mirror}`);
   });
@@ -37,6 +46,7 @@ async function ingestRequests(
       libraryRoot: flags.output as string | undefined,
       pageCount: getPageCount(flags),
       convert: flags.sourceOnly !== true,
+      outputFormat,
       onProgress(message) {
         console.log(`  ${message}`);
       },
@@ -62,6 +72,7 @@ export const operate = async (flags: Record<string, unknown>) => {
       title: flags.title as string | undefined,
       author: flags.author as string | undefined,
       convert: flags.sourceOnly !== true,
+      outputFormat: getOutputFormat(flags),
       onProgress(message) {
         console.log(`  ${message}`);
       },

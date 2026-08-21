@@ -6,7 +6,7 @@ import { strToU8, zipSync } from "fflate";
 import { LibgenPlusAdapter } from "../src/api/adapters/libgen-plus-adapter";
 import type { Entry } from "../src/api/models/entry";
 import { rankCandidates } from "../src/library/candidates";
-import { convertBook } from "../src/library/converter";
+import { canConvertWithDocling, convertBook } from "../src/library/converter";
 import { ingestBestBook } from "../src/library/ingest";
 import { importLocalBook, inferFilenameMetadata } from "../src/library/local-import";
 import { createBookPaths, getCanonicalStem, slugify } from "../src/library/naming";
@@ -201,6 +201,12 @@ describe("best-copy ranking", () => {
 });
 
 describe("Markdown conversion", () => {
+  it("recognizes Docling-native source formats", () => {
+    expect(canConvertWithDocling("PDF")).toBe(true);
+    expect(canConvertWithDocling("docx")).toBe(true);
+    expect(canConvertWithDocling("epub")).toBe(false);
+  });
+
   it("converts structured sources with Pandoc and adds canonical frontmatter", async () => {
     const libraryRoot = await fs.promises.mkdtemp(path.join(os.tmpdir(), "libgen-convert-"));
     const entry = createEntry();
@@ -231,6 +237,129 @@ describe("Markdown conversion", () => {
       expect(markdown).toStartWith("---\n");
       expect(markdown).toContain('libgen_md5: "epub-copy"');
       expect(markdown).toContain("# The Art of War");
+    } finally {
+      await fs.promises.rm(libraryRoot, { recursive: true, force: true });
+    }
+  });
+
+  it("uses current Docling flags and retains referenced PDF assets", async () => {
+    const libraryRoot = await fs.promises.mkdtemp(path.join(os.tmpdir(), "libgen-docling-"));
+    const entry = createEntry({ extension: "pdf" });
+    const paths = createBookPaths(entry, libraryRoot);
+    await fs.promises.mkdir(paths.bookDirectory, { recursive: true });
+    await fs.promises.writeFile(paths.sourcePath, "%PDF-test-source");
+    let conversionArguments: string[] = [];
+
+    try {
+      const conversion = await convertBook(
+        paths,
+        {
+          entry,
+          md5: "pdf-copy",
+          score: 200,
+          reasons: ["exact title match"],
+        },
+        async (_command, arguments_, workingDirectory) => {
+          if (arguments_.includes("--version")) {
+            return { exitCode: 0, stdout: "Docling 2", stderr: "" };
+          }
+          conversionArguments = arguments_;
+          await fs.promises.writeFile(
+            path.join(workingDirectory, "source.md"),
+            "# The Art of War\n\n![Map](source_artifacts/map.png)\n\nCanonical content."
+          );
+          await fs.promises.mkdir(path.join(workingDirectory, "source_artifacts"));
+          await fs.promises.writeFile(
+            path.join(workingDirectory, "source_artifacts", "map.png"),
+            "image"
+          );
+          return { exitCode: 0, stdout: "", stderr: "" };
+        }
+      );
+
+      expect(conversion.status).toBe("converted");
+      expect(conversionArguments[0]).toBe("source.pdf");
+      expect(conversionArguments).toContain("--enrich-formula");
+      expect(conversionArguments).not.toContain("--quiet");
+      expect(conversionArguments).not.toContain("--enrich-chart-extraction");
+      const markdown = await fs.promises.readFile(paths.markdownPath, "utf8");
+      expect(markdown).toContain("![Map](assets/map.png)");
+      expect(fs.existsSync(path.join(paths.assetsDirectory, "map.png"))).toBe(true);
+    } finally {
+      await fs.promises.rm(libraryRoot, { recursive: true, force: true });
+    }
+  });
+
+  it("can retain Markdown and native DoclingDocument JSON from one conversion", async () => {
+    const libraryRoot = await fs.promises.mkdtemp(path.join(os.tmpdir(), "libgen-docling-both-"));
+    const entry = createEntry({ extension: "pdf" });
+    const paths = createBookPaths(entry, libraryRoot);
+    await fs.promises.mkdir(paths.bookDirectory, { recursive: true });
+    await fs.promises.writeFile(paths.sourcePath, "%PDF-test-source");
+    let conversionArguments: string[] = [];
+
+    try {
+      const conversion = await convertBook(
+        paths,
+        {
+          entry,
+          md5: "pdf-copy",
+          score: 200,
+          reasons: ["exact title match"],
+        },
+        async (_command, arguments_, workingDirectory) => {
+          if (arguments_.includes("--version")) {
+            return { exitCode: 0, stdout: "Docling 2", stderr: "" };
+          }
+          conversionArguments = arguments_;
+          await fs.promises.writeFile(
+            path.join(workingDirectory, "source.md"),
+            "# The Art of War\n\nCanonical Markdown content generated from the source PDF."
+          );
+          await fs.promises.writeFile(
+            path.join(workingDirectory, "source.json"),
+            JSON.stringify({ schema_name: "DoclingDocument", version: "1.0.0" })
+          );
+          return { exitCode: 0, stdout: "", stderr: "" };
+        },
+        "both"
+      );
+
+      expect(conversion.status).toBe("converted");
+      expect(conversion.outputFormat).toBe("both");
+      expect(conversionArguments).toContain("--to=md");
+      expect(conversionArguments).toContain("--to=json");
+      expect(fs.existsSync(paths.markdownPath)).toBe(true);
+      expect(fs.existsSync(paths.doclingPath)).toBe(true);
+      const document = JSON.parse(await fs.promises.readFile(paths.doclingPath, "utf8"));
+      expect(document.schema_name).toBe("DoclingDocument");
+    } finally {
+      await fs.promises.rm(libraryRoot, { recursive: true, force: true });
+    }
+  });
+
+  it("rejects native Docling output for unsupported ebook sources", async () => {
+    const libraryRoot = await fs.promises.mkdtemp(
+      path.join(os.tmpdir(), "libgen-docling-unsupported-")
+    );
+    const entry = createEntry({ extension: "epub" });
+    const paths = createBookPaths(entry, libraryRoot);
+
+    try {
+      const conversion = await convertBook(
+        paths,
+        {
+          entry,
+          md5: "epub-copy",
+          score: 200,
+          reasons: ["exact title match"],
+        },
+        undefined,
+        "docling"
+      );
+
+      expect(conversion.status).toBe("failed");
+      expect(conversion.message).toContain("try --format canonical or select a PDF copy");
     } finally {
       await fs.promises.rm(libraryRoot, { recursive: true, force: true });
     }

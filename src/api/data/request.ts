@@ -5,6 +5,13 @@ export const LIBGEN_REQUEST_OPTIONS: RequestInit = {
   },
 };
 
-export function fetchLibgen(input: string | URL): Promise<Response> {
-  return fetch(input, LIBGEN_REQUEST_OPTIONS);
+export function fetchLibgen(input: string | URL, options: RequestInit = {}): Promise<Response> {
+  if (Object.keys(options).length === 0) {
+    return fetch(input, LIBGEN_REQUEST_OPTIONS);
+  }
+  const headers = new Headers(LIBGEN_REQUEST_OPTIONS.headers);
+  for (const [key, value] of new Headers(options.headers)) {
+    headers.set(key, value);
+  }
+  return fetch(input, { ...LIBGEN_REQUEST_OPTIONS, ...options, headers });
 }

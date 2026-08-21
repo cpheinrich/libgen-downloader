@@ -15,6 +15,7 @@ export const cli = meow(
     -o, --output <directory>   library root (default: ~/libgen)
         --pages <number>       result pages to evaluate (default: 2)
         --source-only          retain the source without Markdown conversion
+        --format <format>      converted output: canonical, docling, or both
     -b, --bulk <MD5LIST.txt>   legacy MD5 bulk downloading mode
     -u, --url <MD5>            get the download URL
     -d, --download <MD5>       download the file by MD5
@@ -65,6 +66,10 @@ export const cli = meow(
       sourceOnly: {
         type: "boolean",
         default: false,
+      },
+      format: {
+        type: "string",
+        default: "canonical",
       },
       bulk: {
         type: "string",

@@ -3,11 +3,11 @@ import path from "node:path";
 import { getAdapter } from "../api/adapters";
 import { fetchConfig, findMirror } from "../api/data/config";
 import { getDocument } from "../api/data/document";
-import { downloadFile } from "../api/data/download";
+import { downloadURLToFile } from "../api/data/resumable-download";
 import { fetchLibgen } from "../api/data/request";
 import { SEARCH_PAGE_SIZE } from "../settings";
 import { rankCandidates } from "./candidates";
-import { convertBook } from "./converter";
+import { canConvertWithDocling, convertBook } from "./converter";
 import { writeBookRecords } from "./metadata";
 import { createBookPaths, getLibraryRoot } from "./naming";
 import type {
@@ -103,34 +103,51 @@ async function downloadCandidate(
   }
 
   report(options, `Downloading ${candidate.entry.extension.toUpperCase()} candidate...`);
-  let response: Response;
+  let lastReportedPercentage = 0;
+  let lastReportedMegabytes = 0;
   try {
-    response = await fetchLibgen(downloadURL);
-  } catch {
-    throw new Error(
-      "The LibGen search mirror is online, but its shared file-download host is unreachable from this network."
-    );
-  }
-  if (!response.ok) {
-    throw new Error(
-      `The LibGen search mirror is online, but its shared file-download host returned HTTP ${response.status}.`
-    );
-  }
+    await downloadURLToFile({
+      url: downloadURL,
+      destinationPath: paths.sourcePath,
+      fetcher: fetchLibgen,
+      onRetry(message) {
+        report(options, message);
+      },
+      onProgress(downloadedBytes, totalBytes) {
+        if (totalBytes) {
+          const percentage = Math.min(100, Math.floor((downloadedBytes / totalBytes) * 100));
+          const reportablePercentage = Math.floor(percentage / 10) * 10;
+          if (reportablePercentage >= lastReportedPercentage + 10) {
+            lastReportedPercentage = reportablePercentage;
+            report(options, `Downloaded ${reportablePercentage}% of the candidate...`);
+          }
+          return;
+        }
 
-  await downloadFile({
-    downloadStream: response,
-    destinationPath: paths.sourcePath,
-    filename: path.basename(paths.sourcePath),
-    onStart() {},
-    onData() {},
-  });
+        const downloadedMegabytes = Math.floor(downloadedBytes / (5 * 1024 * 1024)) * 5;
+        if (downloadedMegabytes >= lastReportedMegabytes + 5) {
+          lastReportedMegabytes = downloadedMegabytes;
+          report(options, `Downloaded ${downloadedMegabytes} MB of the candidate...`);
+        }
+      },
+    });
+  } catch (error) {
+    let reason = String(error);
+    if (error instanceof Error) {
+      reason = error.message;
+    }
+    throw new Error(
+      `The LibGen search mirror is online, but its shared file-download host failed: ${reason}`,
+      { cause: error }
+    );
+  }
   await validateDownloadedSource(candidate, paths.sourcePath);
 }
 
 function sourceOnlyConversion(): ConversionResult {
   return {
     status: "unavailable",
-    message: "Markdown conversion was disabled; the standardized source was retained.",
+    message: "Document conversion was disabled; the standardized source was retained.",
   };
 }
 
@@ -155,16 +172,23 @@ export async function ingestBestBook(
 
   const session = options.session || (await createLibgenSession());
   report(options, `Searching ${session.mirror.src} for "${request.query}"...`);
-  const candidates = await searchBookCandidates(
+  let candidates = await searchBookCandidates(
     session,
     request,
     options.pageCount || DEFAULT_PAGE_COUNT
   );
+  if (options.outputFormat && options.outputFormat !== "canonical") {
+    candidates = candidates.filter((candidate) => canConvertWithDocling(candidate.entry.extension));
+  }
   if (candidates.length === 0) {
+    let message = "No sufficiently close, downloadable candidates were found.";
+    if (options.outputFormat && options.outputFormat !== "canonical") {
+      message = "No sufficiently close candidates support native Docling output.";
+    }
     return {
       request,
       status: "failed",
-      message: "No sufficiently close, downloadable candidates were found.",
+      message,
     };
   }
 
@@ -197,8 +221,16 @@ export async function ingestBestBook(
 
       let conversion = sourceOnlyConversion();
       if (options.convert !== false) {
-        report(options, "Converting the selected source to canonical Markdown...");
-        conversion = await convertBook(stagingPaths, candidate);
+        report(
+          options,
+          `Converting the selected source to ${options.outputFormat || "canonical"} output...`
+        );
+        conversion = await convertBook(
+          stagingPaths,
+          candidate,
+          undefined,
+          options.outputFormat || "canonical"
+        );
       }
 
       const hasMoreFinalists = index < finalists.length - 1;
@@ -212,6 +244,9 @@ export async function ingestBestBook(
       if (recordedConversion.markdownPath) {
         recordedConversion.markdownPath = "book.md";
       }
+      if (recordedConversion.doclingPath) {
+        recordedConversion.doclingPath = "document.json";
+      }
       await writeBookRecords({
         paths: stagingPaths,
         request,
@@ -223,6 +258,9 @@ export async function ingestBestBook(
       const finalConversion = { ...conversion };
       if (finalConversion.markdownPath) {
         finalConversion.markdownPath = finalPaths.markdownPath;
+      }
+      if (finalConversion.doclingPath) {
+        finalConversion.doclingPath = finalPaths.doclingPath;
       }
       let message = `Saved the best candidate to ${finalPaths.bookDirectory}`;
       if (conversion.status !== "converted") {

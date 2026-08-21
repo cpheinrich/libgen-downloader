@@ -89,6 +89,7 @@ Best-copy and reading-list ingestion stores each work in a deterministic directo
 └── sun-tzu_the-art-of-war/
     ├── source.epub
     ├── book.md
+    ├── document.json       # optional native DoclingDocument output
     ├── metadata.json
     ├── conversion.json
     └── assets/
@@ -102,9 +103,23 @@ Use `--import` for a local EPUB, PDF, RTF, or other supported source you already
 copies the source rather than moving it, infers `Title by Author` and `Author - Title` filenames,
 and accepts `--title` and `--author` overrides when the embedded metadata is incomplete.
 
-Structured ebooks are converted with Pandoc. PDFs and DjVu files are converted with Docling,
-including OCR, formula enrichment, and referenced images when available. If the matching converter
-is not installed, the source is retained and `conversion.json` records what is missing.
+Structured ebooks are converted with Pandoc. PDFs are converted with Docling, including OCR,
+formula enrichment, and referenced images when available. If the matching converter is not
+installed, the source is retained and `conversion.json` records what is missing.
+
+Choose the converted representation with `--format`:
+
+```bash
+libgen-downloader --best "On the Origin of Species by Charles Darwin" --format canonical
+libgen-downloader --best "On the Origin of Species by Charles Darwin" --format docling
+libgen-downloader --best "On the Origin of Species by Charles Darwin" --format both
+```
+
+`canonical` is the default and produces `book.md`. `docling` preserves Docling's lossless native
+document model as `document.json`. `both` produces the Markdown and JSON representations from one
+Docling parse. The standardized folder, original `source.*`, metadata, and referenced `assets/`
+remain the stable library envelope in every mode. Native Docling output requires a source format
+that Docling supports; for ebook-only formats such as EPUB, use `canonical` or select a PDF copy.
 
 On macOS, install the optional converters with:
 
