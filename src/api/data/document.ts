@@ -1,4 +1,5 @@
 import { parseHTML } from "linkedom";
+import { fetchLibgen } from "./request";
 
 export interface DocumentResult {
   document: Document;
@@ -7,7 +8,7 @@ export interface DocumentResult {
 
 export async function getDocument(searchURL: string): Promise<DocumentResult> {
   try {
-    const response = await fetch(searchURL);
+    const response = await fetchLibgen(searchURL);
     const htmlString = await response.text();
     const { document } = parseHTML(htmlString);
     return { document: document as unknown as Document, htmlString };

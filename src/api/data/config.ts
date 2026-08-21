@@ -1,4 +1,5 @@
-import { CONFIGURATION_URL } from "../../settings";
+import { CONFIGURATION_URL, PREFERRED_MIRROR_SOURCE } from "../../settings";
+import { fetchLibgen } from "./request";
 
 export type MirrorType = "libgen-plus";
 
@@ -12,6 +13,16 @@ export interface Config {
   mirrors: Mirror[];
 }
 
+function prioritizePreferredMirror(mirrors: Mirror[]): Mirror[] {
+  const preferred = PREFERRED_MIRROR_SOURCE.replace(/\/+$/, "");
+  const isPreferred = (mirror: Mirror) => mirror.src.replace(/\/+$/, "") === preferred;
+
+  return [
+    ...mirrors.filter((mirror) => isPreferred(mirror)),
+    ...mirrors.filter((mirror) => !isPreferred(mirror)),
+  ];
+}
+
 export async function fetchConfig(): Promise<Config> {
   try {
     const response = await fetch(CONFIGURATION_URL);
@@ -20,7 +31,7 @@ export async function fetchConfig(): Promise<Config> {
 
     return {
       latestVersion: (config["latest_version"] as string) || "",
-      mirrors: (config["mirrors"] as Mirror[]) || [],
+      mirrors: prioritizePreferredMirror((config["mirrors"] as Mirror[]) || []),
     };
   } catch {
     throw new Error("Error occurred while fetching configuration.");
@@ -33,7 +44,10 @@ export async function findMirror(
 ): Promise<Mirror | undefined> {
   for (const mirror of mirrors) {
     try {
-      await fetch(mirror.src);
+      const response = await fetchLibgen(mirror.src);
+      if (!response.ok) {
+        throw new Error(`Mirror returned HTTP ${response.status}`);
+      }
       return mirror;
     } catch {
       onMirrorFail(mirror.src);

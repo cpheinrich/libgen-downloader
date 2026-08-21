@@ -4,6 +4,7 @@ import { DownloadStatus } from "../../download-statuses";
 import { attempt } from "../../utilities";
 import { getDocument } from "../../api/data/document";
 import { downloadFile } from "../../api/data/download";
+import { fetchLibgen } from "../../api/data/request";
 
 export interface IDownloadProgress {
   filename: string;
@@ -142,7 +143,7 @@ export const createDownloadQueueStateSlice = (
         continue;
       }
 
-      const downloadStream = await attempt(() => fetch(downloadUrl as string));
+      const downloadStream = await attempt(() => fetchLibgen(downloadUrl as string));
       if (!downloadStream) {
         store.setWarningMessage(`Couldn't fetch the download stream for "${entry.title}"`);
         store.increaseTotalFailed();
