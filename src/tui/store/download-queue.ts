@@ -3,8 +3,8 @@ import { Entry } from "../../api/models/entry";
 import { DownloadStatus } from "../../download-statuses";
 import { attempt } from "../../utilities";
 import { getDocument } from "../../api/data/document";
-import { downloadFile } from "../../api/data/download";
 import { fetchLibgen } from "../../api/data/request";
+import { saveEntrySource } from "../../library/direct-download";
 
 export interface IDownloadProgress {
   filename: string;
@@ -155,8 +155,7 @@ export const createDownloadQueueStateSlice = (
           status: DownloadStatus.DOWNLOADING,
         });
 
-        await downloadFile({
-          downloadStream,
+        await saveEntrySource(entry, downloadStream, {
           onStart: (filename, total) => {
             store.updateCurrentDownloadProgress(entry.id, {
               filename,

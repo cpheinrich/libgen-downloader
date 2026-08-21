@@ -5,13 +5,14 @@ import { attempt } from "../../utilities";
 import { LAYOUT_KEY } from "../layouts/keys";
 import { IDownloadProgress } from "./download-queue";
 import { getDocument } from "../../api/data/document";
-import { downloadFile } from "../../api/data/download";
 import { createMD5ListFile } from "../../api/data/file";
 import { fetchLibgen } from "../../api/data/request";
+import { saveEntrySource, saveMD5Source } from "../../library/direct-download";
 import objectHash from "object-hash";
 
 export interface IBulkDownloadQueueItem extends IDownloadProgress {
   md5: string;
+  entry?: Entry;
 }
 
 export interface IBulkDownloadQueueState {
@@ -219,15 +220,20 @@ export const createBulkDownloadQueueStateSlice = (
       }
 
       try {
-        await downloadFile({
-          downloadStream,
-          onStart: (filename, total) => {
+        const callbacks = {
+          onStart: (filename: string, total: number) => {
             get().onBulkQueueItemStart(index, filename, total);
           },
-          onData: (filename, chunk, total) => {
+          onData: (filename: string, chunk: Buffer, total: number) => {
             get().onBulkQueueItemData(index, filename, chunk, total);
           },
-        });
+        };
+        // eslint-disable-next-line unicorn/prefer-ternary
+        if (item.entry) {
+          await saveEntrySource(item.entry, downloadStream, callbacks);
+        } else {
+          await saveMD5Source(item.md5, downloadStream, callbacks);
+        }
 
         get().onBulkQueueItemComplete(index);
       } catch {
@@ -285,6 +291,7 @@ export const createBulkDownloadQueueStateSlice = (
 
       bulkDownloadQueue.push({
         md5,
+        entry,
         status: DownloadStatus.IN_QUEUE,
         filename: "",
         progress: 0,

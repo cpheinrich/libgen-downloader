@@ -1,22 +1,18 @@
-
 # libgen-downloader
 
 [![npm version](https://badge.fury.io/js/libgen-downloader.svg)](https://badge.fury.io/js/libgen-downloader)
 
-
 `libgen-downloader` is a command-line tool for searching and downloading ebooks from **LibGen**. Built with `Node.js`, `TypeScript`, `React`, `Ink`, and `Zustand`, it works by visiting LibGen’s web pages, parsing the HTML, and displaying results. Since it relies on LibGen’s servers, you may occasionally encounter connection errors when searching, downloading, or loading more pages.
 
 ## Important Update
+
 After the original `libgen` mirrors are blocked and not available anymore (see their status from here https://open-slum.org/), `libgen-downloader` now uses the `libgen+` mirrors as its primary source. You can see the new available mirrors from [configuration](https://github.com/obsfx/libgen-downloader/blob/configuration/config.v3.json).
 
 https://github.com/user-attachments/assets/3d92eb78-1567-478d-a0d1-5724f647be10
 
 https://github.com/user-attachments/assets/9896d457-ccbf-40aa-ae6b-c253f7a97824
 
-
-
 ## Installation
-
 
 if you have already installed `NodeJS` and `npm`, you can install it using `npm`:
 
@@ -29,12 +25,14 @@ or you can download one of the `standalone executable` versions.
 #### [Standalone Executables](https://github.com/obsfx/libgen-downloader/releases)
 
 **macOS users:** After downloading, you need to remove the quarantine attribute and make it executable:
+
 ```bash
 xattr -c ./libgen-downloader-macos-*
 chmod +x ./libgen-downloader-macos-*
 ```
 
 **Linux users:** Make it executable:
+
 ```bash
 chmod +x ./libgen-downloader-linux-*
 ```
@@ -44,29 +42,88 @@ chmod +x ./libgen-downloader-linux-*
 - Interactive user interface.
 - Non app blocking direct downloading.
 - Bulk downloading.
+- Best-copy ingestion that ranks duplicate results for Markdown conversion.
+- Canonical library folders under `~/libgen/<author>_<title>/`.
+- Markdown reading-list ingestion with `--list`.
 - Alternative download options.
 - Command line parameters;
+
   ```
   Usage
   	$ libgen-downloader <input>
 
   Options
-  	-s, --search <query>      search for a book
-  	-b, --bulk <MD5LIST.txt>  start the app in bulk downloading mode
-  	-u, --url <MD5>           get the download URL
-  	-d, --download <MD5>      download the file
-  	-h, --help                display help
+  -s, --search <query>       search for a book interactively
+      --best <query>         find and ingest the best copy of a book
+  -l, --list <BOOKS.md>      ingest every book in a Markdown list
+  -o, --output <directory>   library root (default: ~/libgen)
+      --pages <number>       result pages to evaluate (default: 2)
+      --source-only          retain sources without converting to Markdown
+  -b, --bulk <MD5LIST.txt>   legacy MD5 bulk downloading mode
+  -u, --url <MD5>            get the download URL
+  -d, --download <MD5>       download the file by MD5
+  -h, --help                 display help
 
   Examples
-  	$ libgen-downloader    (start the app in interactive mode witout flags)
-  	$ libgen-downloader -s "The Art of War"
-  	$ libgen-downloader -b ./MD5_LIST_1695686580524.txt
+  $ libgen-downloader    (start the app in interactive mode without flags)
+  $ libgen-downloader -s "The Art of War"
+  $ libgen-downloader --best "The Art of War by Sun Tzu"
+  $ libgen-downloader --list ./reading-list.md
+  $ libgen-downloader -b ./MD5_LIST_1695686580524.txt
   	$ libgen-downloader -u 1234567890abcdef1234567890abcdef
   	$ libgen-downloader -d 1234567890abcdef1234567890abcdef
 
   ```
 
+### Canonical library
 
+Best-copy and reading-list ingestion stores each work in a deterministic directory:
+
+```text
+~/libgen/
+└── sun-tzu_the-art-of-war/
+    ├── source.epub
+    ├── book.md
+    ├── metadata.json
+    ├── conversion.json
+    └── assets/
+```
+
+The original server filename is never trusted. The selected source is always named
+`source.<extension>`, and the canonical text is always `book.md`. Set a different library root
+with `--output` or the `LIBGEN_LIBRARY_DIR` environment variable.
+
+Structured ebooks are converted with Pandoc. PDFs and DjVu files are converted with Docling,
+including OCR, formula enrichment, and referenced images when available. If the matching converter
+is not installed, the source is retained and `conversion.json` records what is missing.
+
+On macOS, install the optional converters with:
+
+```bash
+brew install pandoc
+uv tool install docling
+```
+
+### Markdown reading lists
+
+`--list` accepts bullets, task-list items, numbered items, or one plain query per line. Author hints
+improve duplicate matching:
+
+```markdown
+# Reading list
+
+- The Art of War — Sun Tzu
+- [ ] Gödel, Escher, Bach by Douglas Hofstadter
+
+1. A Brief History of Time
+```
+
+Each query is processed independently, existing canonical directories are left untouched, and the
+command prints a downloaded/skipped/failed summary when complete.
+
+Search and file delivery use separate infrastructure. If searches succeed but downloads report
+that the shared file host is unreachable, try the command again on the same VPN or network path
+that permits the download in your browser.
 
 ## Changelogs
 
@@ -85,9 +142,9 @@ v2.0.0
 - Added a cache mechanism to quickly retrieve previously searched results..
 - Added new CLI parameter `-s, --search` to search queries directly in the command line.
 - Added new shortcut keys to simplify usage:
-	- `[J]` and `[K]` to move up and down for vimmers.
-	- `[TAB]` to add an entry to the bulk download queue.
-	- `[D]` to download an entry directly.
+  - `[J]` and `[K]` to move up and down for vimmers.
+  - `[TAB]` to add an entry to the bulk download queue.
+  - `[D]` to download an entry directly.
 - Dropped result filtering. Instead added `Search by` filtering options to filter in columns like the original libgen search functionality.
 
 ---

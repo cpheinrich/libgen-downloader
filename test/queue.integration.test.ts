@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, mock, spyOn } from "bun:test";
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { Writable } from "node:stream";
 import { LibgenPlusAdapter } from "../src/api/adapters/libgen-plus-adapter";
 import type { Entry } from "../src/api/models/entry";
@@ -82,9 +84,12 @@ const installFilesystemFixture = () => {
       },
     }) as fs.WriteStream;
   });
+  const mkdir = spyOn(fs.promises, "mkdir").mockImplementation(async () => {});
+  const rename = spyOn(fs.promises, "rename").mockImplementation(async () => {});
+  const rm = spyOn(fs.promises, "rm").mockImplementation(async () => {});
   const writeFile = spyOn(fs.promises, "writeFile").mockImplementation(async () => {});
 
-  return { createWriteStream, downloadedChunks, writeFile };
+  return { createWriteStream, downloadedChunks, mkdir, rename, rm, writeFile };
 };
 
 beforeEach(() => {
@@ -143,10 +148,17 @@ describe("download queue integration", () => {
       "https://libgen.example/ads.php?md5=success",
       "https://libgen.example/files/success.epub",
     ]);
-    expect(createWriteStream).toHaveBeenCalledWith("./success.epub");
+    expect(createWriteStream).toHaveBeenCalledWith(
+      path.join(
+        os.homedir(),
+        "libgen",
+        "example-author_example-book-entry-1",
+        "source.epub.partial"
+      )
+    );
     expect(Buffer.concat(downloadedChunks).toString()).toBe("downloaded content");
     expect(state.downloadProgressMap[entry.id]).toMatchObject({
-      filename: "success.epub",
+      filename: "source.epub",
       progress: 18,
       total: 18,
       status: DownloadStatus.DOWNLOADED,
@@ -178,6 +190,7 @@ describe("bulk download integration", () => {
     expect(state.bulkDownloadQueue).toEqual([
       {
         md5: "success",
+        entry: validEntry,
         filename: "",
         total: 0,
         progress: 0,
@@ -216,7 +229,7 @@ describe("bulk download integration", () => {
     expect(state.bulkDownloadQueue).toMatchObject([
       {
         md5: "success",
-        filename: "success.epub",
+        filename: "source.epub",
         progress: 18,
         total: 18,
         status: DownloadStatus.DOWNLOADED,
@@ -231,10 +244,10 @@ describe("bulk download integration", () => {
     expect(state.failedBulkDownloadItemCount).toBe(1);
     expect(state.isBulkDownloadComplete).toBe(true);
     expect(state.createdMD5ListFileName).toMatch(/^libgen_downloader_md5_list_\d+\.txt$/);
-    expect(writeFile).toHaveBeenCalledTimes(1);
-    expect(writeFile.mock.calls[0]?.[0].toString()).toMatch(
-      /^\.\/libgen_downloader_md5_list_\d+\.txt$/
+    const md5ListWrite = writeFile.mock.calls.find((call) =>
+      call[0].toString().includes("libgen_downloader_md5_list_")
     );
-    expect(writeFile.mock.calls[0]?.[1]).toBe("success");
+    expect(md5ListWrite?.[0].toString()).toMatch(/^\.\/libgen_downloader_md5_list_\d+\.txt$/);
+    expect(md5ListWrite?.[1]).toBe("success");
   });
 });

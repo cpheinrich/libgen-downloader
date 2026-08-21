@@ -1999,6 +1999,171 @@ var require_canvas = __commonJS((exports, module) => {
   }
 });
 
+// node_modules/content-disposition/index.js
+var require_content_disposition = __commonJS((exports, module) => {
+  /*!
+   * content-disposition
+   * Copyright(c) 2014-2017 Douglas Christopher Wilson
+   * MIT Licensed
+   */
+  module.exports = contentDisposition;
+  module.exports.parse = parse5;
+  var basename = __require("path").basename;
+  var ENCODE_URL_ATTR_CHAR_REGEXP = /[\x00-\x20"'()*,/:;<=>?@[\\\]{}\x7f]/g;
+  var HEX_ESCAPE_REGEXP = /%[0-9A-Fa-f]{2}/;
+  var HEX_ESCAPE_REPLACE_REGEXP = /%([0-9A-Fa-f]{2})/g;
+  var NON_LATIN1_REGEXP = /[^\x20-\x7e\xa0-\xff]/g;
+  var QESC_REGEXP = /\\([\u0000-\u007f])/g;
+  var QUOTE_REGEXP = /([\\"])/g;
+  var PARAM_REGEXP = /;[\x09\x20]*([!#$%&'*+.0-9A-Z^_`a-z|~-]+)[\x09\x20]*=[\x09\x20]*("(?:[\x20!\x23-\x5b\x5d-\x7e\x80-\xff]|\\[\x20-\x7e])*"|[!#$%&'*+.0-9A-Z^_`a-z|~-]+)[\x09\x20]*/g;
+  var TEXT_REGEXP = /^[\x20-\x7e\x80-\xff]+$/;
+  var TOKEN_REGEXP = /^[!#$%&'*+.0-9A-Z^_`a-z|~-]+$/;
+  var EXT_VALUE_REGEXP = /^([A-Za-z0-9!#$%&+\-^_`{}~]+)'(?:[A-Za-z]{2,3}(?:-[A-Za-z]{3}){0,3}|[A-Za-z]{4,8}|)'((?:%[0-9A-Fa-f]{2}|[A-Za-z0-9!#$&+.^_`|~-])+)$/;
+  var DISPOSITION_TYPE_REGEXP = /^([!#$%&'*+.0-9A-Z^_`a-z|~-]+)[\x09\x20]*(?:$|;)/;
+  function contentDisposition(filename, options) {
+    var opts = options || {};
+    var type = opts.type || "attachment";
+    var params = createparams(filename, opts.fallback);
+    return format2(new ContentDisposition(type, params));
+  }
+  function createparams(filename, fallback) {
+    if (filename === undefined) {
+      return;
+    }
+    var params = {};
+    if (typeof filename !== "string") {
+      throw new TypeError("filename must be a string");
+    }
+    if (fallback === undefined) {
+      fallback = true;
+    }
+    if (typeof fallback !== "string" && typeof fallback !== "boolean") {
+      throw new TypeError("fallback must be a string or boolean");
+    }
+    if (typeof fallback === "string" && NON_LATIN1_REGEXP.test(fallback)) {
+      throw new TypeError("fallback must be ISO-8859-1 string");
+    }
+    var name = basename(filename);
+    var isQuotedString = TEXT_REGEXP.test(name);
+    var fallbackName = typeof fallback !== "string" ? fallback && getlatin1(name) : basename(fallback);
+    var hasFallback = typeof fallbackName === "string" && fallbackName !== name;
+    if (hasFallback || !isQuotedString || HEX_ESCAPE_REGEXP.test(name)) {
+      params["filename*"] = name;
+    }
+    if (isQuotedString || hasFallback) {
+      params.filename = hasFallback ? fallbackName : name;
+    }
+    return params;
+  }
+  function format2(obj) {
+    var parameters = obj.parameters;
+    var type = obj.type;
+    if (!type || typeof type !== "string" || !TOKEN_REGEXP.test(type)) {
+      throw new TypeError("invalid type");
+    }
+    var string = String(type).toLowerCase();
+    if (parameters && typeof parameters === "object") {
+      var param;
+      var params = Object.keys(parameters).sort();
+      for (var i = 0;i < params.length; i++) {
+        param = params[i];
+        var val = param.slice(-1) === "*" ? ustring(parameters[param]) : qstring(parameters[param]);
+        string += "; " + param + "=" + val;
+      }
+    }
+    return string;
+  }
+  function decodefield(str) {
+    var match = EXT_VALUE_REGEXP.exec(str);
+    if (!match) {
+      throw new TypeError("invalid extended field value");
+    }
+    var charset = match[1].toLowerCase();
+    var encoded = match[2];
+    var value;
+    var binary = encoded.replace(HEX_ESCAPE_REPLACE_REGEXP, pdecode);
+    switch (charset) {
+      case "iso-8859-1":
+        value = getlatin1(binary);
+        break;
+      case "utf-8":
+      case "utf8":
+        value = Buffer.from(binary, "binary").toString("utf8");
+        break;
+      default:
+        throw new TypeError("unsupported charset in extended field");
+    }
+    return value;
+  }
+  function getlatin1(val) {
+    return String(val).replace(NON_LATIN1_REGEXP, "?");
+  }
+  function parse5(string) {
+    if (!string || typeof string !== "string") {
+      throw new TypeError("argument string is required");
+    }
+    var match = DISPOSITION_TYPE_REGEXP.exec(string);
+    if (!match) {
+      throw new TypeError("invalid type format");
+    }
+    var index = match[0].length;
+    var type = match[1].toLowerCase();
+    var key2;
+    var names = [];
+    var params = {};
+    var value;
+    index = PARAM_REGEXP.lastIndex = match[0].slice(-1) === ";" ? index - 1 : index;
+    while (match = PARAM_REGEXP.exec(string)) {
+      if (match.index !== index) {
+        throw new TypeError("invalid parameter format");
+      }
+      index += match[0].length;
+      key2 = match[1].toLowerCase();
+      value = match[2];
+      if (names.indexOf(key2) !== -1) {
+        throw new TypeError("invalid duplicate parameter");
+      }
+      names.push(key2);
+      if (key2.indexOf("*") + 1 === key2.length) {
+        key2 = key2.slice(0, -1);
+        value = decodefield(value);
+        params[key2] = value;
+        continue;
+      }
+      if (typeof params[key2] === "string") {
+        continue;
+      }
+      if (value[0] === '"') {
+        value = value.slice(1, -1).replace(QESC_REGEXP, "$1");
+      }
+      params[key2] = value;
+    }
+    if (index !== -1 && index !== string.length) {
+      throw new TypeError("invalid parameter format");
+    }
+    return new ContentDisposition(type, params);
+  }
+  function pdecode(str, hex) {
+    return String.fromCharCode(parseInt(hex, 16));
+  }
+  function pencode(char) {
+    return "%" + String(char).charCodeAt(0).toString(16).toUpperCase();
+  }
+  function qstring(val) {
+    var str = String(val);
+    return '"' + str.replace(QUOTE_REGEXP, "\\$1") + '"';
+  }
+  function ustring(val) {
+    var str = String(val);
+    var encoded = encodeURIComponent(str).replace(ENCODE_URL_ATTR_CHAR_REGEXP, pencode);
+    return "UTF-8''" + encoded;
+  }
+  function ContentDisposition(type, parameters) {
+    this.type = type;
+    this.parameters = parameters;
+  }
+});
+
 // node_modules/react/cjs/react.development.js
 var require_react_development = __commonJS((exports, module) => {
   (function() {
@@ -2033,7 +2198,7 @@ var require_react_development = __commonJS((exports, module) => {
       this.refs = emptyObject;
       this.updater = updater || ReactNoopUpdateQueue;
     }
-    function noop() {}
+    function noop2() {}
     function testStringCoercion(value) {
       return "" + value;
     }
@@ -2208,7 +2373,7 @@ var require_react_development = __commonJS((exports, module) => {
         case "rejected":
           throw thenable.reason;
         default:
-          switch (typeof thenable.status === "string" ? thenable.then(noop, noop) : (thenable.status = "pending", thenable.then(function(fulfilledValue) {
+          switch (typeof thenable.status === "string" ? thenable.then(noop2, noop2) : (thenable.status = "pending", thenable.then(function(fulfilledValue) {
             thenable.status === "pending" && (thenable.status = "fulfilled", thenable.value = fulfilledValue);
           }, function(error) {
             thenable.status === "pending" && (thenable.status = "rejected", thenable.reason = error);
@@ -2745,7 +2910,7 @@ See https://react.dev/link/invalid-hook-call for tips about how to debug and fix
       try {
         var returnValue = scope(), onStartTransitionFinish = ReactSharedInternals.S;
         onStartTransitionFinish !== null && onStartTransitionFinish(currentTransition, returnValue);
-        typeof returnValue === "object" && returnValue !== null && typeof returnValue.then === "function" && (ReactSharedInternals.asyncTransitions++, returnValue.then(releaseAsyncTransition, releaseAsyncTransition), returnValue.then(noop, reportGlobalError));
+        typeof returnValue === "object" && returnValue !== null && typeof returnValue.then === "function" && (ReactSharedInternals.asyncTransitions++, returnValue.then(releaseAsyncTransition, releaseAsyncTransition), returnValue.then(noop2, reportGlobalError));
       } catch (error) {
         reportGlobalError(error);
       } finally {
@@ -3292,11 +3457,11 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
         fiber = fiber.next, id--;
       return fiber;
     }
-    function copyWithSetImpl(obj, path3, index, value) {
-      if (index >= path3.length)
+    function copyWithSetImpl(obj, path7, index, value) {
+      if (index >= path7.length)
         return value;
-      var key2 = path3[index], updated = isArrayImpl(obj) ? obj.slice() : assign3({}, obj);
-      updated[key2] = copyWithSetImpl(obj[key2], path3, index + 1, value);
+      var key2 = path7[index], updated = isArrayImpl(obj) ? obj.slice() : assign3({}, obj);
+      updated[key2] = copyWithSetImpl(obj[key2], path7, index + 1, value);
       return updated;
     }
     function copyWithRename(obj, oldPath, newPath) {
@@ -3316,11 +3481,11 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
       index + 1 === oldPath.length ? (updated[newPath[index]] = updated[oldKey], isArrayImpl(updated) ? updated.splice(oldKey, 1) : delete updated[oldKey]) : updated[oldKey] = copyWithRenameImpl(obj[oldKey], oldPath, newPath, index + 1);
       return updated;
     }
-    function copyWithDeleteImpl(obj, path3, index) {
-      var key2 = path3[index], updated = isArrayImpl(obj) ? obj.slice() : assign3({}, obj);
-      if (index + 1 === path3.length)
+    function copyWithDeleteImpl(obj, path7, index) {
+      var key2 = path7[index], updated = isArrayImpl(obj) ? obj.slice() : assign3({}, obj);
+      if (index + 1 === path7.length)
         return isArrayImpl(updated) ? updated.splice(key2, 1) : delete updated[key2], updated;
-      updated[key2] = copyWithDeleteImpl(obj[key2], path3, index + 1);
+      updated[key2] = copyWithDeleteImpl(obj[key2], path7, index + 1);
       return updated;
     }
     function shouldSuspendImpl() {
@@ -3353,7 +3518,7 @@ var require_react_reconciler_development = __commonJS((exports, module) => {
     function warnInvalidContextAccess() {
       console.error("Context can only be read while React is rendering. In classes, you can read it in the render method or getDerivedStateFromProps. In function components, you can read it directly in the function body, but not inside Hooks like useReducer() or useMemo().");
     }
-    function noop2() {}
+    function noop3() {}
     function warnForMissingKey() {}
     function setToSortedString(set2) {
       var array = [];
@@ -13344,29 +13509,29 @@ Check the top-level render call using <` + componentName2 + ">.");
     var didWarnAboutNestedUpdates = false;
     var didWarnAboutFindNodeInStrictMode = {};
     var overrideHookState = null, overrideHookStateDeletePath = null, overrideHookStateRenamePath = null, overrideProps = null, overridePropsDeletePath = null, overridePropsRenamePath = null, scheduleUpdate = null, scheduleRetry = null, setErrorHandler = null, setSuspenseHandler = null;
-    overrideHookState = function(fiber, id, path3, value) {
+    overrideHookState = function(fiber, id, path7, value) {
       id = findHook(fiber, id);
-      id !== null && (path3 = copyWithSetImpl(id.memoizedState, path3, 0, value), id.memoizedState = path3, id.baseState = path3, fiber.memoizedProps = assign3({}, fiber.memoizedProps), path3 = enqueueConcurrentRenderForLane(fiber, 2), path3 !== null && scheduleUpdateOnFiber(path3, fiber, 2));
+      id !== null && (path7 = copyWithSetImpl(id.memoizedState, path7, 0, value), id.memoizedState = path7, id.baseState = path7, fiber.memoizedProps = assign3({}, fiber.memoizedProps), path7 = enqueueConcurrentRenderForLane(fiber, 2), path7 !== null && scheduleUpdateOnFiber(path7, fiber, 2));
     };
-    overrideHookStateDeletePath = function(fiber, id, path3) {
+    overrideHookStateDeletePath = function(fiber, id, path7) {
       id = findHook(fiber, id);
-      id !== null && (path3 = copyWithDeleteImpl(id.memoizedState, path3, 0), id.memoizedState = path3, id.baseState = path3, fiber.memoizedProps = assign3({}, fiber.memoizedProps), path3 = enqueueConcurrentRenderForLane(fiber, 2), path3 !== null && scheduleUpdateOnFiber(path3, fiber, 2));
+      id !== null && (path7 = copyWithDeleteImpl(id.memoizedState, path7, 0), id.memoizedState = path7, id.baseState = path7, fiber.memoizedProps = assign3({}, fiber.memoizedProps), path7 = enqueueConcurrentRenderForLane(fiber, 2), path7 !== null && scheduleUpdateOnFiber(path7, fiber, 2));
     };
     overrideHookStateRenamePath = function(fiber, id, oldPath, newPath) {
       id = findHook(fiber, id);
       id !== null && (oldPath = copyWithRename(id.memoizedState, oldPath, newPath), id.memoizedState = oldPath, id.baseState = oldPath, fiber.memoizedProps = assign3({}, fiber.memoizedProps), oldPath = enqueueConcurrentRenderForLane(fiber, 2), oldPath !== null && scheduleUpdateOnFiber(oldPath, fiber, 2));
     };
-    overrideProps = function(fiber, path3, value) {
-      fiber.pendingProps = copyWithSetImpl(fiber.memoizedProps, path3, 0, value);
+    overrideProps = function(fiber, path7, value) {
+      fiber.pendingProps = copyWithSetImpl(fiber.memoizedProps, path7, 0, value);
       fiber.alternate && (fiber.alternate.pendingProps = fiber.pendingProps);
-      path3 = enqueueConcurrentRenderForLane(fiber, 2);
-      path3 !== null && scheduleUpdateOnFiber(path3, fiber, 2);
+      path7 = enqueueConcurrentRenderForLane(fiber, 2);
+      path7 !== null && scheduleUpdateOnFiber(path7, fiber, 2);
     };
-    overridePropsDeletePath = function(fiber, path3) {
-      fiber.pendingProps = copyWithDeleteImpl(fiber.memoizedProps, path3, 0);
+    overridePropsDeletePath = function(fiber, path7) {
+      fiber.pendingProps = copyWithDeleteImpl(fiber.memoizedProps, path7, 0);
       fiber.alternate && (fiber.alternate.pendingProps = fiber.pendingProps);
-      path3 = enqueueConcurrentRenderForLane(fiber, 2);
-      path3 !== null && scheduleUpdateOnFiber(path3, fiber, 2);
+      path7 = enqueueConcurrentRenderForLane(fiber, 2);
+      path7 !== null && scheduleUpdateOnFiber(path7, fiber, 2);
     };
     overridePropsRenamePath = function(fiber, oldPath, newPath) {
       fiber.pendingProps = copyWithRename(fiber.memoizedProps, oldPath, newPath);
@@ -13715,7 +13880,7 @@ No matching component was found for:
         throw Error("Expected the form instance to be a HostComponent. This is a bug in React.");
       var queue = ensureFormComponentIsStateful(formFiber).queue;
       startHostActionTimer(formFiber);
-      startTransition(formFiber, queue, pendingState, NotPendingTransition, action === null ? noop2 : function() {
+      startTransition(formFiber, queue, pendingState, NotPendingTransition, action === null ? noop3 : function() {
         ReactSharedInternals.T === null && console.error("requestFormReset was called outside a transition or action. To fix, move to an action, or wrap with startTransition.");
         var stateHook = ensureFormComponentIsStateful(formFiber);
         stateHook.next === null && (stateHook = formFiber.alternate.memoizedState);
@@ -15380,7 +15545,7 @@ var require_websocket = __commonJS((exports, module) => {
   var net = __require("net");
   var tls = __require("tls");
   var { randomBytes, createHash } = __require("crypto");
-  var { Duplex, Readable } = __require("stream");
+  var { Duplex, Readable: Readable2 } = __require("stream");
   var { URL: URL2 } = __require("url");
   var PerMessageDeflate = require_permessage_deflate();
   var Receiver = require_receiver();
@@ -17580,8 +17745,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             return false;
           }
-          function getInObject(object, path3) {
-            return path3.reduce(function(reduced, attr) {
+          function getInObject(object, path7) {
+            return path7.reduce(function(reduced, attr) {
               if (reduced) {
                 if (hasOwnProperty.call(reduced, attr)) {
                   return reduced[attr];
@@ -17593,11 +17758,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               return null;
             }, object);
           }
-          function deletePathInObject(object, path3) {
-            var length = path3.length;
-            var last2 = path3[length - 1];
+          function deletePathInObject(object, path7) {
+            var length = path7.length;
+            var last2 = path7[length - 1];
             if (object != null) {
-              var parent = getInObject(object, path3.slice(0, length - 1));
+              var parent = getInObject(object, path7.slice(0, length - 1));
               if (parent) {
                 if (Object(_isArray__WEBPACK_IMPORTED_MODULE_7__["a"])(parent)) {
                   parent.splice(last2, 1);
@@ -17623,11 +17788,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             }
           }
-          function setInObject(object, path3, value) {
-            var length = path3.length;
-            var last2 = path3[length - 1];
+          function setInObject(object, path7, value) {
+            var length = path7.length;
+            var last2 = path7[length - 1];
             if (object != null) {
-              var parent = getInObject(object, path3.slice(0, length - 1));
+              var parent = getInObject(object, path7.slice(0, length - 1));
               if (parent) {
                 parent[last2] = value;
               }
@@ -18056,11 +18221,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           return obj;
         }
         function cleanForBridge(data, isPathAllowed) {
-          var path3 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
+          var path7 = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
           if (data !== null) {
             var cleanedPaths = [];
             var unserializablePaths = [];
-            var cleanedData = Object(_hydration__WEBPACK_IMPORTED_MODULE_1__["a"])(data, cleanedPaths, unserializablePaths, path3, isPathAllowed);
+            var cleanedData = Object(_hydration__WEBPACK_IMPORTED_MODULE_1__["a"])(data, cleanedPaths, unserializablePaths, path7, isPathAllowed);
             return {
               data: cleanedData,
               cleaned: cleanedPaths,
@@ -18080,18 +18245,18 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             Object(clipboard_js__WEBPACK_IMPORTED_MODULE_0__["copy"])(text);
           }
         }
-        function copyWithDelete(obj, path3) {
+        function copyWithDelete(obj, path7) {
           var index = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-          var key2 = path3[index];
+          var key2 = path7[index];
           var updated = Object(shared_isArray__WEBPACK_IMPORTED_MODULE_2__["a"])(obj) ? obj.slice() : _objectSpread({}, obj);
-          if (index + 1 === path3.length) {
+          if (index + 1 === path7.length) {
             if (Object(shared_isArray__WEBPACK_IMPORTED_MODULE_2__["a"])(updated)) {
               updated.splice(key2, 1);
             } else {
               delete updated[key2];
             }
           } else {
-            updated[key2] = copyWithDelete(obj[key2], path3, index + 1);
+            updated[key2] = copyWithDelete(obj[key2], path7, index + 1);
           }
           return updated;
         }
@@ -18112,14 +18277,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           return updated;
         }
-        function copyWithSet(obj, path3, value) {
+        function copyWithSet(obj, path7, value) {
           var index = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
-          if (index >= path3.length) {
+          if (index >= path7.length) {
             return value;
           }
-          var key2 = path3[index];
+          var key2 = path7[index];
           var updated = Object(shared_isArray__WEBPACK_IMPORTED_MODULE_2__["a"])(obj) ? obj.slice() : _objectSpread({}, obj);
-          updated[key2] = copyWithSet(obj[key2], path3, value, index + 1);
+          updated[key2] = copyWithSet(obj[key2], path7, value, index + 1);
           return updated;
         }
         function getEffectDurations(root) {
@@ -19737,8 +19902,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           unserializable: Symbol("unserializable")
         };
         var LEVEL_THRESHOLD = 2;
-        function createDehydrated(type, inspectable, data, cleaned, path3) {
-          cleaned.push(path3);
+        function createDehydrated(type, inspectable, data, cleaned, path7) {
+          cleaned.push(path7);
           var dehydrated = {
             inspectable,
             type,
@@ -19756,13 +19921,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           return dehydrated;
         }
-        function dehydrate(data, cleaned, unserializable, path3, isPathAllowed) {
+        function dehydrate(data, cleaned, unserializable, path7, isPathAllowed) {
           var level = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
           var type = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["d"])(data);
           var isPathAllowedCheck;
           switch (type) {
             case "html_element":
-              cleaned.push(path3);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19771,7 +19936,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "function":
-              cleaned.push(path3);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19780,14 +19945,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "string":
-              isPathAllowedCheck = isPathAllowed(path3);
+              isPathAllowedCheck = isPathAllowed(path7);
               if (isPathAllowedCheck) {
                 return data;
               } else {
                 return data.length <= 500 ? data : data.slice(0, 500) + "...";
               }
             case "bigint":
-              cleaned.push(path3);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19796,7 +19961,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "symbol":
-              cleaned.push(path3);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19805,7 +19970,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "react_element":
-              cleaned.push(path3);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19815,7 +19980,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               };
             case "array_buffer":
             case "data_view":
-              cleaned.push(path3);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19825,19 +19990,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "array":
-              isPathAllowedCheck = isPathAllowed(path3);
+              isPathAllowedCheck = isPathAllowed(path7);
               if (level >= LEVEL_THRESHOLD && !isPathAllowedCheck) {
-                return createDehydrated(type, true, data, cleaned, path3);
+                return createDehydrated(type, true, data, cleaned, path7);
               }
               return data.map(function(item, i) {
-                return dehydrate(item, cleaned, unserializable, path3.concat([i]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
+                return dehydrate(item, cleaned, unserializable, path7.concat([i]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
               });
             case "html_all_collection":
             case "typed_array":
             case "iterator":
-              isPathAllowedCheck = isPathAllowed(path3);
+              isPathAllowedCheck = isPathAllowed(path7);
               if (level >= LEVEL_THRESHOLD && !isPathAllowedCheck) {
-                return createDehydrated(type, true, data, cleaned, path3);
+                return createDehydrated(type, true, data, cleaned, path7);
               } else {
                 var unserializableValue = {
                   unserializable: true,
@@ -19849,13 +20014,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   name: !data.constructor || data.constructor.name === "Object" ? "" : data.constructor.name
                 };
                 Array.from(data).forEach(function(item, i) {
-                  return unserializableValue[i] = dehydrate(item, cleaned, unserializable, path3.concat([i]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
+                  return unserializableValue[i] = dehydrate(item, cleaned, unserializable, path7.concat([i]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
                 });
-                unserializable.push(path3);
+                unserializable.push(path7);
                 return unserializableValue;
               }
             case "opaque_iterator":
-              cleaned.push(path3);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19864,7 +20029,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "date":
-              cleaned.push(path3);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19873,7 +20038,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "regexp":
-              cleaned.push(path3);
+              cleaned.push(path7);
               return {
                 inspectable: false,
                 preview_short: Object(_utils__WEBPACK_IMPORTED_MODULE_0__["b"])(data, false),
@@ -19882,21 +20047,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type
               };
             case "object":
-              isPathAllowedCheck = isPathAllowed(path3);
+              isPathAllowedCheck = isPathAllowed(path7);
               if (level >= LEVEL_THRESHOLD && !isPathAllowedCheck) {
-                return createDehydrated(type, true, data, cleaned, path3);
+                return createDehydrated(type, true, data, cleaned, path7);
               } else {
                 var object = {};
                 Object(_utils__WEBPACK_IMPORTED_MODULE_0__["c"])(data).forEach(function(key2) {
                   var name = key2.toString();
-                  object[name] = dehydrate(data[key2], cleaned, unserializable, path3.concat([name]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
+                  object[name] = dehydrate(data[key2], cleaned, unserializable, path7.concat([name]), isPathAllowed, isPathAllowedCheck ? 1 : level + 1);
                 });
                 return object;
               }
             case "infinity":
             case "nan":
             case "undefined":
-              cleaned.push(path3);
+              cleaned.push(path7);
               return {
                 type
               };
@@ -19904,8 +20069,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               return data;
           }
         }
-        function fillInPath(object, data, path3, value) {
-          var target = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path3);
+        function fillInPath(object, data, path7, value) {
+          var target = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path7);
           if (target != null) {
             if (!target[meta.unserializable]) {
               delete target[meta.inspectable];
@@ -19920,9 +20085,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           if (value !== null && data.unserializable.length > 0) {
             var unserializablePath = data.unserializable[0];
-            var isMatch2 = unserializablePath.length === path3.length;
-            for (var i = 0;i < path3.length; i++) {
-              if (path3[i] !== unserializablePath[i]) {
+            var isMatch2 = unserializablePath.length === path7.length;
+            for (var i = 0;i < path7.length; i++) {
+              if (path7[i] !== unserializablePath[i]) {
                 isMatch2 = false;
                 break;
               }
@@ -19931,13 +20096,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               upgradeUnserializable(value, value);
             }
           }
-          Object(_utils__WEBPACK_IMPORTED_MODULE_0__["l"])(object, path3, value);
+          Object(_utils__WEBPACK_IMPORTED_MODULE_0__["l"])(object, path7, value);
         }
         function hydrate(object, cleaned, unserializable) {
-          cleaned.forEach(function(path3) {
-            var length = path3.length;
-            var last2 = path3[length - 1];
-            var parent = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path3.slice(0, length - 1));
+          cleaned.forEach(function(path7) {
+            var length = path7.length;
+            var last2 = path7[length - 1];
+            var parent = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path7.slice(0, length - 1));
             if (!parent || !parent.hasOwnProperty(last2)) {
               return;
             }
@@ -19963,10 +20128,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               parent[last2] = replaced;
             }
           });
-          unserializable.forEach(function(path3) {
-            var length = path3.length;
-            var last2 = path3[length - 1];
-            var parent = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path3.slice(0, length - 1));
+          unserializable.forEach(function(path7) {
+            var length = path7.length;
+            var last2 = path7[length - 1];
+            var parent = Object(_utils__WEBPACK_IMPORTED_MODULE_0__["h"])(object, path7.slice(0, length - 1));
             if (!parent || !parent.hasOwnProperty(last2)) {
               return;
             }
@@ -23009,9 +23174,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             return alternate;
           }
-          function prepareViewAttributeSource(id, path3) {
+          function prepareViewAttributeSource(id, path7) {
             if (isMostRecentlyInspectedElement(id)) {
-              window.$attribute = Object(utils["h"])(mostRecentlyInspectedElement, path3);
+              window.$attribute = Object(utils["h"])(mostRecentlyInspectedElement, path7);
             }
           }
           function prepareViewElementSource(id) {
@@ -23239,9 +23404,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           function isMostRecentlyInspectedElementCurrent(id) {
             return isMostRecentlyInspectedElement(id) && !hasElementUpdatedSinceLastInspected;
           }
-          function mergeInspectedPaths(path3) {
+          function mergeInspectedPaths(path7) {
             var current = currentlyInspectedPaths;
-            path3.forEach(function(key2) {
+            path7.forEach(function(key2) {
               if (!current[key2]) {
                 current[key2] = {};
               }
@@ -23249,16 +23414,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             });
           }
           function createIsPathAllowed(key2, secondaryCategory) {
-            return function isPathAllowed(path3) {
+            return function isPathAllowed(path7) {
               switch (secondaryCategory) {
                 case "hooks":
-                  if (path3.length === 1) {
+                  if (path7.length === 1) {
                     return true;
                   }
-                  if (path3[path3.length - 2] === "hookSource" && path3[path3.length - 1] === "fileName") {
+                  if (path7[path7.length - 2] === "hookSource" && path7[path7.length - 1] === "fileName") {
                     return true;
                   }
-                  if (path3[path3.length - 1] === "subHooks" || path3[path3.length - 2] === "subHooks") {
+                  if (path7[path7.length - 1] === "subHooks" || path7[path7.length - 2] === "subHooks") {
                     return true;
                   }
                   break;
@@ -23269,8 +23434,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               if (!current) {
                 return false;
               }
-              for (var i = 0;i < path3.length; i++) {
-                current = current[path3[i]];
+              for (var i = 0;i < path7.length; i++) {
+                current = current[path7[i]];
                 if (!current) {
                   return false;
                 }
@@ -23319,37 +23484,37 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 break;
             }
           }
-          function storeAsGlobal(id, path3, count) {
+          function storeAsGlobal(id, path7, count) {
             if (isMostRecentlyInspectedElement(id)) {
-              var value = Object(utils["h"])(mostRecentlyInspectedElement, path3);
+              var value = Object(utils["h"])(mostRecentlyInspectedElement, path7);
               var key2 = "$reactTemp".concat(count);
               window[key2] = value;
               console.log(key2);
               console.log(value);
             }
           }
-          function copyElementPath(id, path3) {
+          function copyElementPath(id, path7) {
             if (isMostRecentlyInspectedElement(id)) {
-              Object(backend_utils["b"])(Object(utils["h"])(mostRecentlyInspectedElement, path3));
+              Object(backend_utils["b"])(Object(utils["h"])(mostRecentlyInspectedElement, path7));
             }
           }
-          function inspectElement(requestID, id, path3, forceFullData) {
-            if (path3 !== null) {
-              mergeInspectedPaths(path3);
+          function inspectElement(requestID, id, path7, forceFullData) {
+            if (path7 !== null) {
+              mergeInspectedPaths(path7);
             }
             if (isMostRecentlyInspectedElement(id) && !forceFullData) {
               if (!hasElementUpdatedSinceLastInspected) {
-                if (path3 !== null) {
+                if (path7 !== null) {
                   var secondaryCategory = null;
-                  if (path3[0] === "hooks") {
+                  if (path7[0] === "hooks") {
                     secondaryCategory = "hooks";
                   }
                   return {
                     id,
                     responseID: requestID,
                     type: "hydrated-path",
-                    path: path3,
-                    value: Object(backend_utils["a"])(Object(utils["h"])(mostRecentlyInspectedElement, path3), createIsPathAllowed(null, secondaryCategory), path3)
+                    path: path7,
+                    value: Object(backend_utils["a"])(Object(utils["h"])(mostRecentlyInspectedElement, path7), createIsPathAllowed(null, secondaryCategory), path7)
                   };
                 } else {
                   return {
@@ -23430,17 +23595,17 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               console.groupEnd();
             }
           }
-          function deletePath(type, id, hookID, path3) {
+          function deletePath(type, id, hookID, path7) {
             var fiber = findCurrentFiberUsingSlowPathById(id);
             if (fiber !== null) {
               var instance = fiber.stateNode;
               switch (type) {
                 case "context":
-                  path3 = path3.slice(1);
+                  path7 = path7.slice(1);
                   switch (fiber.tag) {
                     case ClassComponent:
-                      if (path3.length === 0) {} else {
-                        Object(utils["a"])(instance.context, path3);
+                      if (path7.length === 0) {} else {
+                        Object(utils["a"])(instance.context, path7);
                       }
                       instance.forceUpdate();
                       break;
@@ -23450,21 +23615,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   break;
                 case "hooks":
                   if (typeof overrideHookStateDeletePath === "function") {
-                    overrideHookStateDeletePath(fiber, hookID, path3);
+                    overrideHookStateDeletePath(fiber, hookID, path7);
                   }
                   break;
                 case "props":
                   if (instance === null) {
                     if (typeof overridePropsDeletePath === "function") {
-                      overridePropsDeletePath(fiber, path3);
+                      overridePropsDeletePath(fiber, path7);
                     }
                   } else {
-                    fiber.pendingProps = Object(backend_utils["c"])(instance.props, path3);
+                    fiber.pendingProps = Object(backend_utils["c"])(instance.props, path7);
                     instance.forceUpdate();
                   }
                   break;
                 case "state":
-                  Object(utils["a"])(instance.state, path3);
+                  Object(utils["a"])(instance.state, path7);
                   instance.forceUpdate();
                   break;
               }
@@ -23511,19 +23676,19 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             }
           }
-          function overrideValueAtPath(type, id, hookID, path3, value) {
+          function overrideValueAtPath(type, id, hookID, path7, value) {
             var fiber = findCurrentFiberUsingSlowPathById(id);
             if (fiber !== null) {
               var instance = fiber.stateNode;
               switch (type) {
                 case "context":
-                  path3 = path3.slice(1);
+                  path7 = path7.slice(1);
                   switch (fiber.tag) {
                     case ClassComponent:
-                      if (path3.length === 0) {
+                      if (path7.length === 0) {
                         instance.context = value;
                       } else {
-                        Object(utils["l"])(instance.context, path3, value);
+                        Object(utils["l"])(instance.context, path7, value);
                       }
                       instance.forceUpdate();
                       break;
@@ -23533,18 +23698,18 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   break;
                 case "hooks":
                   if (typeof overrideHookState === "function") {
-                    overrideHookState(fiber, hookID, path3, value);
+                    overrideHookState(fiber, hookID, path7, value);
                   }
                   break;
                 case "props":
                   switch (fiber.tag) {
                     case ClassComponent:
-                      fiber.pendingProps = Object(backend_utils["e"])(instance.props, path3, value);
+                      fiber.pendingProps = Object(backend_utils["e"])(instance.props, path7, value);
                       instance.forceUpdate();
                       break;
                     default:
                       if (typeof overrideProps === "function") {
-                        overrideProps(fiber, path3, value);
+                        overrideProps(fiber, path7, value);
                       }
                       break;
                   }
@@ -23552,7 +23717,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 case "state":
                   switch (fiber.tag) {
                     case ClassComponent:
-                      Object(utils["l"])(instance.state, path3, value);
+                      Object(utils["l"])(instance.state, path7, value);
                       instance.forceUpdate();
                       break;
                   }
@@ -23734,13 +23899,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           var trackedPathMatchFiber = null;
           var trackedPathMatchDepth = -1;
           var mightBeOnTrackedPath = false;
-          function setTrackedPath(path3) {
-            if (path3 === null) {
+          function setTrackedPath(path7) {
+            if (path7 === null) {
               trackedPathMatchFiber = null;
               trackedPathMatchDepth = -1;
               mightBeOnTrackedPath = false;
             }
-            trackedPath = path3;
+            trackedPath = path7;
           }
           function updateTrackedPathStateBeforeMount(fiber) {
             if (trackedPath === null || !mightBeOnTrackedPath) {
@@ -24070,16 +24235,16 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
         process6.argv = [];
         process6.version = "";
         process6.versions = {};
-        function noop2() {}
-        process6.on = noop2;
-        process6.addListener = noop2;
-        process6.once = noop2;
-        process6.off = noop2;
-        process6.removeListener = noop2;
-        process6.removeAllListeners = noop2;
-        process6.emit = noop2;
-        process6.prependListener = noop2;
-        process6.prependOnceListener = noop2;
+        function noop3() {}
+        process6.on = noop3;
+        process6.addListener = noop3;
+        process6.once = noop3;
+        process6.off = noop3;
+        process6.removeListener = noop3;
+        process6.removeAllListeners = noop3;
+        process6.emit = noop3;
+        process6.prependListener = noop3;
+        process6.prependOnceListener = noop3;
         process6.listeners = function(name) {
           return [];
         };
@@ -27953,12 +28118,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             bridge_defineProperty(_assertThisInitialized(_this), "overrideValueAtPath", function(_ref) {
-              var { id, path: path3, rendererID, type, value } = _ref;
+              var { id, path: path7, rendererID, type, value } = _ref;
               switch (type) {
                 case "context":
                   _this.send("overrideContext", {
                     id,
-                    path: path3,
+                    path: path7,
                     rendererID,
                     wasForwarded: true,
                     value
@@ -27967,7 +28132,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 case "hooks":
                   _this.send("overrideHookState", {
                     id,
-                    path: path3,
+                    path: path7,
                     rendererID,
                     wasForwarded: true,
                     value
@@ -27976,7 +28141,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 case "props":
                   _this.send("overrideProps", {
                     id,
-                    path: path3,
+                    path: path7,
                     rendererID,
                     wasForwarded: true,
                     value
@@ -27985,7 +28150,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 case "state":
                   _this.send("overrideState", {
                     id,
-                    path: path3,
+                    path: path7,
                     rendererID,
                     wasForwarded: true,
                     value
@@ -28204,21 +28369,21 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "copyElementPath", function(_ref4) {
-              var { id, path: path3, rendererID } = _ref4;
+              var { id, path: path7, rendererID } = _ref4;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                renderer.copyElementPath(id, path3);
+                renderer.copyElementPath(id, path7);
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "deletePath", function(_ref5) {
-              var { hookID, id, path: path3, rendererID, type } = _ref5;
+              var { hookID, id, path: path7, rendererID, type } = _ref5;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                renderer.deletePath(type, id, hookID, path3);
+                renderer.deletePath(type, id, hookID, path7);
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "getBackendVersion", function() {
@@ -28255,12 +28420,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "inspectElement", function(_ref8) {
-              var { forceFullData, id, path: path3, rendererID, requestID } = _ref8;
+              var { forceFullData, id, path: path7, rendererID, requestID } = _ref8;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                _this._bridge.send("inspectedElement", renderer.inspectElement(requestID, id, path3, forceFullData));
+                _this._bridge.send("inspectedElement", renderer.inspectElement(requestID, id, path7, forceFullData));
                 if (_this._persistedSelectionMatch === null || _this._persistedSelectionMatch.id !== id) {
                   _this._persistedSelection = null;
                   _this._persistedSelectionMatch = null;
@@ -28297,20 +28462,20 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "overrideValueAtPath", function(_ref12) {
-              var { hookID, id, path: path3, rendererID, type, value } = _ref12;
+              var { hookID, id, path: path7, rendererID, type, value } = _ref12;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                renderer.overrideValueAtPath(type, id, hookID, path3, value);
+                renderer.overrideValueAtPath(type, id, hookID, path7, value);
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "overrideContext", function(_ref13) {
-              var { id, path: path3, rendererID, wasForwarded, value } = _ref13;
+              var { id, path: path7, rendererID, wasForwarded, value } = _ref13;
               if (!wasForwarded) {
                 _this.overrideValueAtPath({
                   id,
-                  path: path3,
+                  path: path7,
                   rendererID,
                   type: "context",
                   value
@@ -28318,11 +28483,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "overrideHookState", function(_ref14) {
-              var { id, hookID, path: path3, rendererID, wasForwarded, value } = _ref14;
+              var { id, hookID, path: path7, rendererID, wasForwarded, value } = _ref14;
               if (!wasForwarded) {
                 _this.overrideValueAtPath({
                   id,
-                  path: path3,
+                  path: path7,
                   rendererID,
                   type: "hooks",
                   value
@@ -28330,11 +28495,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "overrideProps", function(_ref15) {
-              var { id, path: path3, rendererID, wasForwarded, value } = _ref15;
+              var { id, path: path7, rendererID, wasForwarded, value } = _ref15;
               if (!wasForwarded) {
                 _this.overrideValueAtPath({
                   id,
-                  path: path3,
+                  path: path7,
                   rendererID,
                   type: "props",
                   value
@@ -28342,11 +28507,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "overrideState", function(_ref16) {
-              var { id, path: path3, rendererID, wasForwarded, value } = _ref16;
+              var { id, path: path7, rendererID, wasForwarded, value } = _ref16;
               if (!wasForwarded) {
                 _this.overrideValueAtPath({
                   id,
-                  path: path3,
+                  path: path7,
                   rendererID,
                   type: "state",
                   value
@@ -28404,12 +28569,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               _this._bridge.send("profilingStatus", _this._isProfiling);
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "storeAsGlobal", function(_ref18) {
-              var { count, id, path: path3, rendererID } = _ref18;
+              var { count, id, path: path7, rendererID } = _ref18;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                renderer.storeAsGlobal(id, path3, count);
+                renderer.storeAsGlobal(id, path7, count);
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "updateConsolePatchSettings", function(_ref19) {
@@ -28429,12 +28594,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "viewAttributeSource", function(_ref20) {
-              var { id, path: path3, rendererID } = _ref20;
+              var { id, path: path7, rendererID } = _ref20;
               var renderer = _this._rendererInterfaces[rendererID];
               if (renderer == null) {
                 console.warn('Invalid renderer id "'.concat(rendererID, '" for element "').concat(id, '"'));
               } else {
-                renderer.prepareViewAttributeSource(id, path3);
+                renderer.prepareViewAttributeSource(id, path7);
               }
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "viewElementSource", function(_ref21) {
@@ -28488,11 +28653,11 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             });
             agent_defineProperty(agent_assertThisInitialized(_this), "_throttledPersistSelection", lodash_throttle_default()(function(rendererID, id) {
               var renderer = _this._rendererInterfaces[rendererID];
-              var path3 = renderer != null ? renderer.getPathForElement(id) : null;
-              if (path3 !== null) {
+              var path7 = renderer != null ? renderer.getPathForElement(id) : null;
+              if (path7 !== null) {
                 Object(storage["e"])(constants3["i"], JSON.stringify({
                   rendererID,
-                  path: path3
+                  path: path7
                 }));
               } else {
                 Object(storage["d"])(constants3["i"]);
@@ -29404,9 +29569,9 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           var currentlyInspectedElementID = null;
           var currentlyInspectedPaths = {};
-          function mergeInspectedPaths(path3) {
+          function mergeInspectedPaths(path7) {
             var current = currentlyInspectedPaths;
-            path3.forEach(function(key2) {
+            path7.forEach(function(key2) {
               if (!current[key2]) {
                 current[key2] = {};
               }
@@ -29414,13 +29579,13 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             });
           }
           function createIsPathAllowed(key2) {
-            return function isPathAllowed(path3) {
+            return function isPathAllowed(path7) {
               var current = currentlyInspectedPaths[key2];
               if (!current) {
                 return false;
               }
-              for (var i = 0;i < path3.length; i++) {
-                current = current[path3[i]];
+              for (var i = 0;i < path7.length; i++) {
+                current = current[path7[i]];
                 if (!current) {
                   return false;
                 }
@@ -29470,23 +29635,23 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 break;
             }
           }
-          function storeAsGlobal(id, path3, count) {
+          function storeAsGlobal(id, path7, count) {
             var inspectedElement = inspectElementRaw(id);
             if (inspectedElement !== null) {
-              var value = Object(src_utils["h"])(inspectedElement, path3);
+              var value = Object(src_utils["h"])(inspectedElement, path7);
               var key2 = "$reactTemp".concat(count);
               window[key2] = value;
               console.log(key2);
               console.log(value);
             }
           }
-          function copyElementPath(id, path3) {
+          function copyElementPath(id, path7) {
             var inspectedElement = inspectElementRaw(id);
             if (inspectedElement !== null) {
-              Object(utils["b"])(Object(src_utils["h"])(inspectedElement, path3));
+              Object(utils["b"])(Object(src_utils["h"])(inspectedElement, path7));
             }
           }
-          function inspectElement(requestID, id, path3, forceFullData) {
+          function inspectElement(requestID, id, path7, forceFullData) {
             if (forceFullData || currentlyInspectedElementID !== id) {
               currentlyInspectedElementID = id;
               currentlyInspectedPaths = {};
@@ -29499,8 +29664,8 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                 type: "not-found"
               };
             }
-            if (path3 !== null) {
-              mergeInspectedPaths(path3);
+            if (path7 !== null) {
+              mergeInspectedPaths(path7);
             }
             updateSelectedElement(id);
             inspectedElement.context = Object(utils["a"])(inspectedElement.context, createIsPathAllowed("context"));
@@ -29615,10 +29780,10 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               console.groupEnd();
             }
           }
-          function prepareViewAttributeSource(id, path3) {
+          function prepareViewAttributeSource(id, path7) {
             var inspectedElement = inspectElementRaw(id);
             if (inspectedElement !== null) {
-              window.$attribute = Object(src_utils["h"])(inspectedElement, path3);
+              window.$attribute = Object(src_utils["h"])(inspectedElement, path7);
             }
           }
           function prepareViewElementSource(id) {
@@ -29634,14 +29799,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
             }
             global2.$type = element.type;
           }
-          function deletePath(type, id, hookID, path3) {
+          function deletePath(type, id, hookID, path7) {
             var internalInstance = idToInternalInstanceMap.get(id);
             if (internalInstance != null) {
               var publicInstance = internalInstance._instance;
               if (publicInstance != null) {
                 switch (type) {
                   case "context":
-                    Object(src_utils["a"])(publicInstance.context, path3);
+                    Object(src_utils["a"])(publicInstance.context, path7);
                     forceUpdate(publicInstance);
                     break;
                   case "hooks":
@@ -29649,12 +29814,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   case "props":
                     var element = internalInstance._currentElement;
                     internalInstance._currentElement = _objectSpread(_objectSpread({}, element), {}, {
-                      props: Object(utils["c"])(element.props, path3)
+                      props: Object(utils["c"])(element.props, path7)
                     });
                     forceUpdate(publicInstance);
                     break;
                   case "state":
-                    Object(src_utils["a"])(publicInstance.state, path3);
+                    Object(src_utils["a"])(publicInstance.state, path7);
                     forceUpdate(publicInstance);
                     break;
                 }
@@ -29688,14 +29853,14 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
               }
             }
           }
-          function overrideValueAtPath(type, id, hookID, path3, value) {
+          function overrideValueAtPath(type, id, hookID, path7, value) {
             var internalInstance = idToInternalInstanceMap.get(id);
             if (internalInstance != null) {
               var publicInstance = internalInstance._instance;
               if (publicInstance != null) {
                 switch (type) {
                   case "context":
-                    Object(src_utils["l"])(publicInstance.context, path3, value);
+                    Object(src_utils["l"])(publicInstance.context, path7, value);
                     forceUpdate(publicInstance);
                     break;
                   case "hooks":
@@ -29703,12 +29868,12 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
                   case "props":
                     var element = internalInstance._currentElement;
                     internalInstance._currentElement = _objectSpread(_objectSpread({}, element), {}, {
-                      props: Object(utils["e"])(element.props, path3, value)
+                      props: Object(utils["e"])(element.props, path7, value)
                     });
                     forceUpdate(publicInstance);
                     break;
                   case "state":
-                    Object(src_utils["l"])(publicInstance.state, path3, value);
+                    Object(src_utils["l"])(publicInstance.state, path7, value);
                     forceUpdate(publicInstance);
                     break;
                 }
@@ -29743,7 +29908,7 @@ In order to be iterable, non-array objects must have a [Symbol.iterator]() metho
           }
           function updateComponentFilters(componentFilters) {}
           function setTraceUpdatesEnabled(enabled) {}
-          function setTrackedPath(path3) {}
+          function setTrackedPath(path7) {}
           function getOwnersList(id) {
             return null;
           }
@@ -30955,174 +31120,9 @@ var require_jsx_dev_runtime = __commonJS((exports, module) => {
   }
 });
 
-// node_modules/content-disposition/index.js
-var require_content_disposition = __commonJS((exports, module) => {
-  /*!
-   * content-disposition
-   * Copyright(c) 2014-2017 Douglas Christopher Wilson
-   * MIT Licensed
-   */
-  module.exports = contentDisposition;
-  module.exports.parse = parse5;
-  var basename = __require("path").basename;
-  var ENCODE_URL_ATTR_CHAR_REGEXP = /[\x00-\x20"'()*,/:;<=>?@[\\\]{}\x7f]/g;
-  var HEX_ESCAPE_REGEXP = /%[0-9A-Fa-f]{2}/;
-  var HEX_ESCAPE_REPLACE_REGEXP = /%([0-9A-Fa-f]{2})/g;
-  var NON_LATIN1_REGEXP = /[^\x20-\x7e\xa0-\xff]/g;
-  var QESC_REGEXP = /\\([\u0000-\u007f])/g;
-  var QUOTE_REGEXP = /([\\"])/g;
-  var PARAM_REGEXP = /;[\x09\x20]*([!#$%&'*+.0-9A-Z^_`a-z|~-]+)[\x09\x20]*=[\x09\x20]*("(?:[\x20!\x23-\x5b\x5d-\x7e\x80-\xff]|\\[\x20-\x7e])*"|[!#$%&'*+.0-9A-Z^_`a-z|~-]+)[\x09\x20]*/g;
-  var TEXT_REGEXP = /^[\x20-\x7e\x80-\xff]+$/;
-  var TOKEN_REGEXP = /^[!#$%&'*+.0-9A-Z^_`a-z|~-]+$/;
-  var EXT_VALUE_REGEXP = /^([A-Za-z0-9!#$%&+\-^_`{}~]+)'(?:[A-Za-z]{2,3}(?:-[A-Za-z]{3}){0,3}|[A-Za-z]{4,8}|)'((?:%[0-9A-Fa-f]{2}|[A-Za-z0-9!#$&+.^_`|~-])+)$/;
-  var DISPOSITION_TYPE_REGEXP = /^([!#$%&'*+.0-9A-Z^_`a-z|~-]+)[\x09\x20]*(?:$|;)/;
-  function contentDisposition(filename, options) {
-    var opts = options || {};
-    var type = opts.type || "attachment";
-    var params = createparams(filename, opts.fallback);
-    return format2(new ContentDisposition(type, params));
-  }
-  function createparams(filename, fallback) {
-    if (filename === undefined) {
-      return;
-    }
-    var params = {};
-    if (typeof filename !== "string") {
-      throw new TypeError("filename must be a string");
-    }
-    if (fallback === undefined) {
-      fallback = true;
-    }
-    if (typeof fallback !== "string" && typeof fallback !== "boolean") {
-      throw new TypeError("fallback must be a string or boolean");
-    }
-    if (typeof fallback === "string" && NON_LATIN1_REGEXP.test(fallback)) {
-      throw new TypeError("fallback must be ISO-8859-1 string");
-    }
-    var name = basename(filename);
-    var isQuotedString = TEXT_REGEXP.test(name);
-    var fallbackName = typeof fallback !== "string" ? fallback && getlatin1(name) : basename(fallback);
-    var hasFallback = typeof fallbackName === "string" && fallbackName !== name;
-    if (hasFallback || !isQuotedString || HEX_ESCAPE_REGEXP.test(name)) {
-      params["filename*"] = name;
-    }
-    if (isQuotedString || hasFallback) {
-      params.filename = hasFallback ? fallbackName : name;
-    }
-    return params;
-  }
-  function format2(obj) {
-    var parameters = obj.parameters;
-    var type = obj.type;
-    if (!type || typeof type !== "string" || !TOKEN_REGEXP.test(type)) {
-      throw new TypeError("invalid type");
-    }
-    var string = String(type).toLowerCase();
-    if (parameters && typeof parameters === "object") {
-      var param;
-      var params = Object.keys(parameters).sort();
-      for (var i = 0;i < params.length; i++) {
-        param = params[i];
-        var val = param.slice(-1) === "*" ? ustring(parameters[param]) : qstring(parameters[param]);
-        string += "; " + param + "=" + val;
-      }
-    }
-    return string;
-  }
-  function decodefield(str) {
-    var match = EXT_VALUE_REGEXP.exec(str);
-    if (!match) {
-      throw new TypeError("invalid extended field value");
-    }
-    var charset = match[1].toLowerCase();
-    var encoded = match[2];
-    var value;
-    var binary = encoded.replace(HEX_ESCAPE_REPLACE_REGEXP, pdecode);
-    switch (charset) {
-      case "iso-8859-1":
-        value = getlatin1(binary);
-        break;
-      case "utf-8":
-      case "utf8":
-        value = Buffer.from(binary, "binary").toString("utf8");
-        break;
-      default:
-        throw new TypeError("unsupported charset in extended field");
-    }
-    return value;
-  }
-  function getlatin1(val) {
-    return String(val).replace(NON_LATIN1_REGEXP, "?");
-  }
-  function parse5(string) {
-    if (!string || typeof string !== "string") {
-      throw new TypeError("argument string is required");
-    }
-    var match = DISPOSITION_TYPE_REGEXP.exec(string);
-    if (!match) {
-      throw new TypeError("invalid type format");
-    }
-    var index = match[0].length;
-    var type = match[1].toLowerCase();
-    var key2;
-    var names = [];
-    var params = {};
-    var value;
-    index = PARAM_REGEXP.lastIndex = match[0].slice(-1) === ";" ? index - 1 : index;
-    while (match = PARAM_REGEXP.exec(string)) {
-      if (match.index !== index) {
-        throw new TypeError("invalid parameter format");
-      }
-      index += match[0].length;
-      key2 = match[1].toLowerCase();
-      value = match[2];
-      if (names.indexOf(key2) !== -1) {
-        throw new TypeError("invalid duplicate parameter");
-      }
-      names.push(key2);
-      if (key2.indexOf("*") + 1 === key2.length) {
-        key2 = key2.slice(0, -1);
-        value = decodefield(value);
-        params[key2] = value;
-        continue;
-      }
-      if (typeof params[key2] === "string") {
-        continue;
-      }
-      if (value[0] === '"') {
-        value = value.slice(1, -1).replace(QESC_REGEXP, "$1");
-      }
-      params[key2] = value;
-    }
-    if (index !== -1 && index !== string.length) {
-      throw new TypeError("invalid parameter format");
-    }
-    return new ContentDisposition(type, params);
-  }
-  function pdecode(str, hex) {
-    return String.fromCharCode(parseInt(hex, 16));
-  }
-  function pencode(char) {
-    return "%" + String(char).charCodeAt(0).toString(16).toUpperCase();
-  }
-  function qstring(val) {
-    var str = String(val);
-    return '"' + str.replace(QUOTE_REGEXP, "\\$1") + '"';
-  }
-  function ustring(val) {
-    var str = String(val);
-    var encoded = encodeURIComponent(str).replace(ENCODE_URL_ATTR_CHAR_REGEXP, pencode);
-    return "UTF-8''" + encoded;
-  }
-  function ContentDisposition(type, parameters) {
-    this.type = type;
-    this.parameters = parameters;
-  }
-});
-
 // node_modules/object-hash/index.js
 var require_object_hash = __commonJS((exports, module) => {
-  var crypto = __require("crypto");
+  var crypto2 = __require("crypto");
   exports = module.exports = objectHash;
   function objectHash(object, options) {
     options = applyDefaults(object, options);
@@ -31140,7 +31140,7 @@ var require_object_hash = __commonJS((exports, module) => {
   exports.keysMD5 = function(object) {
     return objectHash(object, { algorithm: "md5", encoding: "hex", excludeValues: true });
   };
-  var hashes = crypto.getHashes ? crypto.getHashes().slice() : ["sha1", "md5"];
+  var hashes = crypto2.getHashes ? crypto2.getHashes().slice() : ["sha1", "md5"];
   hashes.push("passthrough");
   var encodings = ["buffer", "hex", "binary", "base64"];
   function applyDefaults(object, sourceOptions) {
@@ -31186,7 +31186,7 @@ var require_object_hash = __commonJS((exports, module) => {
   function hash(object, options) {
     var hashingStream;
     if (options.algorithm !== "passthrough") {
-      hashingStream = crypto.createHash(options.algorithm);
+      hashingStream = crypto2.createHash(options.algorithm);
     } else {
       hashingStream = new PassThrough2;
     }
@@ -42548,15 +42548,22 @@ var cli = meow(`
 	  $ libgen-downloader <input>
 
 	Options
-    -s, --search <query>      search for a book
-    -b, --bulk <MD5LIST.txt>  start the app in bulk downloading mode
-    -u, --url <MD5>           get the download URL
-    -d, --download <MD5>      download the file
-    -h, --help                display help
+    -s, --search <query>       search for a book interactively
+        --best <query>         find and ingest the best copy of a book
+    -l, --list <BOOKS.md>      ingest the best copy of every book in a Markdown list
+    -o, --output <directory>   library root (default: ~/libgen)
+        --pages <number>       result pages to evaluate (default: 2)
+        --source-only          retain the source without Markdown conversion
+    -b, --bulk <MD5LIST.txt>   legacy MD5 bulk downloading mode
+    -u, --url <MD5>            get the download URL
+    -d, --download <MD5>       download the file by MD5
+    -h, --help                 display help
 
 	Examples
-    $ libgen-downloader    (start the app in interactive mode witout flags)
+    $ libgen-downloader    (start the app in interactive mode without flags)
     $ libgen-downloader -s "The Art of War"
+    $ libgen-downloader --best "The Art of War by Sun Tzu"
+    $ libgen-downloader --list ./reading-list.md
     $ libgen-downloader -b ./MD5_LIST_1695686580524.txt
     $ libgen-downloader -u 1234567890abcdef1234567890abcdef
     $ libgen-downloader -d 1234567890abcdef1234567890abcdef
@@ -42566,6 +42573,25 @@ var cli = meow(`
     search: {
       type: "string",
       shortFlag: "s"
+    },
+    best: {
+      type: "string"
+    },
+    list: {
+      type: "string",
+      shortFlag: "l"
+    },
+    output: {
+      type: "string",
+      shortFlag: "o"
+    },
+    pages: {
+      type: "string",
+      default: "2"
+    },
+    sourceOnly: {
+      type: "boolean",
+      default: false
     },
     bulk: {
       type: "string",
@@ -42587,7 +42613,7 @@ var cli = meow(`
 });
 
 // src/cli/operate.ts
-import fs5 from "fs";
+import fs9 from "node:fs";
 
 // node_modules/linkedom/esm/shared/symbols.js
 var CHANGED = Symbol("changed");
@@ -50802,6 +50828,1053 @@ async function getDocument(searchURL) {
   }
 }
 
+// src/library/ingest.ts
+import fs5 from "node:fs";
+import path6 from "node:path";
+
+// node_modules/nanoid/index.js
+import { webcrypto as crypto } from "node:crypto";
+
+// node_modules/nanoid/url-alphabet/index.js
+var urlAlphabet = "useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict";
+
+// node_modules/nanoid/index.js
+var POOL_SIZE_MULTIPLIER = 128;
+var pool;
+var poolOffset;
+function fillPool(bytes) {
+  if (!pool || pool.length < bytes) {
+    pool = Buffer.allocUnsafe(bytes * POOL_SIZE_MULTIPLIER);
+    crypto.getRandomValues(pool);
+    poolOffset = 0;
+  } else if (poolOffset + bytes > pool.length) {
+    crypto.getRandomValues(pool);
+    poolOffset = 0;
+  }
+  poolOffset += bytes;
+}
+function nanoid(size = 21) {
+  fillPool(size |= 0);
+  let id = "";
+  for (let i = poolOffset - size;i < poolOffset; i++) {
+    id += urlAlphabet[pool[i] & 63];
+  }
+  return id;
+}
+
+// src/constants.ts
+var SEARCH_MIN_CHAR = 3;
+var MIN_RESULT_LIST_LENGTH = 5;
+var RESULT_LIST_LENGTH = 12;
+var RESULT_LIST_ACTIVE_LIST_INDEX = 3;
+
+// src/labels.ts
+var labels_default = {
+  SEARCH: "? Search",
+  NEXT_PAGE: "→ Next Page",
+  PREV_PAGE: "← Prev Page",
+  START_BULK_DOWNLOAD: "@ Start Bulk Download",
+  EXIT: "✖ Exit",
+  SEE_DETAILS: "See Details",
+  ALTERNATIVE_DOWNLOADS: "Alternative Downloads",
+  DOWNLOAD_DIRECTLY: "Download Directly",
+  DOWNLOADING: "Downloading...",
+  ADD_TO_BULK_DOWNLOAD_QUEUE: "Add To Bulk Download Queue",
+  REMOVE_FROM_BULK_DOWNLOAD_QUEUE: "Remove From Bulk Download Queue",
+  ADDED_TO_BULK_DOWNLOAD_QUEUE: "Added To Bulk Download Queue",
+  TURN_BACK_TO_THE_LIST: "Turn Back To The List",
+  BACK_TO_ENTRY_OPTIONS: "Back",
+  FETCHING_CONFIG: "Fetching configuration file...",
+  FINDING_MIRROR: "Finding an available mirror...",
+  COULDNT_REACH_TO_CONF: "Couldn't reach to configuration",
+  COULDNT_REACH_TO_MIRROR: "Couldn't reach to mirror",
+  GETTING_RESULTS: "Getting results",
+  ERR_OCCURED_WHILE_PARSING_DOC: "Error occured while parsing the document",
+  PREPARING_FOR_BULK_DOWNLOAD: "Preparing for bulk download...",
+  CONNECTION_ERROR: "Connection error",
+  TRYING_OTHER_MIRRORS: "Trying other mirrors...",
+  ALL_MIRRORS_FAILED: "All mirrors failed. Please try again later.",
+  NEXT_PAGE_CHECKING: "→ Next Page",
+  NEXT_PAGE_ERROR: "→ Next Page (?) (Retry)",
+  NEXT_PAGE_UNAVAILABLE: "→ Next Page (no results on next page)",
+  RETRY: "↻ Retry",
+  YES: "Yes",
+  NO: "No"
+};
+
+// src/settings.ts
+var SCREEN_BASE_APP_WIDTH = 80;
+var SCREEN_PADDING = 5;
+var SCREEN_WIDTH_PERC = 95;
+var CONFIGURATION_URL = "https://raw.githubusercontent.com/obsfx/libgen-downloader/configuration/config.v3.json";
+var PREFERRED_MIRROR_SOURCE = "https://libgen.bz/";
+var FAIL_REQ_ATTEMPT_COUNT = 5;
+var FAIL_REQ_ATTEMPT_DELAY_MS = 2000;
+var SEARCH_PAGE_SIZE = 25;
+
+// src/utilities.ts
+function delay(ms) {
+  return new Promise((resolve2) => {
+    setTimeout(() => {
+      resolve2();
+    }, ms);
+  });
+}
+async function attempt(callback, onFail, onError, onComplete) {
+  for (let index = 0;index < FAIL_REQ_ATTEMPT_COUNT; index++) {
+    try {
+      const result = await callback();
+      if (onComplete) {
+        onComplete();
+      }
+      return result;
+    } catch (error) {
+      if (onFail) {
+        onFail(`Request failed, trying again ${index + 1}/${FAIL_REQ_ATTEMPT_COUNT}`);
+      }
+      await delay(FAIL_REQ_ATTEMPT_DELAY_MS);
+      if (index + 1 === FAIL_REQ_ATTEMPT_COUNT && onError) {
+        onError(error?.message);
+      }
+    }
+  }
+  return;
+}
+var createOptionItem = (id, label, onSelect, options) => ({
+  type: 1 /* Option */,
+  data: {
+    id,
+    label,
+    onSelect,
+    ...options
+  }
+});
+var noop = () => {};
+var getNextPageOption = (nextPageStatus, handleNextPageOption, handleRetryNextPageOption) => {
+  switch (nextPageStatus) {
+    case "ready": {
+      return [createOptionItem("next_page_option" /* NEXT_PAGE */, labels_default.NEXT_PAGE, handleNextPageOption)];
+    }
+    case "checking": {
+      return [
+        createOptionItem("next_page_option" /* NEXT_PAGE */, labels_default.NEXT_PAGE_CHECKING, noop, {
+          disabled: true,
+          showSpinner: true
+        })
+      ];
+    }
+    case "error": {
+      return [createOptionItem("next_page_option" /* NEXT_PAGE */, labels_default.NEXT_PAGE_ERROR, handleRetryNextPageOption)];
+    }
+    case "unavailable": {
+      return [
+        createOptionItem("next_page_option" /* NEXT_PAGE */, labels_default.NEXT_PAGE_UNAVAILABLE, noop, {
+          disabled: true
+        })
+      ];
+    }
+    case "idle": {
+      return [];
+    }
+  }
+};
+var constructListItems = ({
+  entries: entries2,
+  currentPage,
+  nextPageStatus,
+  handleSearchOption,
+  handleNextPageOption,
+  handleRetryNextPageOption,
+  handlePrevPageOption,
+  handleStartBulkDownloadOption,
+  handleExitOption
+}) => {
+  const entryListItems = entries2.map((entry, index) => ({
+    type: 0 /* Entry */,
+    data: entry,
+    order: index + 1
+  }));
+  return [
+    ...entryListItems.slice(entryListItems.length - RESULT_LIST_ACTIVE_LIST_INDEX),
+    createOptionItem("search_option" /* SEARCH */, labels_default.SEARCH, handleSearchOption),
+    ...getNextPageOption(nextPageStatus, handleNextPageOption, handleRetryNextPageOption),
+    ...(() => {
+      if (currentPage > 1) {
+        return [createOptionItem("prev_page_option" /* PREV_PAGE */, labels_default.PREV_PAGE, handlePrevPageOption)];
+      }
+      return [];
+    })(),
+    createOptionItem("start_bulk_download_option" /* START_BULK_DOWNLOAD */, labels_default.START_BULK_DOWNLOAD, handleStartBulkDownloadOption),
+    createOptionItem("exit_option" /* EXIT */, labels_default.EXIT, handleExitOption),
+    ...entryListItems.slice(0, entryListItems.length - RESULT_LIST_ACTIVE_LIST_INDEX)
+  ];
+};
+var getRenderedListItems = (cursor, listItems, anyEntryExpanded, activeExpandedListLength) => {
+  const renderedItemsLimit = Math.max(MIN_RESULT_LIST_LENGTH, (() => {
+    if (anyEntryExpanded) {
+      return RESULT_LIST_LENGTH - activeExpandedListLength;
+    }
+    return RESULT_LIST_LENGTH;
+  })());
+  const renderedItems = [];
+  for (let index = 0;index < renderedItemsLimit; index++) {
+    if (index >= listItems.length) {
+      break;
+    }
+    const itemIndex = (cursor + index) % listItems.length;
+    renderedItems.push(listItems[itemIndex]);
+  }
+  return renderedItems;
+};
+function clearText(text) {
+  return text.split(`
+`)[0].replaceAll(/<script[^>]*>[\s\S]*?<\/script>/g, "").replaceAll(/<[^>]+>/g, "").trim();
+}
+
+// src/api/adapters/libgen-plus-adapter.ts
+class LibgenPlusAdapter {
+  baseURL;
+  constructor(baseURL) {
+    this.baseURL = baseURL;
+  }
+  isHiddenField(fieldName) {
+    return !["id"].includes(fieldName);
+  }
+  parseEntries(document2, throwError) {
+    const entries2 = [];
+    const containerTable = document2.querySelector("#tablelibgen > tbody");
+    if (!containerTable) {
+      if (throwError) {
+        throwError("containerTable is undefined");
+      }
+      return [];
+    }
+    const entryElements = containerTable.children;
+    for (const element of entryElements) {
+      const id = nanoid();
+      const authors = clearText(element.children[1]?.textContent || "").split(";").map((author) => author.trim()).join(", ");
+      const titleSectionContent = [...element.children[0].children].filter((child) => child.nodeName !== "NOBR").map((element2) => element2.textContent?.trim()).filter(Boolean).join(" / ");
+      const title = clearText(titleSectionContent || "");
+      const publisher = clearText(element.children[2]?.textContent || "");
+      const year = clearText(element.children[3]?.textContent || "");
+      const pages = clearText(element.children[5]?.textContent || "");
+      const language = clearText(element.children[4]?.textContent || "");
+      const size = clearText(element.children[6]?.textContent || "");
+      const extension = clearText(element.children[7]?.textContent || "");
+      const mirror = element.children[8]?.getElementsByTagName("a")?.[0]?.getAttribute("href") || "";
+      entries2.push({
+        id,
+        authors,
+        title,
+        publisher,
+        year,
+        pages,
+        language,
+        size,
+        extension,
+        mirror
+      });
+    }
+    return entries2;
+  }
+  getPageURL(pathname) {
+    const url = new URL(pathname, this.baseURL);
+    return url.toString();
+  }
+  getSearchURL(query2, pageNumber, pageSize) {
+    const url = new URL("/index.php", this.baseURL);
+    url.searchParams.set("req", query2);
+    url.searchParams.set("page", pageNumber.toString());
+    url.searchParams.set("res", pageSize.toString());
+    return url.toString();
+  }
+  getDetailPageURL(md5) {
+    const url = new URL("/ads.php", this.baseURL);
+    url.searchParams.set("md5", md5);
+    return url.toString();
+  }
+  getMainDownloadURLFromDocument(document2, throwError) {
+    const downloadLinkElement = document2.querySelector("#main > tr:first-child > td:nth-child(2) > a");
+    if (!downloadLinkElement) {
+      if (throwError) {
+        throwError("downloadLinkElement is undefined");
+      }
+      return;
+    }
+    const href = downloadLinkElement.getAttribute("href");
+    return this.getPageURL(href || "");
+  }
+  detectConnectionError(document2) {
+    const alertElement = document2.querySelector(".alert-danger");
+    if (alertElement) {
+      return alertElement.textContent?.trim() || "Unknown connection error";
+    }
+    return;
+  }
+  formatField(fieldName, value) {
+    switch (fieldName) {
+      case "authors": {
+        return value.split(", ").map((author) => author.trim()).join(", ");
+      }
+      case "title": {
+        return value.trim();
+      }
+      case "publisher":
+      case "year":
+      case "pages":
+      case "language":
+      case "size":
+      case "extension": {
+        return value.trim();
+      }
+      case "mirror": {
+        if (value.startsWith("http")) {
+          return value;
+        }
+        return this.getPageURL(value);
+      }
+      default: {
+        return value;
+      }
+    }
+  }
+}
+
+// src/api/adapters/index.ts
+var getAdapter = (mirrorURL, mirrorType) => {
+  switch (mirrorType) {
+    case "libgen-plus": {
+      return new LibgenPlusAdapter(mirrorURL);
+    }
+    default: {
+      throw new Error(`Unknown mirror type: ${mirrorType}`);
+    }
+  }
+};
+
+// src/api/data/config.ts
+function prioritizePreferredMirror(mirrors) {
+  const preferred = PREFERRED_MIRROR_SOURCE.replace(/\/+$/, "");
+  const isPreferred = (mirror) => mirror.src.replace(/\/+$/, "") === preferred;
+  return [
+    ...mirrors.filter((mirror) => isPreferred(mirror)),
+    ...mirrors.filter((mirror) => !isPreferred(mirror))
+  ];
+}
+async function fetchConfig() {
+  try {
+    const response = await fetch(CONFIGURATION_URL);
+    const json = await response.json();
+    const config = json;
+    return {
+      latestVersion: config["latest_version"] || "",
+      mirrors: prioritizePreferredMirror(config["mirrors"] || [])
+    };
+  } catch {
+    throw new Error("Error occurred while fetching configuration.");
+  }
+}
+async function findMirror(mirrors, onMirrorFail) {
+  for (const mirror of mirrors) {
+    try {
+      const response = await fetchLibgen(mirror.src);
+      if (!response.ok) {
+        throw new Error(`Mirror returned HTTP ${response.status}`);
+      }
+      return mirror;
+    } catch {
+      onMirrorFail(mirror.src);
+    }
+  }
+  return;
+}
+
+// src/api/data/download.ts
+var import_content_disposition = __toESM(require_content_disposition(), 1);
+import fs2 from "node:fs";
+import path3 from "node:path";
+import { Readable, Transform } from "node:stream";
+import { pipeline } from "node:stream/promises";
+function getResponseFilename(downloadStream) {
+  const header = downloadStream.headers.get("content-disposition");
+  if (!header) {
+    return;
+  }
+  return import_content_disposition.default.parse(header).parameters.filename;
+}
+var downloadFile = async ({
+  downloadStream,
+  onStart,
+  onData,
+  destinationPath,
+  filename: requestedFilename
+}) => {
+  const MAX_FILE_NAME_LENGTH = 128;
+  const responseFilename = getResponseFilename(downloadStream);
+  if (!responseFilename && !requestedFilename) {
+    throw new Error("No content-disposition header found");
+  }
+  let fullFileName = requestedFilename || "download.bin";
+  if (!requestedFilename && responseFilename) {
+    fullFileName = responseFilename;
+  }
+  const slicedFileName = fullFileName.slice(Math.max(fullFileName.length - MAX_FILE_NAME_LENGTH, 0));
+  const outputPath = destinationPath || `./${slicedFileName}`;
+  let writePath = outputPath;
+  if (destinationPath) {
+    await fs2.promises.mkdir(path3.dirname(destinationPath), { recursive: true });
+    writePath = `${destinationPath}.partial`;
+  }
+  const total = Number(downloadStream.headers.get("content-length") || 0);
+  const filename = slicedFileName;
+  if (!downloadStream.body) {
+    throw new Error("No response body");
+  }
+  onStart(filename, total);
+  const progressStream = new Transform({
+    transform(chunk, _encoding, callback) {
+      const buffer = Buffer.from(chunk);
+      onData(filename, buffer, total);
+      callback(undefined, buffer);
+    }
+  });
+  try {
+    await pipeline(Readable.from(downloadStream.body, { objectMode: false }), progressStream, fs2.createWriteStream(writePath));
+    if (destinationPath) {
+      await fs2.promises.rename(writePath, outputPath);
+    }
+    const downloadResult = {
+      path: outputPath,
+      filename,
+      total
+    };
+    return downloadResult;
+  } catch {
+    if (destinationPath) {
+      await fs2.promises.rm(writePath, { force: true });
+    }
+    throw new Error(`(${filename}) Error occurred while downloading file`);
+  }
+};
+
+// src/library/naming.ts
+import os from "node:os";
+import path4 from "node:path";
+var MAX_AUTHOR_LENGTH = 64;
+var MAX_TITLE_LENGTH = 112;
+function getLibraryRoot(override) {
+  const configured = override || process.env.LIBGEN_LIBRARY_DIR;
+  if (configured) {
+    return path4.resolve(configured.replace(/^~(?=$|\/)/, os.homedir()));
+  }
+  return path4.join(os.homedir(), "libgen");
+}
+function slugify(value, maximumLength = MAX_TITLE_LENGTH) {
+  const normalized = value.normalize("NFKD").replaceAll(/\p{Mark}/gu, "").toLowerCase().replaceAll("&", " and ").replaceAll(/[’']/g, "").replaceAll(/[^\p{Letter}\p{Number}]+/gu, "-").replaceAll(/^-+|-+$/g, "").replaceAll(/-+/g, "-").slice(0, maximumLength).replaceAll(/-+$/g, "");
+  return normalized || "unknown";
+}
+function getPrimaryAuthor(authors) {
+  const [primaryAuthor] = authors.split(/,|;/);
+  return primaryAuthor?.trim() || "unknown-author";
+}
+function getCanonicalStem(entry) {
+  const author = slugify(getPrimaryAuthor(entry.authors), MAX_AUTHOR_LENGTH);
+  const title = slugify(entry.title, MAX_TITLE_LENGTH);
+  return `${author}_${title}`;
+}
+function normalizeExtension(extension) {
+  const normalized = extension.toLowerCase().replaceAll(/[^a-z0-9]/g, "");
+  return normalized || "bin";
+}
+function getEntryMD5(entry) {
+  try {
+    const url = new URL(entry.mirror, "https://libgen.invalid/");
+    return url.searchParams.get("md5") || undefined;
+  } catch {
+    return;
+  }
+}
+function createBookPaths(entry, libraryRootOverride) {
+  const libraryRoot = getLibraryRoot(libraryRootOverride);
+  const canonicalStem = getCanonicalStem(entry);
+  const bookDirectory = path4.join(libraryRoot, canonicalStem);
+  const extension = normalizeExtension(entry.extension);
+  return {
+    libraryRoot,
+    canonicalStem,
+    bookDirectory,
+    assetsDirectory: path4.join(bookDirectory, "assets"),
+    sourcePath: path4.join(bookDirectory, `source.${extension}`),
+    markdownPath: path4.join(bookDirectory, "book.md"),
+    metadataPath: path4.join(bookDirectory, "metadata.json"),
+    conversionPath: path4.join(bookDirectory, "conversion.json")
+  };
+}
+function createMD5BookPaths(md5, extension, libraryRootOverride) {
+  return createBookPaths({
+    id: md5,
+    authors: "unknown-author",
+    title: md5,
+    publisher: "",
+    year: "",
+    pages: "",
+    language: "",
+    size: "",
+    extension,
+    mirror: `/ads.php?md5=${md5}`
+  }, libraryRootOverride);
+}
+
+// src/library/candidates.ts
+var FORMAT_SCORES = {
+  epub: 50,
+  pdf: 38,
+  docx: 34,
+  html: 32,
+  htm: 32,
+  mobi: 26,
+  azw3: 26,
+  fb2: 24,
+  rtf: 20,
+  txt: 18,
+  djvu: 10
+};
+function normalizeForComparison(value) {
+  return value.normalize("NFKD").replaceAll(/\p{Mark}/gu, "").toLowerCase().replaceAll(/[^\p{Letter}\p{Number}]+/gu, " ").trim();
+}
+function getTokens(value) {
+  return new Set(normalizeForComparison(value).split(/\s+/).filter(Boolean));
+}
+function getCoverage(expected, actual) {
+  const expectedTokens = getTokens(expected);
+  const actualTokens = getTokens(actual);
+  if (expectedTokens.size === 0) {
+    return 0;
+  }
+  let matched = 0;
+  for (const token of expectedTokens) {
+    if (actualTokens.has(token)) {
+      matched += 1;
+    }
+  }
+  return matched / expectedTokens.size;
+}
+function getBestTitleCoverage(expected, title) {
+  let bestCoverage = getCoverage(expected, title);
+  for (const segment of title.split(" / ")) {
+    bestCoverage = Math.max(bestCoverage, getCoverage(expected, segment));
+  }
+  return bestCoverage;
+}
+function hasExactTitleSegment(expected, title) {
+  const normalizedExpected = normalizeForComparison(expected);
+  return title.split(" / ").map((segment) => normalizeForComparison(segment)).includes(normalizedExpected);
+}
+function scoreCandidate(entry, request) {
+  const md5 = getEntryMD5(entry);
+  if (!md5) {
+    return;
+  }
+  const reasons = [];
+  let score = 0;
+  const expectedTitle = request.title || request.query;
+  const normalizedExpectedTitle = normalizeForComparison(expectedTitle);
+  const normalizedTitle = normalizeForComparison(entry.title);
+  const titleCoverage = getBestTitleCoverage(expectedTitle, entry.title);
+  if (normalizedExpectedTitle === normalizedTitle || hasExactTitleSegment(expectedTitle, entry.title)) {
+    score += 140;
+    reasons.push("exact title match");
+  } else {
+    score += Math.round(titleCoverage * 100);
+    if (titleCoverage >= 0.8) {
+      reasons.push("strong title match");
+    }
+  }
+  if (titleCoverage < 0.5) {
+    score -= 100;
+  }
+  if (request.author) {
+    const authorCoverage = getCoverage(request.author, entry.authors);
+    score += Math.round(authorCoverage * 70);
+    if (authorCoverage >= 0.8) {
+      reasons.push("author match");
+    }
+    if (authorCoverage < 0.5) {
+      score -= 50;
+    }
+  }
+  const extension = entry.extension.toLowerCase();
+  const formatScore = FORMAT_SCORES[extension] || 0;
+  score += formatScore;
+  if (formatScore > 0) {
+    reasons.push(`${extension} conversion profile`);
+  }
+  if (/^english$/i.test(entry.language)) {
+    score += 20;
+    reasons.push("English language");
+  }
+  if (entry.pages && Number.parseInt(entry.pages, 10) > 0) {
+    score += 5;
+  }
+  if (entry.publisher) {
+    score += 3;
+  }
+  if (/^\d{4}$/.test(entry.year)) {
+    score += 3;
+  }
+  if (entry.size.trim() !== "") {
+    score += 2;
+  }
+  return { entry, md5, score, reasons };
+}
+function rankCandidates(entries2, request) {
+  const ranked = [];
+  for (const entry of entries2) {
+    const candidate = scoreCandidate(entry, request);
+    if (candidate) {
+      ranked.push(candidate);
+    }
+  }
+  ranked.sort((first, second) => second.score - first.score);
+  return ranked;
+}
+
+// src/library/converter.ts
+import { execFile } from "node:child_process";
+import fs4 from "node:fs";
+import path5 from "node:path";
+
+// src/library/metadata.ts
+import fs3 from "node:fs";
+async function writeBookRecords({
+  paths,
+  request,
+  selected,
+  conversion
+}) {
+  const metadata = {
+    schemaVersion: 1,
+    title: selected.entry.title,
+    authors: selected.entry.authors,
+    publisher: selected.entry.publisher,
+    year: selected.entry.year,
+    pages: selected.entry.pages,
+    language: selected.entry.language,
+    sourceFormat: selected.entry.extension.toLowerCase(),
+    sourceFile: "source." + selected.entry.extension.toLowerCase(),
+    libgenMD5: selected.md5,
+    libgenMirrorPath: selected.entry.mirror,
+    requestedAs: request.sourceLine,
+    selection: {
+      score: selected.score,
+      reasons: selected.reasons
+    },
+    ingestedAt: new Date().toISOString()
+  };
+  await fs3.promises.writeFile(paths.metadataPath, `${JSON.stringify(metadata, undefined, 2)}
+`);
+  await fs3.promises.writeFile(paths.conversionPath, `${JSON.stringify(conversion, undefined, 2)}
+`);
+}
+function yamlString(value) {
+  return JSON.stringify(value);
+}
+function createMarkdownFrontmatter(entry, md5) {
+  return [
+    "---",
+    `title: ${yamlString(entry.title)}`,
+    `authors: ${yamlString(entry.authors)}`,
+    `publisher: ${yamlString(entry.publisher)}`,
+    `year: ${yamlString(entry.year)}`,
+    `language: ${yamlString(entry.language)}`,
+    `libgen_md5: ${yamlString(md5)}`,
+    `source_format: ${yamlString(entry.extension.toLowerCase())}`,
+    "---",
+    ""
+  ].join(`
+`);
+}
+async function addMarkdownFrontmatter(markdownPath, entry, md5) {
+  const markdown = await fs3.promises.readFile(markdownPath, "utf8");
+  if (markdown.includes(`libgen_md5: ${yamlString(md5)}`)) {
+    return;
+  }
+  await fs3.promises.writeFile(markdownPath, createMarkdownFrontmatter(entry, md5) + markdown);
+}
+
+// src/library/converter.ts
+var runCommand = (command, arguments_, workingDirectory) => new Promise((resolve2) => {
+  execFile(command, arguments_, { cwd: workingDirectory, maxBuffer: 10 * 1024 * 1024 }, (error, stdout, stderr) => {
+    let exitCode = 0;
+    if (error) {
+      exitCode = 1;
+      if (typeof error.code === "number") {
+        exitCode = error.code;
+      }
+    }
+    resolve2({ exitCode, stdout, stderr });
+  });
+});
+async function commandIsAvailable(command, runner, workingDirectory) {
+  const result = await runner(command, ["--version"], workingDirectory);
+  return result.exitCode === 0;
+}
+async function validateMarkdown(markdownPath) {
+  try {
+    const contents = await fs4.promises.readFile(markdownPath, "utf8");
+    return contents.trim().length >= 20;
+  } catch {
+    return false;
+  }
+}
+async function normalizeDoclingOutput(paths) {
+  const generatedMarkdown = path5.join(paths.bookDirectory, "source.md");
+  if (generatedMarkdown !== paths.markdownPath && fs4.existsSync(generatedMarkdown)) {
+    await fs4.promises.rename(generatedMarkdown, paths.markdownPath);
+  }
+  const generatedAssets = path5.join(paths.bookDirectory, "source_artifacts");
+  if (!fs4.existsSync(generatedAssets)) {
+    return;
+  }
+  await fs4.promises.mkdir(paths.assetsDirectory, { recursive: true });
+  await fs4.promises.cp(generatedAssets, paths.assetsDirectory, { recursive: true });
+  await fs4.promises.rm(generatedAssets, { recursive: true, force: true });
+  const markdown = await fs4.promises.readFile(paths.markdownPath, "utf8");
+  await fs4.promises.writeFile(paths.markdownPath, markdown.replaceAll("source_artifacts/", "assets/"));
+}
+async function convertTextSource(paths, candidate) {
+  await fs4.promises.copyFile(paths.sourcePath, paths.markdownPath);
+  await addMarkdownFrontmatter(paths.markdownPath, candidate.entry, candidate.md5);
+  return {
+    status: "converted",
+    converter: "copy",
+    message: "Copied the textual source into canonical Markdown.",
+    markdownPath: paths.markdownPath
+  };
+}
+async function convertWithPandoc(paths, candidate, runner) {
+  if (!await commandIsAvailable("pandoc", runner, paths.bookDirectory)) {
+    return {
+      status: "unavailable",
+      converter: "pandoc",
+      message: "Pandoc is not installed; the original source was retained for later conversion."
+    };
+  }
+  const result = await runner("pandoc", [
+    path5.basename(paths.sourcePath),
+    "--to=gfm+tex_math_dollars",
+    "--wrap=none",
+    "--extract-media=assets",
+    `--output=${path5.basename(paths.markdownPath)}`
+  ], paths.bookDirectory);
+  if (result.exitCode !== 0 || !await validateMarkdown(paths.markdownPath)) {
+    return {
+      status: "failed",
+      converter: "pandoc",
+      message: result.stderr.trim() || "Pandoc did not produce usable Markdown."
+    };
+  }
+  await addMarkdownFrontmatter(paths.markdownPath, candidate.entry, candidate.md5);
+  return {
+    status: "converted",
+    converter: "pandoc",
+    message: "Converted the structured ebook with Pandoc.",
+    markdownPath: paths.markdownPath
+  };
+}
+async function convertWithDocling(paths, candidate, runner) {
+  if (!await commandIsAvailable("docling", runner, paths.bookDirectory)) {
+    return {
+      status: "unavailable",
+      converter: "docling",
+      message: "Docling is not installed; the original source was retained for later conversion."
+    };
+  }
+  const arguments_ = [
+    "convert",
+    path5.basename(paths.sourcePath),
+    "--to=md",
+    "--output=.",
+    "--image-export-mode=referenced",
+    "--enrich-formula",
+    "--enrich-chart-extraction",
+    "--quiet"
+  ];
+  let result = await runner("docling", arguments_, paths.bookDirectory);
+  if (result.exitCode !== 0) {
+    result = await runner("docling", [
+      "convert",
+      path5.basename(paths.sourcePath),
+      "--to=md",
+      "--output=.",
+      "--image-export-mode=referenced",
+      "--quiet"
+    ], paths.bookDirectory);
+  }
+  if (result.exitCode === 0) {
+    await normalizeDoclingOutput(paths);
+  }
+  if (result.exitCode !== 0 || !await validateMarkdown(paths.markdownPath)) {
+    return {
+      status: "failed",
+      converter: "docling",
+      message: result.stderr.trim() || "Docling did not produce usable Markdown."
+    };
+  }
+  await addMarkdownFrontmatter(paths.markdownPath, candidate.entry, candidate.md5);
+  return {
+    status: "converted",
+    converter: "docling",
+    message: "Converted the document with Docling, including referenced assets.",
+    markdownPath: paths.markdownPath
+  };
+}
+async function convertBook(paths, candidate, runner = runCommand) {
+  await fs4.promises.mkdir(paths.assetsDirectory, { recursive: true });
+  const extension = candidate.entry.extension.toLowerCase();
+  if (["md", "markdown", "txt"].includes(extension)) {
+    return convertTextSource(paths, candidate);
+  }
+  if (["pdf", "djvu"].includes(extension)) {
+    return convertWithDocling(paths, candidate, runner);
+  }
+  if (["epub", "docx", "html", "htm", "mobi", "azw3", "fb2", "rtf", "odt"].includes(extension)) {
+    return convertWithPandoc(paths, candidate, runner);
+  }
+  return {
+    status: "unavailable",
+    message: `No Markdown converter is configured for .${extension} files.`
+  };
+}
+
+// src/library/ingest.ts
+var DEFAULT_PAGE_COUNT = 2;
+var DEFAULT_FINALIST_COUNT = 3;
+function report(options, message) {
+  options.onProgress?.(message);
+}
+async function createLibgenSession(onMirrorFail = () => {}) {
+  const config = await fetchConfig();
+  const mirror = await findMirror(config.mirrors, onMirrorFail);
+  if (!mirror) {
+    throw new Error("No reachable LibGen mirror was found.");
+  }
+  return { mirror, adapter: getAdapter(mirror.src, mirror.type) };
+}
+async function searchBookCandidates(session, request, pageCount = DEFAULT_PAGE_COUNT) {
+  const entries2 = [];
+  let searchQuery = request.query;
+  if (request.author) {
+    searchQuery = `${request.query} ${request.author}`;
+  }
+  for (let pageNumber = 1;pageNumber <= pageCount; pageNumber += 1) {
+    const searchURL = session.adapter.getSearchURL(searchQuery, pageNumber, SEARCH_PAGE_SIZE);
+    const result = await getDocument(searchURL);
+    const connectionError = session.adapter.detectConnectionError(result.document);
+    if (connectionError) {
+      throw new Error(connectionError);
+    }
+    const pageEntries = session.adapter.parseEntries(result.document) || [];
+    if (pageEntries.length === 0) {
+      break;
+    }
+    entries2.push(...pageEntries);
+  }
+  return rankCandidates(entries2, request).filter((candidate) => candidate.score >= 40);
+}
+async function validateDownloadedSource(candidate, sourcePath) {
+  const file = await fs5.promises.open(sourcePath, "r");
+  try {
+    const buffer = Buffer.alloc(8);
+    const { bytesRead } = await file.read(buffer, 0, buffer.length, 0);
+    if (bytesRead === 0) {
+      throw new Error("The downloaded source is empty.");
+    }
+    const signature = buffer.subarray(0, bytesRead).toString("latin1");
+    const extension = candidate.entry.extension.toLowerCase();
+    if (extension === "pdf" && !signature.startsWith("%PDF-")) {
+      throw new Error("The selected PDF candidate did not contain a PDF file.");
+    }
+    if (extension === "epub" && !signature.startsWith("PK")) {
+      throw new Error("The selected EPUB candidate was not a valid EPUB container.");
+    }
+  } finally {
+    await file.close();
+  }
+}
+async function downloadCandidate(session, candidate, paths, options) {
+  const detailURL = session.adapter.getPageURL(candidate.entry.mirror);
+  const detailResult = await getDocument(detailURL);
+  const downloadURL = session.adapter.getMainDownloadURLFromDocument(detailResult.document);
+  if (!downloadURL) {
+    throw new Error("The candidate detail page did not contain a download URL.");
+  }
+  report(options, `Downloading ${candidate.entry.extension.toUpperCase()} candidate...`);
+  let response;
+  try {
+    response = await fetchLibgen(downloadURL);
+  } catch {
+    throw new Error("The LibGen search mirror is online, but its shared file-download host is unreachable from this network.");
+  }
+  if (!response.ok) {
+    throw new Error(`The LibGen search mirror is online, but its shared file-download host returned HTTP ${response.status}.`);
+  }
+  await downloadFile({
+    downloadStream: response,
+    destinationPath: paths.sourcePath,
+    filename: path6.basename(paths.sourcePath),
+    onStart() {},
+    onData() {}
+  });
+  await validateDownloadedSource(candidate, paths.sourcePath);
+}
+function sourceOnlyConversion() {
+  return {
+    status: "unavailable",
+    message: "Markdown conversion was disabled; the standardized source was retained."
+  };
+}
+async function finalizeStagingDirectory(stagingPaths, finalPaths, stagingRoot) {
+  if (fs5.existsSync(finalPaths.bookDirectory)) {
+    throw new Error(`The canonical book directory already exists: ${finalPaths.bookDirectory}`);
+  }
+  await fs5.promises.rename(stagingPaths.bookDirectory, finalPaths.bookDirectory);
+  await fs5.promises.rm(stagingRoot, { recursive: true, force: true });
+}
+async function ingestBestBook(request, options = {}) {
+  const libraryRoot = getLibraryRoot(options.libraryRoot);
+  await fs5.promises.mkdir(libraryRoot, { recursive: true });
+  const session = options.session || await createLibgenSession();
+  report(options, `Searching ${session.mirror.src} for "${request.query}"...`);
+  const candidates = await searchBookCandidates(session, request, options.pageCount || DEFAULT_PAGE_COUNT);
+  if (candidates.length === 0) {
+    return {
+      request,
+      status: "failed",
+      message: "No sufficiently close, downloadable candidates were found."
+    };
+  }
+  const finalistCount = options.finalistCount || DEFAULT_FINALIST_COUNT;
+  const finalists = candidates.slice(0, finalistCount);
+  let lastError = "All finalist candidates failed.";
+  for (const [index, candidate] of finalists.entries()) {
+    const finalPaths = createBookPaths(candidate.entry, libraryRoot);
+    if (fs5.existsSync(finalPaths.bookDirectory)) {
+      return {
+        request,
+        status: "skipped",
+        message: `Canonical directory already exists; left it untouched at ${finalPaths.bookDirectory}`,
+        selected: candidate,
+        paths: finalPaths
+      };
+    }
+    const stagingRoot = await fs5.promises.mkdtemp(path6.join(libraryRoot, ".staging-"));
+    const stagingPaths = createBookPaths(candidate.entry, stagingRoot);
+    await fs5.promises.mkdir(stagingPaths.assetsDirectory, { recursive: true });
+    try {
+      report(options, `Evaluating candidate ${index + 1}/${finalists.length}: ${candidate.reasons.join(", ")}`);
+      await downloadCandidate(session, candidate, stagingPaths, options);
+      let conversion = sourceOnlyConversion();
+      if (options.convert !== false) {
+        report(options, "Converting the selected source to canonical Markdown...");
+        conversion = await convertBook(stagingPaths, candidate);
+      }
+      const hasMoreFinalists = index < finalists.length - 1;
+      if (conversion.status === "failed" && hasMoreFinalists) {
+        lastError = conversion.message;
+        await fs5.promises.rm(stagingRoot, { recursive: true, force: true });
+        continue;
+      }
+      const recordedConversion = { ...conversion };
+      if (recordedConversion.markdownPath) {
+        recordedConversion.markdownPath = "book.md";
+      }
+      await writeBookRecords({
+        paths: stagingPaths,
+        request,
+        selected: candidate,
+        conversion: recordedConversion
+      });
+      await finalizeStagingDirectory(stagingPaths, finalPaths, stagingRoot);
+      const finalConversion = { ...conversion };
+      if (finalConversion.markdownPath) {
+        finalConversion.markdownPath = finalPaths.markdownPath;
+      }
+      let message = `Saved the best candidate to ${finalPaths.bookDirectory}`;
+      if (conversion.status !== "converted") {
+        message += ` (${conversion.message})`;
+      }
+      return {
+        request,
+        status: "downloaded",
+        message,
+        selected: candidate,
+        paths: finalPaths,
+        conversion: finalConversion
+      };
+    } catch (error) {
+      lastError = String(error);
+      if (error instanceof Error) {
+        lastError = error.message;
+      }
+      await fs5.promises.rm(stagingRoot, { recursive: true, force: true });
+    }
+  }
+  return { request, status: "failed", message: lastError };
+}
+
+// src/library/reading-list.ts
+function stripMarkdownListMarker(line) {
+  return line.replace(/^\s*(?:[-*+]\s+(?:\[[ xX]\]\s+)?|\d+[.)]\s+)/, "").trim();
+}
+function stripMarkdownLink(value) {
+  const linkMatch = value.match(/^\[([^\]]+)]\([^)]*\)$/);
+  return linkMatch?.[1]?.trim() || value;
+}
+function parseBookRequest(value) {
+  const sourceLine = stripMarkdownListMarker(value);
+  if (!sourceLine || /^(?:#|>|```|---)/.test(sourceLine)) {
+    return;
+  }
+  const cleaned = stripMarkdownLink(sourceLine);
+  const byMatch = cleaned.match(/^(.+?)\s+by\s+(.+)$/i);
+  if (byMatch?.[1] && byMatch[2]) {
+    return {
+      query: byMatch[1].trim(),
+      title: byMatch[1].trim(),
+      author: byMatch[2].trim(),
+      sourceLine
+    };
+  }
+  const dashMatch = cleaned.match(/^(.+?)\s+[—–]\s+(.+)$/);
+  if (dashMatch?.[1] && dashMatch[2]) {
+    return {
+      query: dashMatch[1].trim(),
+      title: dashMatch[1].trim(),
+      author: dashMatch[2].trim(),
+      sourceLine
+    };
+  }
+  return { query: cleaned, title: cleaned, sourceLine };
+}
+function parseReadingList(markdown) {
+  const requests = [];
+  const seen = new Set;
+  for (const line of markdown.split(/\r?\n/)) {
+    const request = parseBookRequest(line);
+    if (!request) {
+      continue;
+    }
+    const key2 = `${request.query}\x00${request.author || ""}`.toLowerCase();
+    if (seen.has(key2)) {
+      continue;
+    }
+    seen.add(key2);
+    requests.push(request);
+  }
+  return requests;
+}
+
 // node_modules/ink/build/render.js
 import { Stream } from "node:stream";
 import process15 from "node:process";
@@ -50963,7 +52036,7 @@ __export(exports_base, {
   ConEmu: () => ConEmu
 });
 import process5 from "node:process";
-import os from "node:os";
+import os2 from "node:os";
 
 // node_modules/environment/index.js
 var isBrowser = globalThis.window?.document !== undefined;
@@ -51062,7 +52135,7 @@ var isOldWindows = () => {
   if (isBrowser || !isWindows2) {
     return false;
   }
-  const parts = os.release().split(".");
+  const parts = os2.release().split(".");
   const major = Number(parts[0]);
   const build = Number(parts[2] ?? 0);
   if (major < 10) {
@@ -51208,7 +52281,7 @@ var patchConsole = (callback) => {
 var dist_default = patchConsole;
 
 // node_modules/ink/build/ink.js
-var import_constants27 = __toESM(require_constants(), 1);
+var import_constants28 = __toESM(require_constants(), 1);
 
 // node_modules/yoga-layout/dist/binaries/yoga-wasm-base64-esm.js
 var loadYoga = (() => {
@@ -53257,7 +54330,7 @@ function wrapAnsi(string, columns, options) {
 
 // node_modules/ink/build/reconciler.js
 var import_react_reconciler = __toESM(require_react_reconciler(), 1);
-var import_constants26 = __toESM(require_constants(), 1);
+var import_constants27 = __toESM(require_constants(), 1);
 import process6 from "node:process";
 var import_react = __toESM(require_react(), 1);
 
@@ -54102,7 +55175,7 @@ var cleanupYogaNode = (node2) => {
   node2?.unsetMeasureFunc();
   node2?.freeRecursive();
 };
-var currentUpdatePriority = import_constants26.NoEventPriority;
+var currentUpdatePriority = import_constants27.NoEventPriority;
 var currentRootNode;
 var reconciler_default = import_react_reconciler.default({
   getRootHostContext: () => ({
@@ -54254,10 +55327,10 @@ var reconciler_default = import_react_reconciler.default({
   },
   getCurrentUpdatePriority: () => currentUpdatePriority,
   resolveUpdatePriority() {
-    if (currentUpdatePriority !== import_constants26.NoEventPriority) {
+    if (currentUpdatePriority !== import_constants27.NoEventPriority) {
       return currentUpdatePriority;
     }
-    return import_constants26.DefaultEventPriority;
+    return import_constants27.DefaultEventPriority;
   },
   maySuspendCommit() {
     return false;
@@ -54499,7 +55572,7 @@ var ansi_styles_default2 = ansiStyles2;
 
 // node_modules/ink/node_modules/chalk/source/vendor/supports-color/index.js
 import process7 from "node:process";
-import os2 from "node:os";
+import os3 from "node:os";
 import tty from "node:tty";
 function hasFlag(flag, argv = globalThis.Deno ? globalThis.Deno.args : process7.argv) {
   const prefix = flag.startsWith("-") ? "" : flag.length === 1 ? "-" : "--";
@@ -54564,7 +55637,7 @@ function _supportsColor(haveStream, { streamIsTTY, sniffFlags = true } = {}) {
     return min2;
   }
   if (process7.platform === "win32") {
-    const osRelease = os2.release().split(".");
+    const osRelease = os3.release().split(".");
     if (Number(osRelease[0]) >= 10 && Number(osRelease[2]) >= 10586) {
       return Number(osRelease[2]) >= 14931 ? 3 : 2;
     }
@@ -55707,7 +56780,7 @@ var FocusContext_default = FocusContext;
 // node_modules/ink/build/components/ErrorOverview.js
 var import_react11 = __toESM(require_react(), 1);
 var import_stack_utils = __toESM(require_stack_utils(), 1);
-import * as fs2 from "node:fs";
+import * as fs6 from "node:fs";
 import { cwd } from "node:process";
 
 // node_modules/convert-to-spaces/dist/index.js
@@ -55827,8 +56900,8 @@ function Text5({ color, backgroundColor, dimColor = false, bold = false, italic 
 }
 
 // node_modules/ink/build/components/ErrorOverview.js
-var cleanupPath = (path3) => {
-  return path3?.replace(`file://${cwd()}/`, "");
+var cleanupPath = (path7) => {
+  return path7?.replace(`file://${cwd()}/`, "");
 };
 var stackUtils = new import_stack_utils.default({
   cwd: cwd(),
@@ -55841,8 +56914,8 @@ function ErrorOverview({ error }) {
   const filePath = cleanupPath(origin?.file);
   let excerpt;
   let lineWidth = 0;
-  if (filePath && origin?.line && fs2.existsSync(filePath)) {
-    const sourceCode = fs2.readFileSync(filePath, "utf8");
+  if (filePath && origin?.line && fs6.existsSync(filePath)) {
+    const sourceCode = fs6.readFileSync(filePath, "utf8");
     excerpt = dist_default3(sourceCode, origin.line);
     if (excerpt) {
       for (const { line } of excerpt) {
@@ -56106,7 +57179,7 @@ Read about how to prevent this error on https://github.com/vadimdemedes/ink/#isr
 }
 
 // node_modules/ink/build/ink.js
-var noop2 = () => {};
+var noop3 = () => {};
 
 class Ink {
   options;
@@ -56149,7 +57222,7 @@ class Ink {
     this.lastOutputHeight = 0;
     this.lastTerminalWidth = this.getTerminalWidth();
     this.fullStaticOutput = "";
-    this.container = reconciler_default.createContainer(this.rootNode, import_constants27.LegacyRoot, null, false, null, "id", () => {}, () => {}, () => {}, () => {}, null);
+    this.container = reconciler_default.createContainer(this.rootNode, import_constants28.LegacyRoot, null, false, null, "id", () => {}, () => {}, () => {}, () => {}, null);
     this.unsubscribeExit = import_signal_exit2.default(this.unmount, { alwaysLast: false });
     if (process14.env["DEV"] === "true") {
       reconciler_default.injectIntoDevTools({
@@ -56261,7 +57334,7 @@ class Ink {
   };
   render(node2) {
     const tree = import_react13.default.createElement(accessibilityContext.Provider, { value: { isScreenReaderEnabled: this.isScreenReaderEnabled } }, import_react13.default.createElement(App, { stdin: this.options.stdin, stdout: this.options.stdout, stderr: this.options.stderr, writeToStdout: this.writeToStdout, writeToStderr: this.writeToStderr, exitOnCtrlC: this.options.exitOnCtrlC, onExit: this.unmount }, node2));
-    reconciler_default.updateContainerSync(tree, this.container, null, noop2);
+    reconciler_default.updateContainerSync(tree, this.container, null, noop3);
     reconciler_default.flushSyncWork();
   }
   writeToStdout(data) {
@@ -56317,7 +57390,7 @@ class Ink {
       this.log.done();
     }
     this.isUnmounted = true;
-    reconciler_default.updateContainerSync(null, this.container, null, noop2);
+    reconciler_default.updateContainerSync(null, this.container, null, noop3);
     reconciler_default.flushSyncWork();
     instances_default.delete(this.options.stdout);
     if (error instanceof Error) {
@@ -56713,175 +57786,6 @@ var createImpl = (createState) => {
 };
 var create5 = (createState) => createState ? createImpl(createState) : createImpl;
 
-// src/constants.ts
-var SEARCH_MIN_CHAR = 3;
-var MIN_RESULT_LIST_LENGTH = 5;
-var RESULT_LIST_LENGTH = 12;
-var RESULT_LIST_ACTIVE_LIST_INDEX = 3;
-
-// src/labels.ts
-var labels_default = {
-  SEARCH: "? Search",
-  NEXT_PAGE: "→ Next Page",
-  PREV_PAGE: "← Prev Page",
-  START_BULK_DOWNLOAD: "@ Start Bulk Download",
-  EXIT: "✖ Exit",
-  SEE_DETAILS: "See Details",
-  ALTERNATIVE_DOWNLOADS: "Alternative Downloads",
-  DOWNLOAD_DIRECTLY: "Download Directly",
-  DOWNLOADING: "Downloading...",
-  ADD_TO_BULK_DOWNLOAD_QUEUE: "Add To Bulk Download Queue",
-  REMOVE_FROM_BULK_DOWNLOAD_QUEUE: "Remove From Bulk Download Queue",
-  ADDED_TO_BULK_DOWNLOAD_QUEUE: "Added To Bulk Download Queue",
-  TURN_BACK_TO_THE_LIST: "Turn Back To The List",
-  BACK_TO_ENTRY_OPTIONS: "Back",
-  FETCHING_CONFIG: "Fetching configuration file...",
-  FINDING_MIRROR: "Finding an available mirror...",
-  COULDNT_REACH_TO_CONF: "Couldn't reach to configuration",
-  COULDNT_REACH_TO_MIRROR: "Couldn't reach to mirror",
-  GETTING_RESULTS: "Getting results",
-  ERR_OCCURED_WHILE_PARSING_DOC: "Error occured while parsing the document",
-  PREPARING_FOR_BULK_DOWNLOAD: "Preparing for bulk download...",
-  CONNECTION_ERROR: "Connection error",
-  TRYING_OTHER_MIRRORS: "Trying other mirrors...",
-  ALL_MIRRORS_FAILED: "All mirrors failed. Please try again later.",
-  NEXT_PAGE_CHECKING: "→ Next Page",
-  NEXT_PAGE_ERROR: "→ Next Page (?) (Retry)",
-  NEXT_PAGE_UNAVAILABLE: "→ Next Page (no results on next page)",
-  RETRY: "↻ Retry",
-  YES: "Yes",
-  NO: "No"
-};
-
-// src/settings.ts
-var SCREEN_BASE_APP_WIDTH = 80;
-var SCREEN_PADDING = 5;
-var SCREEN_WIDTH_PERC = 95;
-var CONFIGURATION_URL = "https://raw.githubusercontent.com/obsfx/libgen-downloader/configuration/config.v3.json";
-var PREFERRED_MIRROR_SOURCE = "https://libgen.bz/";
-var FAIL_REQ_ATTEMPT_COUNT = 5;
-var FAIL_REQ_ATTEMPT_DELAY_MS = 2000;
-var SEARCH_PAGE_SIZE = 25;
-
-// src/utilities.ts
-function delay2(ms) {
-  return new Promise((resolve2) => {
-    setTimeout(() => {
-      resolve2();
-    }, ms);
-  });
-}
-async function attempt2(callback, onFail, onError, onComplete) {
-  for (let index = 0;index < FAIL_REQ_ATTEMPT_COUNT; index++) {
-    try {
-      const result2 = await callback();
-      if (onComplete) {
-        onComplete();
-      }
-      return result2;
-    } catch (error) {
-      if (onFail) {
-        onFail(`Request failed, trying again ${index + 1}/${FAIL_REQ_ATTEMPT_COUNT}`);
-      }
-      await delay2(FAIL_REQ_ATTEMPT_DELAY_MS);
-      if (index + 1 === FAIL_REQ_ATTEMPT_COUNT && onError) {
-        onError(error?.message);
-      }
-    }
-  }
-  return;
-}
-var createOptionItem = (id, label, onSelect, options) => ({
-  type: 1 /* Option */,
-  data: {
-    id,
-    label,
-    onSelect,
-    ...options
-  }
-});
-var noop3 = () => {};
-var getNextPageOption = (nextPageStatus, handleNextPageOption, handleRetryNextPageOption) => {
-  switch (nextPageStatus) {
-    case "ready": {
-      return [createOptionItem("next_page_option" /* NEXT_PAGE */, labels_default.NEXT_PAGE, handleNextPageOption)];
-    }
-    case "checking": {
-      return [
-        createOptionItem("next_page_option" /* NEXT_PAGE */, labels_default.NEXT_PAGE_CHECKING, noop3, {
-          disabled: true,
-          showSpinner: true
-        })
-      ];
-    }
-    case "error": {
-      return [createOptionItem("next_page_option" /* NEXT_PAGE */, labels_default.NEXT_PAGE_ERROR, handleRetryNextPageOption)];
-    }
-    case "unavailable": {
-      return [
-        createOptionItem("next_page_option" /* NEXT_PAGE */, labels_default.NEXT_PAGE_UNAVAILABLE, noop3, {
-          disabled: true
-        })
-      ];
-    }
-    case "idle": {
-      return [];
-    }
-  }
-};
-var constructListItems = ({
-  entries: entries2,
-  currentPage,
-  nextPageStatus,
-  handleSearchOption,
-  handleNextPageOption,
-  handleRetryNextPageOption,
-  handlePrevPageOption,
-  handleStartBulkDownloadOption,
-  handleExitOption
-}) => {
-  const entryListItems = entries2.map((entry, index) => ({
-    type: 0 /* Entry */,
-    data: entry,
-    order: index + 1
-  }));
-  return [
-    ...entryListItems.slice(entryListItems.length - RESULT_LIST_ACTIVE_LIST_INDEX),
-    createOptionItem("search_option" /* SEARCH */, labels_default.SEARCH, handleSearchOption),
-    ...getNextPageOption(nextPageStatus, handleNextPageOption, handleRetryNextPageOption),
-    ...(() => {
-      if (currentPage > 1) {
-        return [createOptionItem("prev_page_option" /* PREV_PAGE */, labels_default.PREV_PAGE, handlePrevPageOption)];
-      }
-      return [];
-    })(),
-    createOptionItem("start_bulk_download_option" /* START_BULK_DOWNLOAD */, labels_default.START_BULK_DOWNLOAD, handleStartBulkDownloadOption),
-    createOptionItem("exit_option" /* EXIT */, labels_default.EXIT, handleExitOption),
-    ...entryListItems.slice(0, entryListItems.length - RESULT_LIST_ACTIVE_LIST_INDEX)
-  ];
-};
-var getRenderedListItems = (cursor, listItems, anyEntryExpanded, activeExpandedListLength) => {
-  const renderedItemsLimit = Math.max(MIN_RESULT_LIST_LENGTH, (() => {
-    if (anyEntryExpanded) {
-      return RESULT_LIST_LENGTH - activeExpandedListLength;
-    }
-    return RESULT_LIST_LENGTH;
-  })());
-  const renderedItems = [];
-  for (let index = 0;index < renderedItemsLimit; index++) {
-    if (index >= listItems.length) {
-      break;
-    }
-    const itemIndex = (cursor + index) % listItems.length;
-    renderedItems.push(listItems[itemIndex]);
-  }
-  return renderedItems;
-};
-function clearText(text) {
-  return text.split(`
-`)[0].replaceAll(/<script[^>]*>[\s\S]*?<\/script>/g, "").replaceAll(/<[^>]+>/g, "").trim();
-}
-
 // src/tui/helpers/screen.ts
 var clearScreen2 = () => {
   let clearANSI = "\x1B[2J";
@@ -57050,58 +57954,64 @@ var downloadStatusIndicators = {
   }, undefined, true, undefined, this)
 };
 
-// src/api/data/download.ts
-var import_content_disposition = __toESM(require_content_disposition(), 1);
-import fs3 from "node:fs";
-import { Readable, Transform as Transform2 } from "node:stream";
-import { pipeline } from "node:stream/promises";
-var downloadFile = async ({
-  downloadStream,
-  onStart,
-  onData
-}) => {
-  const MAX_FILE_NAME_LENGTH = 128;
-  const downloadContentDisposition = downloadStream.headers.get("content-disposition");
-  if (!downloadContentDisposition) {
-    throw new Error("No content-disposition header found");
-  }
-  const parsedContentDisposition = import_content_disposition.default.parse(downloadContentDisposition);
-  const fullFileName = parsedContentDisposition.parameters.filename;
-  const slicedFileName = fullFileName.slice(Math.max(fullFileName.length - MAX_FILE_NAME_LENGTH, 0));
-  const path3 = `./${slicedFileName}`;
-  const total = Number(downloadStream.headers.get("content-length") || 0);
-  const filename = parsedContentDisposition.parameters.filename;
-  if (!downloadStream.body) {
-    throw new Error("No response body");
-  }
-  onStart(filename, total);
-  const progressStream = new Transform2({
-    transform(chunk2, _encoding, callback) {
-      const buffer = Buffer.from(chunk2);
-      onData(filename, buffer, total);
-      callback(undefined, buffer);
-    }
-  });
-  try {
-    await pipeline(Readable.from(downloadStream.body, { objectMode: false }), progressStream, fs3.createWriteStream(path3));
-    const downloadResult = {
-      path: path3,
-      filename,
-      total
-    };
-    return downloadResult;
-  } catch {
-    throw new Error(`(${filename}) Error occurred while downloading file`);
-  }
-};
-
 // src/api/data/file.ts
-import fs4 from "fs";
+import fs7 from "fs";
 async function createMD5ListFile(md5List) {
   const filename = `libgen_downloader_md5_list_${Date.now().toString()}.txt`;
-  await fs4.promises.writeFile(`./${filename}`, md5List.join(`
+  await fs7.promises.writeFile(`./${filename}`, md5List.join(`
 `));
   return filename;
+}
+
+// src/library/direct-download.ts
+import path7 from "node:path";
+import fs8 from "node:fs";
+async function saveSource(entry, md5, paths, downloadStream, callbacks) {
+  await fs8.promises.mkdir(paths.assetsDirectory, { recursive: true });
+  await downloadFile({
+    downloadStream,
+    destinationPath: paths.sourcePath,
+    filename: path7.basename(paths.sourcePath),
+    ...callbacks
+  });
+  const selected = {
+    entry,
+    md5,
+    score: 0,
+    reasons: ["manually selected copy"]
+  };
+  await writeBookRecords({
+    paths,
+    request: { query: entry.title, title: entry.title, sourceLine: entry.title },
+    selected,
+    conversion: {
+      status: "unavailable",
+      message: "Manual copy retained. Use --best or --list for automatic Markdown conversion."
+    }
+  });
+  return paths;
+}
+async function saveEntrySource(entry, downloadStream, callbacks) {
+  const md5 = getEntryMD5(entry) || entry.id;
+  return saveSource(entry, md5, createBookPaths(entry), downloadStream, callbacks);
+}
+async function saveMD5Source(md5, downloadStream, callbacks) {
+  const responseFilename = getResponseFilename(downloadStream) || "source.bin";
+  const extension = normalizeExtension(path7.extname(responseFilename).slice(1));
+  const paths = createMD5BookPaths(md5, extension);
+  const entry = {
+    id: md5,
+    authors: "unknown-author",
+    title: md5,
+    publisher: "",
+    year: "",
+    pages: "",
+    language: "",
+    size: downloadStream.headers.get("content-length") || "",
+    extension,
+    mirror: `/ads.php?md5=${md5}`
+  };
+  return saveSource(entry, md5, paths, downloadStream, callbacks);
 }
 
 // src/tui/store/bulk-download-queue.ts
@@ -57230,7 +58140,7 @@ var createBulkDownloadQueueStateSlice = (set2, get2) => ({
         continue;
       }
       get2().onBulkQueueItemProcessing(index);
-      const detailPageResult = await attempt2(() => getDocument(detailPageUrl));
+      const detailPageResult = await attempt(() => getDocument(detailPageUrl));
       if (!detailPageResult) {
         get2().setWarningMessage(`Couldn't fetch the detail page for ${item.md5}`);
         get2().onBulkQueueItemFail(index);
@@ -57242,22 +58152,26 @@ var createBulkDownloadQueueStateSlice = (set2, get2) => ({
         get2().onBulkQueueItemFail(index);
         continue;
       }
-      const downloadStream = await attempt2(() => fetchLibgen(downloadUrl));
+      const downloadStream = await attempt(() => fetchLibgen(downloadUrl));
       if (!downloadStream) {
         get2().setWarningMessage(`Couldn't fetch the download stream for ${item.md5}`);
         get2().onBulkQueueItemFail(index);
         continue;
       }
       try {
-        await downloadFile({
-          downloadStream,
+        const callbacks = {
           onStart: (filename, total) => {
             get2().onBulkQueueItemStart(index, filename, total);
           },
           onData: (filename, chunk2, total) => {
             get2().onBulkQueueItemData(index, filename, chunk2, total);
           }
-        });
+        };
+        if (item.entry) {
+          await saveEntrySource(item.entry, downloadStream, callbacks);
+        } else {
+          await saveMD5Source(item.md5, downloadStream, callbacks);
+        }
         get2().onBulkQueueItemComplete(index);
       } catch {
         get2().onBulkQueueItemFail(index);
@@ -57303,6 +58217,7 @@ var createBulkDownloadQueueStateSlice = (set2, get2) => ({
       }
       bulkDownloadQueue.push({
         md5,
+        entry,
         status: "IN_QUEUE" /* IN_QUEUE */,
         filename: "",
         progress: 0,
@@ -57363,194 +58278,6 @@ var createCacheStateSlice = (set2, get2) => ({
   }
 });
 
-// src/api/data/config.ts
-function prioritizePreferredMirror(mirrors) {
-  const preferred = PREFERRED_MIRROR_SOURCE.replace(/\/+$/, "");
-  const isPreferred = (mirror) => mirror.src.replace(/\/+$/, "") === preferred;
-  return [
-    ...mirrors.filter((mirror) => isPreferred(mirror)),
-    ...mirrors.filter((mirror) => !isPreferred(mirror))
-  ];
-}
-async function fetchConfig() {
-  try {
-    const response = await fetch(CONFIGURATION_URL);
-    const json = await response.json();
-    const config = json;
-    return {
-      latestVersion: config["latest_version"] || "",
-      mirrors: prioritizePreferredMirror(config["mirrors"] || [])
-    };
-  } catch {
-    throw new Error("Error occurred while fetching configuration.");
-  }
-}
-async function findMirror(mirrors, onMirrorFail) {
-  for (const mirror of mirrors) {
-    try {
-      const response = await fetchLibgen(mirror.src);
-      if (!response.ok) {
-        throw new Error(`Mirror returned HTTP ${response.status}`);
-      }
-      return mirror;
-    } catch {
-      onMirrorFail(mirror.src);
-    }
-  }
-  return;
-}
-
-// node_modules/nanoid/index.js
-import { webcrypto as crypto } from "node:crypto";
-
-// node_modules/nanoid/url-alphabet/index.js
-var urlAlphabet = "useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict";
-
-// node_modules/nanoid/index.js
-var POOL_SIZE_MULTIPLIER = 128;
-var pool;
-var poolOffset;
-function fillPool(bytes) {
-  if (!pool || pool.length < bytes) {
-    pool = Buffer.allocUnsafe(bytes * POOL_SIZE_MULTIPLIER);
-    crypto.getRandomValues(pool);
-    poolOffset = 0;
-  } else if (poolOffset + bytes > pool.length) {
-    crypto.getRandomValues(pool);
-    poolOffset = 0;
-  }
-  poolOffset += bytes;
-}
-function nanoid(size2 = 21) {
-  fillPool(size2 |= 0);
-  let id = "";
-  for (let i = poolOffset - size2;i < poolOffset; i++) {
-    id += urlAlphabet[pool[i] & 63];
-  }
-  return id;
-}
-
-// src/api/adapters/libgen-plus-adapter.ts
-class LibgenPlusAdapter {
-  baseURL;
-  constructor(baseURL) {
-    this.baseURL = baseURL;
-  }
-  isHiddenField(fieldName) {
-    return !["id"].includes(fieldName);
-  }
-  parseEntries(document2, throwError) {
-    const entries2 = [];
-    const containerTable = document2.querySelector("#tablelibgen > tbody");
-    if (!containerTable) {
-      if (throwError) {
-        throwError("containerTable is undefined");
-      }
-      return [];
-    }
-    const entryElements = containerTable.children;
-    for (const element of entryElements) {
-      const id = nanoid();
-      const authors = clearText(element.children[1]?.textContent || "").split(";").map((author) => author.trim()).join(", ");
-      const titleSectionContent = [...element.children[0].children].filter((child) => child.nodeName !== "NOBR").map((element2) => element2.textContent?.trim()).filter(Boolean).join(" / ");
-      const title = clearText(titleSectionContent || "");
-      const publisher = clearText(element.children[2]?.textContent || "");
-      const year = clearText(element.children[3]?.textContent || "");
-      const pages = clearText(element.children[5]?.textContent || "");
-      const language = clearText(element.children[4]?.textContent || "");
-      const size2 = clearText(element.children[6]?.textContent || "");
-      const extension = clearText(element.children[7]?.textContent || "");
-      const mirror = element.children[8]?.getElementsByTagName("a")?.[0]?.getAttribute("href") || "";
-      entries2.push({
-        id,
-        authors,
-        title,
-        publisher,
-        year,
-        pages,
-        language,
-        size: size2,
-        extension,
-        mirror
-      });
-    }
-    return entries2;
-  }
-  getPageURL(pathname) {
-    const url = new URL(pathname, this.baseURL);
-    return url.toString();
-  }
-  getSearchURL(query2, pageNumber, pageSize) {
-    const url = new URL("/index.php", this.baseURL);
-    url.searchParams.set("req", query2);
-    url.searchParams.set("page", pageNumber.toString());
-    url.searchParams.set("res", pageSize.toString());
-    return url.toString();
-  }
-  getDetailPageURL(md5) {
-    const url = new URL("/ads.php", this.baseURL);
-    url.searchParams.set("md5", md5);
-    return url.toString();
-  }
-  getMainDownloadURLFromDocument(document2, throwError) {
-    const downloadLinkElement = document2.querySelector("#main > tr:first-child > td:nth-child(2) > a");
-    if (!downloadLinkElement) {
-      if (throwError) {
-        throwError("downloadLinkElement is undefined");
-      }
-      return;
-    }
-    const href = downloadLinkElement.getAttribute("href");
-    return this.getPageURL(href || "");
-  }
-  detectConnectionError(document2) {
-    const alertElement = document2.querySelector(".alert-danger");
-    if (alertElement) {
-      return alertElement.textContent?.trim() || "Unknown connection error";
-    }
-    return;
-  }
-  formatField(fieldName, value) {
-    switch (fieldName) {
-      case "authors": {
-        return value.split(", ").map((author) => author.trim()).join(", ");
-      }
-      case "title": {
-        return value.trim();
-      }
-      case "publisher":
-      case "year":
-      case "pages":
-      case "language":
-      case "size":
-      case "extension": {
-        return value.trim();
-      }
-      case "mirror": {
-        if (value.startsWith("http")) {
-          return value;
-        }
-        return this.getPageURL(value);
-      }
-      default: {
-        return value;
-      }
-    }
-  }
-}
-
-// src/api/adapters/index.ts
-var getAdapter = (mirrorURL, mirrorType) => {
-  switch (mirrorType) {
-    case "libgen-plus": {
-      return new LibgenPlusAdapter(mirrorURL);
-    }
-    default: {
-      throw new Error(`Unknown mirror type: ${mirrorType}`);
-    }
-  }
-};
-
 // src/tui/store/config.ts
 var initialConfigState = {
   mirrorAdapter: undefined,
@@ -57564,7 +58291,7 @@ var createConfigStateSlice = (set2, get2) => ({
     const store = get2();
     store.setIsLoading(true);
     store.setLoaderMessage(labels_default.FETCHING_CONFIG);
-    const config = await attempt2(fetchConfig);
+    const config = await attempt(fetchConfig);
     if (!config) {
       store.setIsLoading(false);
       store.setErrorMessage("Couldn't fetch the config");
@@ -57683,7 +58410,7 @@ var createDownloadQueueStateSlice = (set2, get2) => ({
         store.increaseTotalFailed();
         continue;
       }
-      const mirrorPageResult = await attempt2(() => getDocument(detailPageUrl));
+      const mirrorPageResult = await attempt(() => getDocument(detailPageUrl));
       if (!mirrorPageResult) {
         store.setWarningMessage(`Couldn't fetch the mirror page for "${entry.title}"`);
         store.increaseTotalFailed();
@@ -57695,7 +58422,7 @@ var createDownloadQueueStateSlice = (set2, get2) => ({
         store.increaseTotalFailed();
         continue;
       }
-      const downloadStream = await attempt2(() => fetchLibgen(downloadUrl));
+      const downloadStream = await attempt(() => fetchLibgen(downloadUrl));
       if (!downloadStream) {
         store.setWarningMessage(`Couldn't fetch the download stream for "${entry.title}"`);
         store.increaseTotalFailed();
@@ -57705,8 +58432,7 @@ var createDownloadQueueStateSlice = (set2, get2) => ({
         store.updateCurrentDownloadProgress(entry.id, {
           status: "DOWNLOADING" /* DOWNLOADING */
         });
-        await downloadFile({
-          downloadStream,
+        await saveEntrySource(entry, downloadStream, {
           onStart: (filename, total) => {
             store.updateCurrentDownloadProgress(entry.id, {
               filename,
@@ -57792,7 +58518,7 @@ var createEventActionsSlice = (_set, get2) => ({
     if (cachedEntries.length > 0) {
       return { status: "success", entries: cachedEntries };
     }
-    const pageDocumentResult = await attempt2(() => getDocument(searchURL));
+    const pageDocumentResult = await attempt(() => getDocument(searchURL));
     if (!pageDocumentResult) {
       return { status: "error", message: `Couldn't fetch the search page for "${query2}"` };
     }
@@ -58148,7 +58874,7 @@ var ansi_styles_default3 = ansiStyles3;
 
 // node_modules/ink-text-input/node_modules/chalk/source/vendor/supports-color/index.js
 import process16 from "node:process";
-import os3 from "node:os";
+import os4 from "node:os";
 import tty2 from "node:tty";
 function hasFlag2(flag, argv = globalThis.Deno ? globalThis.Deno.args : process16.argv) {
   const prefix = flag.startsWith("-") ? "" : flag.length === 1 ? "-" : "--";
@@ -58213,7 +58939,7 @@ function _supportsColor2(haveStream, { streamIsTTY, sniffFlags = true } = {}) {
     return min2;
   }
   if (process16.platform === "win32") {
-    const osRelease = os3.release().split(".");
+    const osRelease = os4.release().split(".");
     if (Number(osRelease[0]) >= 10 && Number(osRelease[2]) >= 10586) {
       return Number(osRelease[2]) >= 14931 ? 3 : 2;
     }
@@ -60549,7 +61275,60 @@ function renderTUI({
 }
 
 // src/cli/operate.ts
+function getPageCount(flags) {
+  const pageCount = Number.parseInt(String(flags.pages || "2"), 10);
+  if (!Number.isFinite(pageCount) || pageCount < 1) {
+    return 2;
+  }
+  return pageCount;
+}
+async function ingestRequests(requests, flags) {
+  if (requests.length === 0) {
+    throw new Error("The reading list did not contain any book entries.");
+  }
+  const session = await createLibgenSession((mirror) => {
+    console.log(`Mirror unavailable: ${mirror}`);
+  });
+  const results = [];
+  for (const [index, request] of requests.entries()) {
+    console.log(`
+[${index + 1}/${requests.length}] ${request.sourceLine}`);
+    const result2 = await ingestBestBook(request, {
+      session,
+      libraryRoot: flags.output,
+      pageCount: getPageCount(flags),
+      convert: flags.sourceOnly !== true,
+      onProgress(message) {
+        console.log(`  ${message}`);
+      }
+    });
+    console.log(`  ${result2.status.toUpperCase()}: ${result2.message}`);
+    results.push(result2);
+  }
+  const downloaded = results.filter((result2) => result2.status === "downloaded").length;
+  const skipped = results.filter((result2) => result2.status === "skipped").length;
+  const failed = results.filter((result2) => result2.status === "failed").length;
+  console.log(`
+Complete: ${downloaded} downloaded, ${skipped} skipped, ${failed} failed.`);
+  if (failed > 0) {
+    process.exitCode = 1;
+  }
+  return results;
+}
 var operate = async (flags) => {
+  if (flags.best) {
+    const request = parseBookRequest(flags.best);
+    if (!request) {
+      throw new Error("Provide a book title after --best.");
+    }
+    await ingestRequests([request], flags);
+    return;
+  }
+  if (flags.list) {
+    const markdown = await fs9.promises.readFile(flags.list, "utf8");
+    await ingestRequests(parseReadingList(markdown), flags);
+    return;
+  }
   if (flags.search) {
     const query2 = flags.search;
     if (query2.length < 3) {
@@ -60568,7 +61347,7 @@ var operate = async (flags) => {
   }
   if (flags.bulk) {
     const filePath = flags.bulk;
-    const data = await fs5.promises.readFile(filePath, "utf8");
+    const data = await fs9.promises.readFile(filePath, "utf8");
     const md5List = data.split(`
 `).filter((line) => line.trim());
     const store = useBoundStore.getState();
@@ -60592,7 +61371,7 @@ var operate = async (flags) => {
       console.log("Failed to get detail page URL");
       return;
     }
-    const detailPageResult = await attempt2(() => getDocument(detailPageUrl));
+    const detailPageResult = await attempt(() => getDocument(detailPageUrl));
     if (!detailPageResult) {
       console.log("Failed to get detail page document");
       return;
@@ -60628,7 +61407,16 @@ var operate = async (flags) => {
 var version = "3.3.3";
 
 // src/index.ts
-operate(cli.flags);
+try {
+  await operate(cli.flags);
+} catch (error) {
+  let message = String(error);
+  if (error instanceof Error) {
+    message = error.message;
+  }
+  console.error(`Error: ${message}`);
+  process.exitCode = 1;
+}
 export {
   version as APP_VERSION
 };

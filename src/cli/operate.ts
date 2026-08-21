@@ -1,12 +1,75 @@
-// eslint-disable-next-line unicorn/prefer-node-protocol
-import fs from "fs";
+import fs from "node:fs";
 import { getDocument } from "../api/data/document";
+import { createLibgenSession, ingestBestBook } from "../library/ingest";
+import { parseBookRequest, parseReadingList } from "../library/reading-list";
+import type { BookRequest, IngestionResult } from "../library/types";
 import renderTUI from "../tui/index";
 import { LAYOUT_KEY } from "../tui/layouts/keys";
 import { useBoundStore } from "../tui/store/index";
 import { attempt } from "../utilities";
 
+function getPageCount(flags: Record<string, unknown>): number {
+  const pageCount = Number.parseInt(String(flags.pages || "2"), 10);
+  if (!Number.isFinite(pageCount) || pageCount < 1) {
+    return 2;
+  }
+  return pageCount;
+}
+
+async function ingestRequests(
+  requests: BookRequest[],
+  flags: Record<string, unknown>
+): Promise<IngestionResult[]> {
+  if (requests.length === 0) {
+    throw new Error("The reading list did not contain any book entries.");
+  }
+
+  const session = await createLibgenSession((mirror) => {
+    console.log(`Mirror unavailable: ${mirror}`);
+  });
+  const results: IngestionResult[] = [];
+
+  for (const [index, request] of requests.entries()) {
+    console.log(`\n[${index + 1}/${requests.length}] ${request.sourceLine}`);
+    const result = await ingestBestBook(request, {
+      session,
+      libraryRoot: flags.output as string | undefined,
+      pageCount: getPageCount(flags),
+      convert: flags.sourceOnly !== true,
+      onProgress(message) {
+        console.log(`  ${message}`);
+      },
+    });
+    console.log(`  ${result.status.toUpperCase()}: ${result.message}`);
+    results.push(result);
+  }
+
+  const downloaded = results.filter((result) => result.status === "downloaded").length;
+  const skipped = results.filter((result) => result.status === "skipped").length;
+  const failed = results.filter((result) => result.status === "failed").length;
+  console.log(`\nComplete: ${downloaded} downloaded, ${skipped} skipped, ${failed} failed.`);
+  if (failed > 0) {
+    process.exitCode = 1;
+  }
+  return results;
+}
+
 export const operate = async (flags: Record<string, unknown>) => {
+  if (flags.best) {
+    const request = parseBookRequest(flags.best as string);
+    if (!request) {
+      throw new Error("Provide a book title after --best.");
+    }
+    await ingestRequests([request], flags);
+    return;
+  }
+
+  if (flags.list) {
+    const markdown = await fs.promises.readFile(flags.list as string, "utf8");
+    await ingestRequests(parseReadingList(markdown), flags);
+    return;
+  }
+
   if (flags.search) {
     const query = flags.search as string;
     if (query.length < 3) {
