@@ -240,10 +240,11 @@ describe("Docling conversion", () => {
       );
 
       expect(conversion.status).toBe("converted");
-      expect(conversionArguments[0]).toBe("source.pdf");
-      expect(conversionArguments).toContain("--to=json");
-      expect(conversionArguments).toContain("--output=docling");
-      expect(conversionArguments).not.toContain("--to=md");
+      expect(conversionArguments[0]).toEndWith("/scripts/docling_export.py");
+      expect(conversionArguments[1]).toBe(paths.sourcePath);
+      expect(conversionArguments[2]).toBe(paths.doclingDirectory);
+      expect(conversionArguments).not.toContain("--markdown");
+      expect(conversionArguments).not.toContain("--image-export-mode=referenced");
       expect(fs.existsSync(paths.doclingJSONPath)).toBe(true);
       expect(fs.existsSync(paths.doclingMarkdownPath)).toBe(false);
     } finally {
@@ -280,9 +281,41 @@ describe("Docling conversion", () => {
       );
 
       expect(conversion.status).toBe("converted");
-      expect(conversionArguments).toContain("--to=json");
-      expect(conversionArguments).toContain("--to=md");
+      expect(conversionArguments).toContain("--markdown");
       expect(await fs.promises.readFile(paths.doclingMarkdownPath, "utf8")).toBe(nativeMarkdown);
+    } finally {
+      await fs.promises.rm(libraryRoot, { recursive: true, force: true });
+    }
+  });
+
+  it("rejects non-portable Docling output that references staging paths", async () => {
+    const libraryRoot = await fs.promises.mkdtemp(path.join(os.tmpdir(), "libgen-docling-paths-"));
+    const entry = createEntry();
+    const paths = createBookPaths(entry, libraryRoot);
+    await fs.promises.mkdir(paths.bookDirectory, { recursive: true });
+    await fs.promises.writeFile(paths.sourcePath, "%PDF-test-source");
+
+    try {
+      const conversion = await convertBook(
+        paths,
+        { entry, md5: "pdf-copy", score: 200, reasons: ["exact title match"] },
+        async (_command, arguments_) => {
+          if (arguments_.includes("--version")) {
+            return { exitCode: 0, stdout: "Docling 2", stderr: "" };
+          }
+          await fs.promises.writeFile(
+            paths.doclingJSONPath,
+            JSON.stringify({
+              schema_name: "DoclingDocument",
+              pictures: [{ image: { uri: "/tmp/staging/source_artifacts/image.png" } }],
+            })
+          );
+          return { exitCode: 0, stdout: "", stderr: "" };
+        }
+      );
+
+      expect(conversion.status).toBe("failed");
+      expect(conversion.message).toContain("did not produce the requested native output");
     } finally {
       await fs.promises.rm(libraryRoot, { recursive: true, force: true });
     }

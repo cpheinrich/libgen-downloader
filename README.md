@@ -110,7 +110,9 @@ and accepts `--title` and `--author` overrides when the embedded metadata is inc
 Docling is the only document converter. Its JSON document model is always produced and is the
 canonical converted representation. Add `--markdown` to ask Docling to export Markdown from the
 same parse. The package does not rewrite, normalize, add frontmatter to, or otherwise parse
-Docling's Markdown. OCR, formula enrichment, and referenced images are enabled when available.
+Docling's Markdown. OCR, formula enrichment, and referenced picture images are enabled when
+available. Full-page raster caches are omitted from JSON because the original source already
+preserves every page; this keeps large documents compact without discarding extracted figures.
 
 ```bash
 libgen-downloader --best "On the Origin of Species by Charles Darwin"

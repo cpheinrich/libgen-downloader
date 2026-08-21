@@ -51550,6 +51550,7 @@ function rankCandidates(entries2, request) {
 import { execFile } from "node:child_process";
 import fs3 from "node:fs";
 import path4 from "node:path";
+import { fileURLToPath as fileURLToPath3 } from "node:url";
 var CONVERSION_TIMEOUT_MS = 15 * 60 * 1000;
 var DOCLING_INPUT_EXTENSIONS = new Set([
   "adoc",
@@ -51594,10 +51595,81 @@ async function commandIsAvailable(command, runner, workingDirectory) {
   const result = await runner(command, ["--version"], workingDirectory);
   return result.exitCode === 0;
 }
+async function executablePath(command) {
+  const executableNames = [command];
+  if (process.platform === "win32") {
+    executableNames.unshift(`${command}.exe`);
+  }
+  for (const directory of (process.env.PATH || "").split(path4.delimiter)) {
+    for (const executableName of executableNames) {
+      const candidate = path4.join(directory, executableName);
+      try {
+        await fs3.promises.access(candidate, fs3.constants.X_OK);
+        return await fs3.promises.realpath(candidate);
+      } catch {}
+    }
+  }
+  return;
+}
+async function resolveDoclingPython() {
+  const doclingPath = await executablePath("docling");
+  if (!doclingPath) {
+    throw new Error("Docling is installed but its executable could not be resolved from PATH.");
+  }
+  for (const executableName of ["python", "python3", "python.exe"]) {
+    const candidate = path4.join(path4.dirname(doclingPath), executableName);
+    try {
+      await fs3.promises.access(candidate, fs3.constants.X_OK);
+      return candidate;
+    } catch {}
+  }
+  const launcher = await fs3.promises.readFile(doclingPath, "utf8");
+  const firstLine = launcher.split(`
+`, 1)[0] || "";
+  const interpreter = firstLine.match(/^#!\s*(\/\S+)/)?.[1];
+  if (interpreter) {
+    await fs3.promises.access(interpreter, fs3.constants.X_OK);
+    return interpreter;
+  }
+  throw new Error("Could not locate the Python environment that contains Docling.");
+}
+async function resolveExporterPath() {
+  const moduleDirectory = path4.dirname(fileURLToPath3(import.meta.url));
+  const candidates = [
+    path4.resolve(moduleDirectory, "../../scripts/docling_export.py"),
+    path4.resolve(moduleDirectory, "../scripts/docling_export.py")
+  ];
+  for (const candidate of candidates) {
+    try {
+      await fs3.promises.access(candidate, fs3.constants.R_OK);
+      return candidate;
+    } catch {}
+  }
+  throw new Error("The bundled Docling exporter script is missing.");
+}
 async function validateDoclingDocument(doclingPath) {
   try {
     const document2 = JSON.parse(await fs3.promises.readFile(doclingPath, "utf8"));
-    return document2?.schema_name === "DoclingDocument";
+    if (document2?.schema_name !== "DoclingDocument") {
+      return false;
+    }
+    if (Array.isArray(document2.pages) && document2.pages.some((page) => page.image)) {
+      return false;
+    }
+    if (!Array.isArray(document2.pictures)) {
+      return true;
+    }
+    for (const picture of document2.pictures) {
+      const uri = picture?.image?.uri;
+      if (typeof uri !== "string") {
+        continue;
+      }
+      if (uri.startsWith("data:") || path4.isAbsolute(uri)) {
+        return false;
+      }
+      await fs3.promises.access(path4.resolve(path4.dirname(doclingPath), uri), fs3.constants.R_OK);
+    }
+    return true;
   } catch {
     return false;
   }
@@ -51613,18 +51685,10 @@ async function validateOptionalMarkdown(paths, includeMarkdown) {
     return false;
   }
 }
-function getDoclingArguments(paths, includeMarkdown, enrich) {
-  const arguments_ = [
-    path4.basename(paths.sourcePath),
-    "--to=json",
-    "--output=docling",
-    "--image-export-mode=referenced"
-  ];
+function getDoclingArguments(exporterPath, paths, includeMarkdown) {
+  const arguments_ = [exporterPath, paths.sourcePath, paths.doclingDirectory];
   if (includeMarkdown) {
-    arguments_.push("--to=md");
-  }
-  if (enrich) {
-    arguments_.push("--enrich-formula");
+    arguments_.push("--markdown");
   }
   return arguments_;
 }
@@ -51645,10 +51709,25 @@ async function convertBook(paths, candidate, runner = runCommand, includeMarkdow
     };
   }
   await fs3.promises.mkdir(paths.doclingDirectory, { recursive: true });
-  let result = await runner("docling", getDoclingArguments(paths, includeMarkdown, true), paths.bookDirectory);
-  if (result.exitCode !== 0) {
-    result = await runner("docling", getDoclingArguments(paths, includeMarkdown, false), paths.bookDirectory);
+  let pythonCommand = "python3";
+  let exporterPath;
+  try {
+    exporterPath = await resolveExporterPath();
+    if (runner === runCommand) {
+      pythonCommand = await resolveDoclingPython();
+    }
+  } catch (error) {
+    let message = "Could not initialize Docling export.";
+    if (error instanceof Error) {
+      message = error.message;
+    }
+    return {
+      status: "failed",
+      converter: "docling",
+      message
+    };
   }
+  const result = await runner(pythonCommand, getDoclingArguments(exporterPath, paths, includeMarkdown), paths.bookDirectory);
   const jsonIsValid = await validateDoclingDocument(paths.doclingJSONPath);
   const markdownIsValid = await validateOptionalMarkdown(paths, includeMarkdown);
   if (result.exitCode !== 0 || !jsonIsValid || !markdownIsValid) {
